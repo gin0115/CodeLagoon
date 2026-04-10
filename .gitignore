@@ -15,10 +15,12 @@ mu-plugins/*
 !mu-plugins/mu-loader.php
 !mu-plugins/colophon
 !mu-plugins/team51-tracking
-!mu-plugins/a8csp-project-scaffold-features
+!mu-plugins/codelag-features
+
+team51-plugin-scaffold-trunk
 
 themes/*
-!themes/a8csp-project-scaffold
+!themes/codelag-scaffold
 
 # Other wp-content exclusions
 upgrade/*

@@ -16,7 +16,7 @@ As a rule of thumb, if there is another source of updates for a piece of code, i
 
 ### Theme Structure
 
-This demo project contains a Block Theme called `a8csp-project-scaffold` which is setup to work with all build processes set out in `composer.json` and `package.json`. This theme is a recommendation of structure only. You can modify or replace this as needed if needed. [Block Canvas](https://github.com/Automattic/themes/tree/trunk/block-canvas) is also an excellent starter theme you can consider.
+This demo project contains a Block Theme called `codelagoon` which is setup to work with all build processes set out in `composer.json` and `package.json`. This theme is a recommendation of structure only. You can modify or replace this as needed if needed. [Block Canvas](https://github.com/Automattic/themes/tree/trunk/block-canvas) is also an excellent starter theme you can consider.
 
 In general, any active theme on the site should contain the following folder structure:
 
@@ -82,7 +82,7 @@ Custom blocks should now use the [WPCom Special Projects Blocks Monorepo](https:
 
 ### Features plugin
 
-As part of the effort to decouple the theme from the site's functionality, we are also requiring a features plugin that contains all the custom functionality of the site. The demo project contains a plugin called `a8csp-project-scaffold-features` which contains a custom post type registration and some basic scaffolding.
+As part of the effort to decouple the theme from the site's functionality, we are also requiring a features plugin that contains all the custom functionality of the site. The demo project contains a plugin called `codelag-features` which contains a custom post type registration and some basic scaffolding.
 
 As far as the mu-plugin's assets are concerned, these follows the same folder structure as the theme (see above).
 

@@ -1,9 +1,9 @@
 {
-  "name": "a8csp/project-scaffold",
+  "name": "gin0115/codelagoon",
   "type": "wordpress-project",
 
-  "description": "The scaffold for new projects used by the Automattic Special Projects team.",
-  "homepage": "https://a8csp-project-scaffold-production.mystagingwebsite.com",
+  "description": "Its a site where devs can share snippets etc",
+  "homepage": "https://github.com/gin0115/CodeLagoon",
   "license": "GPL-2.0-or-later",
   "authors": [
     {
@@ -34,8 +34,8 @@
       "@format:php:theme",
       "@format:php:features"
     ],
-    "format:php:theme": "phpcbf --standard=./themes/a8csp-project-scaffold/.phpcs.xml --basepath=. ./themes/a8csp-project-scaffold -v",
-    "format:php:features": "phpcbf --standard=./mu-plugins/a8csp-project-scaffold-features/.phpcs.xml --basepath=. ./mu-plugins/a8csp-project-scaffold-features -v",
+    "format:php:theme": "phpcbf --standard=./themes/codelag-scaffold/.phpcs.xml --basepath=. ./themes/codelag-scaffold -v",
+    "format:php:features": "phpcbf --standard=./mu-plugins/codelag-features/.phpcs.xml --basepath=. ./mu-plugins/codelag-features -v",
 
     "lint:php": [
       "@lint:php:theme",
@@ -46,18 +46,18 @@
       "@lint:php:theme:phpmd",
       "@lint:php:theme:phpstan"
     ],
-    "lint:php:theme:phpcs": "phpcs --standard=./themes/a8csp-project-scaffold/.phpcs.xml --basepath=. ./themes/a8csp-project-scaffold -v",
-    "lint:php:theme:phpmd": "phpmd ./themes/a8csp-project-scaffold ansi ./themes/a8csp-project-scaffold/.phpmd.xml -v",
-    "lint:php:theme:phpstan": "phpstan analyse -c ./themes/a8csp-project-scaffold/.phpstan.neon -v --memory-limit=1G",
+    "lint:php:theme:phpcs": "phpcs --standard=./themes/codelag-scaffold/.phpcs.xml --basepath=. ./themes/codelag-scaffold -v",
+    "lint:php:theme:phpmd": "phpmd ./themes/codelag-scaffold ansi ./themes/codelag-scaffold/.phpmd.xml -v",
+    "lint:php:theme:phpstan": "phpstan analyse -c ./themes/codelag-scaffold/.phpstan.neon -v --memory-limit=1G",
 
     "lint:php:features": [
       "@lint:php:features:phpcs",
       "@lint:php:features:phpmd",
       "@lint:php:features:phpstan"
     ],
-    "lint:php:features:phpcs": "phpcs --standard=./mu-plugins/a8csp-project-scaffold-features/.phpcs.xml --basepath=. ./mu-plugins/a8csp-project-scaffold-features -v",
-    "lint:php:features:phpmd": "phpmd ./mu-plugins/a8csp-project-scaffold-features ansi ./mu-plugins/a8csp-project-scaffold-features/.phpmd.xml -v",
-    "lint:php:features:phpstan": "phpstan analyse -c ./mu-plugins/a8csp-project-scaffold-features/.phpstan.neon -v --memory-limit=1G",
+    "lint:php:features:phpcs": "phpcs --standard=./mu-plugins/codelag-features/.phpcs.xml --basepath=. ./mu-plugins/codelag-features -v",
+    "lint:php:features:phpmd": "phpmd ./mu-plugins/codelag-features ansi ./mu-plugins/codelag-features/.phpmd.xml -v",
+    "lint:php:features:phpstan": "phpstan analyse -c ./mu-plugins/codelag-features/.phpstan.neon -v --memory-limit=1G",
 
     "internationalize": [
       "@makepot:theme",
@@ -67,13 +67,13 @@
       "@updatepo:features"
     ],
 
-    "makepot:theme": "wp i18n make-pot themes/a8csp-project-scaffold",
-    "updatepo:theme": "wp i18n update-po themes/a8csp-project-scaffold/languages/a8csp-project-scaffold.pot",
-    "makemo:theme": "wp i18n make-mo themes/a8csp-project-scaffold/languages",
+    "makepot:theme": "wp i18n make-pot themes/codelag-scaffold",
+    "updatepo:theme": "wp i18n update-po themes/codelag-scaffold/languages/codelagoon.pot",
+    "makemo:theme": "wp i18n make-mo themes/codelag-scaffold/languages",
 
-    "makepot:features": "wp i18n make-pot mu-plugins/a8csp-project-scaffold-features",
-    "updatepo:features": "wp i18n update-po mu-plugins/a8csp-project-scaffold-features/languages/a8csp-project-scaffold-features.pot",
-    "makemo:features": "wp i18n make-mo mu-plugins/a8csp-project-scaffold-features/languages",
+    "makepot:features": "wp i18n make-pot mu-plugins/codelag-features",
+    "updatepo:features": "wp i18n update-po mu-plugins/codelag-features/languages/codelag-features.pot",
+    "makemo:features": "wp i18n make-mo mu-plugins/codelag-features/languages",
 
     "packages-install": "@composer install --ignore-platform-reqs --no-interaction",
     "packages-update": [
