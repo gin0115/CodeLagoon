@@ -1,0 +1,355 @@
+/**
+ * Editor-only styles for the Lagoon Viewer block.
+ * Stacked collapsible cards with drag-to-reorder, Monaco bodies.
+ */
+
+.lagoon-viewer-editor {
+	padding: 1.25rem;
+	background: #fafafa;
+	border: 1px solid #e0e0e0;
+	border-radius: 6px;
+
+	// Baseline VS Code dark theme variables. Monaco's bundled CSS targets
+	// `--vscode-*` custom properties for every UI surface (background, gutter,
+	// line numbers, selection, etc.) and expects its theme service to define
+	// them. In this build that emission is broken, so we provide vs-dark
+	// defaults at the WRAPPER level. The JS theme picker overrides via inline
+	// `style` on this same element, which beats these declarations because
+	// inline always wins over CSS rules of equal selector. Descendants
+	// (`.monaco-editor`, `.monaco-editor-background`, ...) inherit cleanly.
+	--vscode-editor-background: #1e1e1e;
+	--vscode-editor-foreground: #d4d4d4;
+	--vscode-editorWidget-background: #252526;
+	--vscode-editorWidget-foreground: #cccccc;
+	--vscode-editorWidget-border: #454545;
+	--vscode-editorCursor-foreground: #aeafad;
+	--vscode-editorLineNumber-foreground: #858585;
+	--vscode-editorLineNumber-activeForeground: #c6c6c6;
+	--vscode-editor-lineHighlightBackground: rgba(255, 255, 255, 0.04);
+	--vscode-editor-lineHighlightBorder: rgba(255, 255, 255, 0.04);
+	--vscode-editor-selectionBackground: #264f78;
+	--vscode-editor-inactiveSelectionBackground: #3a3d41;
+	--vscode-editor-selectionHighlightBackground: rgba(173, 214, 255, 0.15);
+	--vscode-editor-wordHighlightBackground: rgba(87, 87, 87, 0.72);
+	--vscode-editor-findMatchBackground: #515c6a;
+	--vscode-editor-findMatchHighlightBackground: rgba(234, 92, 0, 0.33);
+	--vscode-editorIndentGuide-background: #404040;
+	--vscode-editorIndentGuide-activeBackground: #707070;
+	--vscode-editorGutter-background: #1e1e1e;
+	--vscode-editorWhitespace-foreground: #3b3a32;
+	--vscode-editorBracketMatch-background: rgba(0, 100, 0, 0.3);
+	--vscode-editorBracketMatch-border: #888888;
+	--vscode-editorOverviewRuler-border: #7f7f7f4d;
+	--vscode-scrollbar-shadow: #000000;
+	--vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
+	--vscode-scrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.7);
+	--vscode-scrollbarSlider-activeBackground: rgba(191, 191, 191, 0.4);
+	--vscode-minimap-background: #1e1e1e;
+	--vscode-minimapSlider-background: rgba(121, 121, 121, 0.2);
+	--vscode-minimapSlider-hoverBackground: rgba(100, 100, 100, 0.35);
+	--vscode-minimapSlider-activeBackground: rgba(191, 191, 191, 0.2);
+	--vscode-editorStickyScroll-background: #1e1e1e;
+	--vscode-editorStickyScrollHover-background: #2a2d2e;
+	--vscode-foreground: #cccccc;
+	--vscode-focusBorder: #007fd4;
+
+	&__toolbar {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin-bottom: 1.25rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #e5e5e5;
+
+		.components-base-control {
+			max-width: 240px;
+			margin-bottom: 0;
+		}
+	}
+
+	&__toolbar-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		flex-wrap: wrap;
+	}
+
+	&__toolbar-divider {
+		width: 1px;
+		height: 1.5rem;
+		background: #d0d0d0;
+		margin: 0 0.4rem;
+	}
+
+	&__loading {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem 0;
+		color: #555;
+	}
+
+	&__footer {
+		margin-top: 1.25rem;
+		padding-top: 1.25rem;
+		border-top: 1px dashed #ddd;
+	}
+}
+
+.lagoon-file-card {
+	background: #fff;
+	border: 1px solid #d5d5d5;
+	border-radius: 6px;
+	margin-bottom: 1.25rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	overflow: hidden;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	&.is-dirty {
+		border-color: #f0a500;
+		box-shadow: 0 0 0 1px rgba(240, 165, 0, 0.25);
+	}
+
+	&.is-collapsed &__body {
+		display: none;
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.5rem 0.65rem;
+		background: #f4f4f4;
+		border-bottom: 1px solid #e0e0e0;
+	}
+
+	&.is-collapsed &__header {
+		border-bottom: none;
+	}
+
+	&__handle {
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__name {
+		flex: 1;
+		min-width: 0;
+		padding: 0.4rem 0.6rem;
+		font-family: monospace;
+		font-size: 0.9rem;
+		border: 1px solid #d0d0d0;
+		border-radius: 3px;
+		background: #fff;
+	}
+
+	&__lang-badge {
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: center;
+		padding: 0.3rem !important;
+		min-height: auto !important;
+		min-width: auto !important;
+		height: auto !important;
+		width: auto !important;
+		background: #fff !important;
+		border: 1px solid #d5d5d5 !important;
+		border-radius: 4px !important;
+		line-height: 1 !important;
+
+		&:hover {
+			background: #f4f4f4 !important;
+			border-color: #999 !important;
+		}
+
+		svg {
+			display: block;
+		}
+	}
+
+	&__lang-badge-fallback {
+		display: inline-flex;
+		align-items: center;
+		color: #555;
+
+		svg {
+			display: block;
+		}
+	}
+
+	&__lang-badge-xml {
+		font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #4479A1;
+		padding: 0 0.2rem;
+		letter-spacing: -0.02em;
+	}
+
+	&__lang-picker {
+		padding: 0.75rem;
+		min-width: 200px;
+	}
+
+	&__desc-toggle {
+		&.is-active {
+			background: rgba(0, 124, 186, 0.1) !important;
+			color: #007cba !important;
+		}
+	}
+
+	&__body {
+		padding: 1rem 1rem 1.1rem;
+	}
+
+	&__description {
+		margin-bottom: 0.9rem;
+		padding: 0.65rem 0.8rem;
+		background: #fafafa;
+		border-radius: 4px;
+		border: 1px solid #ececec;
+	}
+
+	&__editor {
+		position: relative;
+		width: 100%;
+		height: 420px;
+		border: 1px solid #222;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	&__preview-toggle {
+		&.is-active {
+			background: rgba(0, 124, 186, 0.1) !important;
+			color: #007cba !important;
+		}
+	}
+
+	&__preview {
+		max-height: 420px;
+		overflow-y: auto;
+		padding: 1.25rem 1.5rem;
+		background: #fff;
+		border: 1px solid #d5d5d5;
+		border-radius: 4px;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: #1c1e21;
+
+		h1, h2, h3, h4, h5, h6 {
+			margin-top: 1.5em;
+			margin-bottom: 0.5em;
+			font-weight: 600;
+			line-height: 1.25;
+
+			&:first-child {
+				margin-top: 0;
+			}
+		}
+
+		h1 { font-size: 1.75rem; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+		h2 { font-size: 1.4rem; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+		h3 { font-size: 1.2rem; }
+		h4 { font-size: 1rem; }
+
+		p { margin: 0 0 1em; }
+
+		a {
+			color: #0366d6;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		code {
+			background: rgba(27, 31, 35, 0.05);
+			padding: 0.2em 0.4em;
+			border-radius: 3px;
+			font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+			font-size: 0.85em;
+		}
+
+		pre {
+			background: #f6f8fa;
+			padding: 1em;
+			border-radius: 6px;
+			overflow-x: auto;
+			margin: 0 0 1em;
+
+			code {
+				background: none;
+				padding: 0;
+				font-size: 0.85em;
+			}
+		}
+
+		blockquote {
+			border-left: 4px solid #dfe2e5;
+			padding-left: 1em;
+			color: #6a737d;
+			margin: 0 0 1em;
+		}
+
+		ul, ol {
+			margin: 0 0 1em;
+			padding-left: 1.6em;
+		}
+
+		li > p { margin-bottom: 0.4em; }
+
+		table {
+			border-collapse: collapse;
+			margin: 0 0 1em;
+			width: 100%;
+
+			th, td {
+				border: 1px solid #dfe2e5;
+				padding: 0.4em 0.75em;
+			}
+
+			th {
+				background: #f6f8fa;
+				font-weight: 600;
+			}
+		}
+
+		hr {
+			border: 0;
+			border-top: 1px solid #eaecef;
+			margin: 1.5em 0;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+	}
+}
+
+.lagoon-new-file-modal {
+	max-width: 460px;
+
+	.components-base-control {
+		margin-bottom: 1rem;
+	}
+
+	&__actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		margin-top: 1.25rem;
+	}
+}
+

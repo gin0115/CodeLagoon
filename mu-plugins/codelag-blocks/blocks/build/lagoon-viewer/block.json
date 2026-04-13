@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "codelag/lagoon-viewer",
+  "version": "0.1.0",
+  "title": "Lagoon Viewer",
+  "category": "widgets",
+  "icon": "editor-code",
+  "description": "Renders the files belonging to the current lagoon.",
+  "textdomain": "codelag-blocks",
+  "keywords": [
+    "lagoon",
+    "snippet",
+    "code"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": false,
+    "customClassName": false
+  },
+  "attributes": {
+    "defaultFileIndex": {
+      "type": "number",
+      "default": 0
+    },
+    "showLineNumbers": {
+      "type": "boolean",
+      "default": true
+    },
+    "contentVersion": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style-index.css",
+  "editorStyle": "file:./index.css",
+  "viewStyle": "file:./view.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "codelag/lagoon-card",
+  "version": "0.1.0",
+  "title": "Lagoon Card",
+  "category": "widgets",
+  "icon": "index-card",
+  "description": "Single lagoon summary card. Drop inside a Query Loop's post-template.",
+  "textdomain": "codelag-blocks",
+  "keywords": [
+    "lagoon",
+    "card",
+    "snippet"
+  ],
+  "usesContext": [
+    "postId",
+    "queryId"
+  ],
+  "supports": {
+    "html": false,
+    "align": false,
+    "anchor": false,
+    "customClassName": false,
+    "inserter": true
+  },
+  "attributes": {
+    "previewLines": {
+      "type": "number",
+      "default": 6
+    },
+    "maxTagChips": {
+      "type": "number",
+      "default": 4
+    },
+    "showFork": {
+      "type": "boolean",
+      "default": true
+    },
+    "showView": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style-index.css",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php"
+}

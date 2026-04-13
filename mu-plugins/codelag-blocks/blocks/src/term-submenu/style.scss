@@ -1,0 +1,15 @@
+/**
+ * Term Submenu — frontend styles.
+ *
+ * Deliberately minimal. The block plugs into core/navigation and inherits
+ * its palette + layout via the navigation-submenu classes we reuse. Only
+ * the small inline count chip is our own visual concern.
+ */
+
+.codelag-term-submenu {
+	&__count {
+		opacity: 0.6;
+		font-size: 0.85em;
+		margin-left: 0.25em;
+	}
+}

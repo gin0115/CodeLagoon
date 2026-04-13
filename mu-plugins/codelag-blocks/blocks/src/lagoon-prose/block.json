@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "codelag/lagoon-prose",
+	"version": "0.1.0",
+	"title": "Lagoon Prose",
+	"category": "widgets",
+	"icon": "editor-paragraph",
+	"description": "Free-form prose slot. Locked into every lagoon as the intro and outro around the lagoon-viewer block, with a restricted set of inner blocks.",
+	"textdomain": "codelag-blocks",
+	"keywords": [ "lagoon", "prose", "intro", "outro" ],
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"reusable": false,
+		"inserter": false
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"editorStyle": "file:./index.css"
+}

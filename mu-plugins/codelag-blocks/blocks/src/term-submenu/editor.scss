@@ -1,0 +1,37 @@
+/**
+ * Term Submenu — editor-only styles.
+ *
+ * Gives the in-canvas preview a sensible layout so designers can see the
+ * parent label + submenu structure without relying on the navigation
+ * block's runtime behaviours (hover/click dropdowns).
+ */
+
+.codelag-term-submenu {
+	&__parent {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		font-weight: 600;
+	}
+
+	&__list {
+		list-style: none;
+		margin: 0.35rem 0 0;
+		padding: 0.35rem 0 0 1rem;
+		border-left: 2px solid rgba( 0, 0, 0, 0.1 );
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+
+		.codelag-term-submenu__count {
+			opacity: 0.6;
+			font-size: 0.85em;
+		}
+	}
+
+	&__hint {
+		color: rgba( 0, 0, 0, 0.5 );
+		font-style: italic;
+		font-size: 0.85em;
+	}
+}

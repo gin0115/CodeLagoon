@@ -1,0 +1,371 @@
+/**
+ * Lagoon Filters — frontend styles.
+ *
+ * All colour / radius values flow through `var(--cl-*)` so the filter
+ * bar follows whatever palette the viewer has selected.
+ */
+
+.codelag-filters,
+.wp-block-codelag-lagoon-filters {
+	// Single flex row; slots size to content and wrap naturally when
+	// there isn't room. No forced columns — let the browser pick breaks.
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 0.6rem;
+	padding: 0.9rem 1rem;
+	background: var(--cl-surface-low, #1c1b1b);
+	border: 1px solid var(--cl-outline-variant, #3b494b);
+	border-radius: var(--cl-radius, 1rem);
+	color: var(--cl-on-surface, #e5e2e1);
+
+	&__slot {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0 1rem;
+		min-height: 2.8rem;
+		background: var(--cl-surface-container, #201f1f);
+		border: 1px solid transparent;
+		border-radius: var(--cl-radius-pill, 9999px);
+		font-size: 0.85rem;
+		color: var(--cl-on-surface-variant, #b9cacb);
+		transition: border-color 160ms ease, background 160ms ease;
+
+		&:focus-within {
+			border-color: var(--cl-primary, #00f0ff);
+			background: var(--cl-surface-high, #2a2a2a);
+		}
+
+		.material-symbols-outlined {
+			font-size: 1rem !important;
+			color: inherit;
+		}
+
+		input,
+		select {
+			appearance: none;
+			-webkit-appearance: none;
+			background: transparent;
+			border: 0;
+			color: var(--cl-on-surface, #e5e2e1);
+			font: inherit;
+			line-height: 1.3;
+			padding: 0;
+			margin: 0;
+			min-width: 0;
+
+			&:focus {
+				outline: none;
+			}
+		}
+
+		select {
+			padding-right: 1.2rem;
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%2300f0ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+			background-repeat: no-repeat;
+			background-position: right 0 center;
+			background-size: 10px 10px;
+			cursor: pointer;
+
+			option {
+				background: var(--cl-surface-container, #201f1f);
+				color: var(--cl-on-surface, #e5e2e1);
+			}
+		}
+
+		&--search {
+			flex: 1 1 240px;
+
+			input[type="search"] {
+				flex: 1 1 auto;
+				width: 100%;
+			}
+		}
+
+		&--tags {
+			select[multiple] {
+				min-height: 1.8em;
+				max-height: 1.8em;
+			}
+		}
+	}
+
+	&__label {
+		display: inline-block !important;
+		font-size: 0.6rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--cl-primary, #00f0ff);
+		opacity: 0.85;
+		white-space: nowrap;
+		flex: 0 0 auto;
+	}
+
+	&__apply {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0 1.1rem;
+		min-height: 2.8rem;
+		border-radius: var(--cl-radius-pill, 9999px);
+		border: 0;
+		background: var(--cl-surface-high, #2a2a2a);
+		color: var(--cl-on-surface-variant, #b9cacb);
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		cursor: pointer;
+		transition: background 160ms ease, color 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-primary, #00f0ff);
+			background: var(--cl-surface-container, #201f1f);
+		}
+
+		.material-symbols-outlined {
+			font-size: 1rem !important;
+		}
+	}
+
+	&__clear {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0 1rem;
+		min-height: 2.8rem;
+		border-radius: var(--cl-radius-pill, 9999px);
+		border: 1px solid var(--cl-outline-variant, #3b494b);
+		background: transparent;
+		color: var(--cl-on-surface-variant, #b9cacb);
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-error, #ffb4ab);
+			border-color: var(--cl-error, #ffb4ab);
+			background: var(--cl-surface-container, #201f1f);
+		}
+
+		.material-symbols-outlined {
+			font-size: 1rem !important;
+		}
+	}
+
+	&__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.4rem 1rem;
+		border-radius: var(--cl-radius-pill, 9999px);
+		background: linear-gradient( 135deg, var(--cl-primary, #00f0ff) 0%, var(--cl-primary-dim, #00dbe9) 100% );
+		color: var(--cl-primary-text, #00363a);
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		text-decoration: none;
+		margin-left: auto;
+		box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+
+		&:hover,
+		&:focus-visible {
+			transform: scale(0.97);
+			box-shadow: 0 0 22px rgba(0, 240, 255, 0.3);
+		}
+
+		.material-symbols-outlined {
+			font-size: 1rem !important;
+		}
+	}
+
+}
+
+// -----------------------------------------------------------------------
+// select2 palette overrides — only active when select2 has upgraded the
+// filter <select> boxes. We target select2 containers that live inside
+// a `.codelag-filters` so these rules never leak onto wp-admin or other
+// frontend select2 instances that might exist elsewhere.
+// -----------------------------------------------------------------------
+
+// Multi-select slots: let select2 own the visible pill chrome (no nested
+// pills / halos when chips wrap), and let the slot grow to fill the row
+// so language / purpose / tags breathe.
+// Multi-select slots keep the slot's pill chrome (so the label sits inside
+// the oval with the chips). select2's own pill is stripped so there's no
+// nested halo. The slot grows to fit its chips on a single line; when the
+// filter bar can't accommodate the grown slot, the filter bar's flex-wrap
+// drops this slot to the next row.
+.codelag-filters__slot--multi {
+	flex: 0 1 auto;
+	min-width: 12rem;
+
+	.codelag-filters__label {
+		align-self: center;
+	}
+
+	.select2-container {
+		flex: 0 0 auto;
+		width: auto !important;
+	}
+
+	.select2-container--default .select2-selection--multiple {
+		background: transparent !important;
+		border: 0 !important;
+		outline: 0 !important;
+		box-shadow: none !important;
+		min-height: 0 !important;
+		padding: 0 !important;
+	}
+
+	// select2 also adds a border on focus/open via another selector —
+	// kill that too so there's never a stray outline inside the slot.
+	.select2-container--default.select2-container--open .select2-selection--multiple,
+	.select2-container--default.select2-container--focus .select2-selection--multiple {
+		border: 0 !important;
+		outline: 0 !important;
+		box-shadow: none !important;
+	}
+}
+
+.codelag-filters .select2-container {
+	min-width: 10rem;
+}
+
+.codelag-filters .select2-container--default {
+	.select2-selection--multiple {
+		background: var(--cl-surface-container, #201f1f);
+		border: 0 !important;
+		outline: 0 !important;
+		box-shadow: none !important;
+		border-radius: var(--cl-radius-pill, 9999px);
+		min-height: 2.8rem;
+		padding: 0.25rem 0.6rem;
+		color: var(--cl-on-surface, #e5e2e1);
+		display: flex;
+		align-items: center;
+		flex-wrap: nowrap;
+
+		// Chips stay on a single line inside the select2 pill. The select2
+		// widget grows horizontally to fit them all; when the filter bar
+		// itself runs out of width, THE SLOT wraps to a new row instead
+		// (handled by the filter bar's flex-wrap).
+		.select2-selection__rendered {
+			padding: 0;
+			gap: 0.25rem;
+			display: inline-flex;
+			flex-wrap: nowrap;
+			align-items: center;
+		}
+
+		.select2-selection__choice {
+			flex: 0 0 auto;
+		}
+
+		.select2-selection__choice {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.25rem;
+			background: var(--cl-primary, #00f0ff);
+			color: var(--cl-primary-text, #00363a);
+			border: 0;
+			border-radius: var(--cl-radius-pill, 9999px);
+			padding: 0.1rem 0.55rem;
+			font-size: 0.7rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			margin: 0.15rem 0;
+		}
+
+		.select2-selection__choice__remove {
+			order: 2;
+			margin: 0 0 0 0.25rem;
+			color: inherit;
+			border: 0;
+			background: transparent;
+			font-size: 0.95rem;
+			line-height: 1;
+
+			&:hover,
+			&:focus {
+				background: transparent;
+				color: var(--cl-error, #ffb4ab);
+			}
+		}
+
+		.select2-search--inline .select2-search__field {
+			background: transparent;
+			color: var(--cl-on-surface, #e5e2e1);
+			font-size: 0.78rem;
+			margin-top: 0;
+			padding: 0 0.2rem;
+			min-height: 1.6rem;
+
+			&::placeholder {
+				color: var(--cl-on-surface-variant, #b9cacb);
+				opacity: 0.7;
+			}
+		}
+	}
+
+	&.select2-container--focus .select2-selection--multiple,
+	.select2-selection--multiple:focus-within {
+		border-color: var(--cl-primary, #00f0ff);
+	}
+}
+
+// Dropdown panel — we use `dropdownParent: $(form)` in view.js, so it
+// ends up as a child of the form rather than body. Target it both ways so
+// it looks right regardless of where select2 renders it.
+//
+// `min-width: 18rem` so the option list is comfortably readable even when
+// the source slot is narrower — the dropdown will grow horizontally past
+// the anchor to accommodate.
+.codelag-filters .select2-dropdown,
+.select2-container--open .select2-dropdown {
+	background: var(--cl-surface-container, #201f1f);
+	border: 1px solid var(--cl-outline-variant, #3b494b);
+	color: var(--cl-on-surface, #e5e2e1);
+	border-radius: var(--cl-radius-sm, 0.5rem);
+	overflow: hidden;
+	z-index: 100;
+	min-width: 18rem;
+
+	.select2-search--dropdown .select2-search__field {
+		background: var(--cl-surface-lowest, #0e0e0e);
+		border: 1px solid var(--cl-outline-variant, #3b494b);
+		border-radius: var(--cl-radius-pill, 9999px);
+		color: var(--cl-on-surface, #e5e2e1);
+		padding: 0.35rem 0.7rem;
+		font-size: 0.8rem;
+	}
+
+	.select2-results__option {
+		color: var(--cl-on-surface-variant, #b9cacb);
+		padding: 0.4rem 0.7rem;
+		font-size: 0.8rem;
+
+		&--highlighted[aria-selected],
+		&--highlighted {
+			background: var(--cl-surface-high, #2a2a2a);
+			color: var(--cl-primary, #00f0ff);
+		}
+
+		&[aria-selected="true"] {
+			background: var(--cl-primary, #00f0ff);
+			color: var(--cl-primary-text, #00363a);
+		}
+	}
+}

@@ -1,0 +1,331 @@
+/**
+ * Frontend styles for the Lagoon Viewer block.
+ *
+ * Loaded via the `style` field in block.json, so this is enqueued on both
+ * the editor and the frontend. Editor-only styling lives in editor.scss.
+ *
+ * All colour / radius values flow through CSS custom properties emitted by
+ * the theme's SiteThemeService (`var(--cl-*)`). Fallback hex values are the
+ * Obsidian Cyan defaults so the block still looks right when the theme's
+ * variable block hasn't loaded (e.g. in the Gutenberg inserter preview).
+ *
+ * Prism and github-markdown CSS are imported from view.js (JS-side imports
+ * get extracted into view.css and enqueued through the block.json `viewStyle`
+ * field). Do not `@import` them here — sass-loader does not inline native
+ * CSS @import statements.
+ */
+
+$lv-mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+.wp-block-codelag-lagoon-viewer {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin: 1.5rem 0;
+	padding: 0 20px;
+	color: var(--cl-on-surface, #e5e2e1);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+
+	.lagoon-viewer__empty {
+		font-style: italic;
+		color: var(--cl-on-surface-variant, #b9cacb);
+		padding: 1rem;
+		background: var(--cl-surface-low, #1c1b1b);
+		border-radius: var(--cl-radius, 1rem);
+		text-align: center;
+	}
+}
+
+.lagoon-file {
+	background: var(--cl-surface-lowest, #0e0e0e);
+	border-radius: var(--cl-radius, 1rem);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+
+	&__header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.6rem 1rem;
+		background: var(--cl-surface-low, #1c1b1b);
+		font-family: $lv-mono;
+		font-size: 0.82rem;
+	}
+
+	&__name {
+		color: var(--cl-on-surface-variant, #b9cacb);
+		font-weight: 600;
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+
+		&::before {
+			content: "";
+			display: inline-block;
+			width: 14px;
+			height: 14px;
+			margin-right: 0.45rem;
+			vertical-align: -2px;
+			background-color: currentColor;
+			mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z' fill='black'/></svg>");
+			-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z' fill='black'/></svg>");
+			mask-repeat: no-repeat;
+			mask-size: contain;
+			-webkit-mask-repeat: no-repeat;
+			-webkit-mask-size: contain;
+		}
+	}
+
+	&__lang {
+		color: var(--cl-primary, #00f0ff);
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-weight: 700;
+		padding: 0.18rem 0.5rem;
+		border-radius: var(--cl-radius-pill, 9999px);
+		background: var(--cl-surface-container, #201f1f);
+	}
+
+	&__action {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		background: var(--cl-surface-container, #201f1f);
+		color: var(--cl-on-surface-variant, #b9cacb);
+		border: 0;
+		border-radius: var(--cl-radius-pill, 9999px);
+		padding: 0.22rem 0.7rem;
+		font-family: inherit;
+		font-size: 0.66rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		cursor: pointer;
+		transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-primary, #00f0ff);
+			background: var(--cl-surface-high, #2a2a2a);
+			transform: scale(0.97);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--cl-primary, #00f0ff);
+			outline-offset: 1px;
+		}
+	}
+
+	&__description {
+		margin: 0;
+		padding: 0.65rem 1rem;
+		background: var(--cl-surface-low, #1c1b1b);
+		color: var(--cl-on-surface-variant, #b9cacb);
+		font-size: 0.85rem;
+		line-height: 1.55;
+	}
+
+	&__code {
+		margin: 0;
+		padding: 1.1rem 1.25rem;
+		background: var(--cl-surface-lowest, #0e0e0e);
+		color: var(--cl-on-surface-variant, #b9cacb);
+		font-family: $lv-mono;
+		font-size: 0.85rem;
+		line-height: 1.6;
+		overflow-x: auto;
+		white-space: pre;
+		border-radius: 0;
+
+		code {
+			background: transparent;
+			padding: 0;
+			font-family: inherit;
+			font-size: inherit;
+			color: inherit;
+		}
+	}
+
+	// Markdown body — deliberately vanilla. White background, black body text,
+	// grey blockquote. Independent of the site palette so the prose always
+	// reads like "document", not "terminal". github-markdown-css is NOT used;
+	// all rules are authored by hand here.
+	&__md.markdown-body {
+		padding: 1.5rem 1.75rem;
+		background: #ffffff;
+		color: #111111;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		border-radius: 0;
+
+		> *:first-child {
+			margin-top: 0;
+		}
+		> *:last-child {
+			margin-bottom: 0;
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			color: #111111;
+			font-weight: 700;
+			line-height: 1.25;
+			margin-top: 1.6em;
+			margin-bottom: 0.6em;
+		}
+		h1 { font-size: 1.75rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3em; }
+		h2 { font-size: 1.4rem;  border-bottom: 1px solid #e5e5e5; padding-bottom: 0.3em; }
+		h3 { font-size: 1.15rem; }
+		h4 { font-size: 1rem; }
+		h5 { font-size: 0.92rem; }
+		h6 { font-size: 0.85rem; color: #555555; }
+
+		p {
+			margin: 0 0 1em;
+		}
+
+		a {
+			color: #0969da;
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+
+		strong { font-weight: 700; }
+		em { font-style: italic; }
+
+		blockquote {
+			margin: 1em 0;
+			padding: 0.25em 1em;
+			color: #555555;
+			border-left: 4px solid #dddddd;
+			background: transparent;
+
+			> *:first-child { margin-top: 0; }
+			> *:last-child { margin-bottom: 0; }
+		}
+
+		ul, ol {
+			margin: 0 0 1em;
+			padding-left: 1.6em;
+		}
+		li + li {
+			margin-top: 0.2em;
+		}
+
+		hr {
+			border: 0;
+			border-top: 1px solid #e5e5e5;
+			margin: 1.6em 0;
+		}
+
+		// Inline code.
+		code {
+			background: #f3f3f3;
+			color: #111111;
+			padding: 0.1em 0.35em;
+			border-radius: 3px;
+			font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+			font-size: 0.88em;
+		}
+
+		// Fenced code blocks. Prism's syntax colours still apply on top.
+		pre {
+			background: #f6f6f6;
+			color: #111111;
+			padding: 0.9em 1em;
+			border-radius: 6px;
+			overflow-x: auto;
+			margin: 0 0 1em;
+			font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+			font-size: 0.85rem;
+			line-height: 1.55;
+			box-shadow: none;
+
+			code {
+				background: transparent;
+				color: inherit;
+				padding: 0;
+				font-size: inherit;
+			}
+
+			// Kill the decorative paper-curl pseudos some Prism themes
+			// (prism-coy, prism-funky) add to `pre[class*="language-"]`.
+			// They render as stray strips/tabs around the block inside the
+			// vanilla markdown body and look broken.
+			&::before,
+			&::after {
+				content: none !important;
+				display: none !important;
+			}
+		}
+
+		// Same suppression at the container level — the Prism theme
+		// selector targets `pre[class*="language-"]` directly.
+		pre[class*="language-"]::before,
+		pre[class*="language-"]::after {
+			content: none !important;
+			display: none !important;
+		}
+
+		table {
+			display: block;
+			width: max-content;
+			max-width: 100%;
+			overflow-x: auto;
+			margin: 0 0 1em;
+			border-collapse: collapse;
+			font-size: 0.88rem;
+
+			th, td {
+				padding: 0.5em 0.85em;
+				border: 1px solid #e5e5e5;
+			}
+			th {
+				background: #f6f6f6;
+				font-weight: 700;
+			}
+			tr:nth-child(2n) td {
+				background: #fafafa;
+			}
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+			border-radius: 4px;
+		}
+
+		// GFM task list checkboxes.
+		input[type="checkbox"] {
+			margin-right: 0.35em;
+		}
+
+		// Footnotes.
+		.footnotes {
+			font-size: 0.85rem;
+			color: #555555;
+			border-top: 1px solid #e5e5e5;
+			margin-top: 2em;
+			padding-top: 1em;
+		}
+	}
+
+	// The hidden source <pre> revealed by the toggle.
+	&__code--md-source {
+		border-top: 0;
+		background: var(--cl-surface-low, #1c1b1b);
+	}
+
+	&__raw {
+		display: none !important;
+	}
+}

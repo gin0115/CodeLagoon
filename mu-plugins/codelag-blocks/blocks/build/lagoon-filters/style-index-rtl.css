@@ -1,0 +1,329 @@
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./mu-plugins/codelag-blocks/blocks/src/lagoon-filters/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * Lagoon Filters — frontend styles.
+ *
+ * All colour / radius values flow through `var(--cl-*)` so the filter
+ * bar follows whatever palette the viewer has selected.
+ */
+.codelag-filters,
+.wp-block-codelag-lagoon-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 0.6rem;
+  padding: 0.9rem 1rem;
+  background: var(--cl-surface-low, #1c1b1b);
+  border: 1px solid var(--cl-outline-variant, #3b494b);
+  border-radius: var(--cl-radius, 1rem);
+  color: var(--cl-on-surface, #e5e2e1);
+}
+.codelag-filters__slot,
+.wp-block-codelag-lagoon-filters__slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0 1rem;
+  min-height: 2.8rem;
+  background: var(--cl-surface-container, #201f1f);
+  border: 1px solid transparent;
+  border-radius: var(--cl-radius-pill, 9999px);
+  font-size: 0.85rem;
+  color: var(--cl-on-surface-variant, #b9cacb);
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.codelag-filters__slot:focus-within,
+.wp-block-codelag-lagoon-filters__slot:focus-within {
+  border-color: var(--cl-primary, #00f0ff);
+  background: var(--cl-surface-high, #2a2a2a);
+}
+.codelag-filters__slot .material-symbols-outlined,
+.wp-block-codelag-lagoon-filters__slot .material-symbols-outlined {
+  font-size: 1rem !important;
+  color: inherit;
+}
+.codelag-filters__slot input,
+.codelag-filters__slot select,
+.wp-block-codelag-lagoon-filters__slot input,
+.wp-block-codelag-lagoon-filters__slot select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--cl-on-surface, #e5e2e1);
+  font: inherit;
+  line-height: 1.3;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.codelag-filters__slot input:focus,
+.codelag-filters__slot select:focus,
+.wp-block-codelag-lagoon-filters__slot input:focus,
+.wp-block-codelag-lagoon-filters__slot select:focus {
+  outline: none;
+}
+.codelag-filters__slot select,
+.wp-block-codelag-lagoon-filters__slot select {
+  padding-left: 1.2rem;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 12 12%27><path d=%27M2 4l4 4 4-4%27 fill=%27none%27 stroke=%27%2300f0ff%27 stroke-width=%271.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/></svg>");
+  background-repeat: no-repeat;
+  background-position: left 0 center;
+  background-size: 10px 10px;
+  cursor: pointer;
+}
+.codelag-filters__slot select option,
+.wp-block-codelag-lagoon-filters__slot select option {
+  background: var(--cl-surface-container, #201f1f);
+  color: var(--cl-on-surface, #e5e2e1);
+}
+.codelag-filters__slot--search,
+.wp-block-codelag-lagoon-filters__slot--search {
+  flex: 1 1 240px;
+}
+.codelag-filters__slot--search input[type=search],
+.wp-block-codelag-lagoon-filters__slot--search input[type=search] {
+  flex: 1 1 auto;
+  width: 100%;
+}
+.codelag-filters__slot--tags select[multiple],
+.wp-block-codelag-lagoon-filters__slot--tags select[multiple] {
+  min-height: 1.8em;
+  max-height: 1.8em;
+}
+.codelag-filters__label,
+.wp-block-codelag-lagoon-filters__label {
+  display: inline-block !important;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cl-primary, #00f0ff);
+  opacity: 0.85;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.codelag-filters__apply,
+.wp-block-codelag-lagoon-filters__apply {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 1.1rem;
+  min-height: 2.8rem;
+  border-radius: var(--cl-radius-pill, 9999px);
+  border: 0;
+  background: var(--cl-surface-high, #2a2a2a);
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.codelag-filters__apply:hover, .codelag-filters__apply:focus-visible,
+.wp-block-codelag-lagoon-filters__apply:hover,
+.wp-block-codelag-lagoon-filters__apply:focus-visible {
+  color: var(--cl-primary, #00f0ff);
+  background: var(--cl-surface-container, #201f1f);
+}
+.codelag-filters__apply .material-symbols-outlined,
+.wp-block-codelag-lagoon-filters__apply .material-symbols-outlined {
+  font-size: 1rem !important;
+}
+.codelag-filters__clear,
+.wp-block-codelag-lagoon-filters__clear {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 1rem;
+  min-height: 2.8rem;
+  border-radius: var(--cl-radius-pill, 9999px);
+  border: 1px solid var(--cl-outline-variant, #3b494b);
+  background: transparent;
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.codelag-filters__clear:hover, .codelag-filters__clear:focus-visible,
+.wp-block-codelag-lagoon-filters__clear:hover,
+.wp-block-codelag-lagoon-filters__clear:focus-visible {
+  color: var(--cl-error, #ffb4ab);
+  border-color: var(--cl-error, #ffb4ab);
+  background: var(--cl-surface-container, #201f1f);
+}
+.codelag-filters__clear .material-symbols-outlined,
+.wp-block-codelag-lagoon-filters__clear .material-symbols-outlined {
+  font-size: 1rem !important;
+}
+.codelag-filters__cta,
+.wp-block-codelag-lagoon-filters__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--cl-radius-pill, 9999px);
+  background: linear-gradient(-135deg, var(--cl-primary, #00f0ff) 0%, var(--cl-primary-dim, #00dbe9) 100%);
+  color: var(--cl-primary-text, #00363a);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  margin-right: auto;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+}
+.codelag-filters__cta:hover, .codelag-filters__cta:focus-visible,
+.wp-block-codelag-lagoon-filters__cta:hover,
+.wp-block-codelag-lagoon-filters__cta:focus-visible {
+  transform: scale(0.97);
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.3);
+}
+.codelag-filters__cta .material-symbols-outlined,
+.wp-block-codelag-lagoon-filters__cta .material-symbols-outlined {
+  font-size: 1rem !important;
+}
+
+.codelag-filters__slot--multi {
+  flex: 0 1 auto;
+  min-width: 12rem;
+}
+.codelag-filters__slot--multi .codelag-filters__label {
+  align-self: center;
+}
+.codelag-filters__slot--multi .select2-container {
+  flex: 0 0 auto;
+  width: auto !important;
+}
+.codelag-filters__slot--multi .select2-container--default .select2-selection--multiple {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+.codelag-filters__slot--multi .select2-container--default.select2-container--open .select2-selection--multiple,
+.codelag-filters__slot--multi .select2-container--default.select2-container--focus .select2-selection--multiple {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.codelag-filters .select2-container {
+  min-width: 10rem;
+}
+
+.codelag-filters .select2-container--default .select2-selection--multiple {
+  background: var(--cl-surface-container, #201f1f);
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: var(--cl-radius-pill, 9999px);
+  min-height: 2.8rem;
+  padding: 0.25rem 0.6rem;
+  color: var(--cl-on-surface, #e5e2e1);
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+  padding: 0;
+  gap: 0.25rem;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  flex: 0 0 auto;
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--cl-primary, #00f0ff);
+  color: var(--cl-primary-text, #00363a);
+  border: 0;
+  border-radius: var(--cl-radius-pill, 9999px);
+  padding: 0.1rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0.15rem 0;
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  order: 2;
+  margin: 0 0.25rem 0 0;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover, .codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:focus {
+  background: transparent;
+  color: var(--cl-error, #ffb4ab);
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+  background: transparent;
+  color: var(--cl-on-surface, #e5e2e1);
+  font-size: 0.78rem;
+  margin-top: 0;
+  padding: 0 0.2rem;
+  min-height: 1.6rem;
+}
+.codelag-filters .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
+  color: var(--cl-on-surface-variant, #b9cacb);
+  opacity: 0.7;
+}
+.codelag-filters .select2-container--default.select2-container--focus .select2-selection--multiple,
+.codelag-filters .select2-container--default .select2-selection--multiple:focus-within {
+  border-color: var(--cl-primary, #00f0ff);
+}
+
+.codelag-filters .select2-dropdown,
+.select2-container--open .select2-dropdown {
+  background: var(--cl-surface-container, #201f1f);
+  border: 1px solid var(--cl-outline-variant, #3b494b);
+  color: var(--cl-on-surface, #e5e2e1);
+  border-radius: var(--cl-radius-sm, 0.5rem);
+  overflow: hidden;
+  z-index: 100;
+  min-width: 18rem;
+}
+.codelag-filters .select2-dropdown .select2-search--dropdown .select2-search__field,
+.select2-container--open .select2-dropdown .select2-search--dropdown .select2-search__field {
+  background: var(--cl-surface-lowest, #0e0e0e);
+  border: 1px solid var(--cl-outline-variant, #3b494b);
+  border-radius: var(--cl-radius-pill, 9999px);
+  color: var(--cl-on-surface, #e5e2e1);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+}
+.codelag-filters .select2-dropdown .select2-results__option,
+.select2-container--open .select2-dropdown .select2-results__option {
+  color: var(--cl-on-surface-variant, #b9cacb);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+}
+.codelag-filters .select2-dropdown .select2-results__option--highlighted[aria-selected], .codelag-filters .select2-dropdown .select2-results__option--highlighted,
+.select2-container--open .select2-dropdown .select2-results__option--highlighted[aria-selected],
+.select2-container--open .select2-dropdown .select2-results__option--highlighted {
+  background: var(--cl-surface-high, #2a2a2a);
+  color: var(--cl-primary, #00f0ff);
+}
+.codelag-filters .select2-dropdown .select2-results__option[aria-selected=true],
+.select2-container--open .select2-dropdown .select2-results__option[aria-selected=true] {
+  background: var(--cl-primary, #00f0ff);
+  color: var(--cl-primary-text, #00363a);
+}

@@ -1,0 +1,895 @@
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/style.css ***!
+  \**********************************************************************************************************************************************************************************************************************************/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.monaco-editor .diff-hidden-lines-widget {
+	width: 100%;
+}
+
+.monaco-editor .diff-hidden-lines {
+	height: 0px; /* The children each have a fixed height, the transform confuses the browser */
+	transform: translate(0px, -10px);
+	font-size: 13px;
+	line-height: 14px;
+}
+
+.monaco-editor .diff-hidden-lines:not(.dragging) .top:hover,
+.monaco-editor .diff-hidden-lines:not(.dragging) .bottom:hover,
+.monaco-editor .diff-hidden-lines .top.dragging,
+.monaco-editor .diff-hidden-lines .bottom.dragging {
+	background-color: var(--vscode-focusBorder);
+}
+
+.monaco-editor .diff-hidden-lines .top,
+.monaco-editor .diff-hidden-lines .bottom {
+	transition: background-color 0.1s ease-out;
+	height: 4px;
+	background-color: transparent;
+	background-clip: padding-box;
+	border-bottom: 2px solid transparent;
+	border-top: 4px solid transparent;
+	/*cursor: n-resize;*/
+}
+
+.monaco-editor.draggingUnchangedRegion.canMoveTop:not(.canMoveBottom) *,
+.monaco-editor .diff-hidden-lines .top.canMoveTop:not(.canMoveBottom),
+.monaco-editor .diff-hidden-lines .bottom.canMoveTop:not(.canMoveBottom) {
+	cursor: n-resize !important;
+}
+
+.monaco-editor.draggingUnchangedRegion:not(.canMoveTop).canMoveBottom *,
+.monaco-editor .diff-hidden-lines .top:not(.canMoveTop).canMoveBottom,
+.monaco-editor .diff-hidden-lines .bottom:not(.canMoveTop).canMoveBottom {
+	cursor: s-resize !important;
+}
+
+.monaco-editor.draggingUnchangedRegion.canMoveTop.canMoveBottom *,
+.monaco-editor .diff-hidden-lines .top.canMoveTop.canMoveBottom,
+.monaco-editor .diff-hidden-lines .bottom.canMoveTop.canMoveBottom {
+	cursor: ns-resize !important;
+}
+
+.monaco-editor .diff-hidden-lines .top {
+	transform: translate(0px, 4px);
+}
+
+.monaco-editor .diff-hidden-lines .bottom {
+	transform: translate(0px, -6px);
+}
+
+.monaco-editor .diff-unchanged-lines {
+	background: var(--vscode-diffEditor-unchangedCodeBackground);
+}
+
+.monaco-editor .noModificationsOverlay {
+	z-index: 1;
+	background: var(--vscode-editor-background);
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+
+.monaco-editor .diff-hidden-lines .center {
+	background: var(--vscode-diffEditor-unchangedRegionBackground);
+	color: var(--vscode-diffEditor-unchangedRegionForeground);
+	overflow: hidden;
+	display: block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	height: 24px;
+	box-shadow: inset 0 -5px 5px -7px var(--vscode-diffEditor-unchangedRegionShadow), inset 0 5px 5px -7px var(--vscode-diffEditor-unchangedRegionShadow);
+}
+
+.monaco-editor .diff-hidden-lines .center span.codicon {
+	vertical-align: middle;
+}
+
+.monaco-editor .diff-hidden-lines .center a:hover .codicon {
+	cursor: pointer;
+	color: var(--vscode-editorLink-activeForeground) !important;
+}
+
+.monaco-editor .diff-hidden-lines div.breadcrumb-item {
+	cursor: pointer;
+}
+
+.monaco-editor .diff-hidden-lines div.breadcrumb-item:hover {
+	color: var(--vscode-editorLink-activeForeground);
+}
+
+.monaco-editor .movedOriginal {
+	border: 2px solid var(--vscode-diffEditor-move-border);
+}
+
+.monaco-editor .movedModified {
+	border: 2px solid var(--vscode-diffEditor-move-border);
+}
+
+.monaco-editor .movedOriginal.currentMove, .monaco-editor .movedModified.currentMove {
+	border: 2px solid var(--vscode-diffEditor-moveActive-border);
+}
+
+.monaco-diff-editor .moved-blocks-lines path.currentMove {
+	stroke: var(--vscode-diffEditor-moveActive-border);
+}
+
+.monaco-diff-editor .moved-blocks-lines path {
+	pointer-events: visiblestroke;
+}
+
+.monaco-diff-editor .moved-blocks-lines .arrow {
+	fill: var(--vscode-diffEditor-move-border);
+}
+
+.monaco-diff-editor .moved-blocks-lines .arrow.currentMove {
+	fill: var(--vscode-diffEditor-moveActive-border);
+}
+
+.monaco-diff-editor .moved-blocks-lines .arrow-rectangle {
+	fill: var(--vscode-editor-background);
+}
+
+.monaco-diff-editor .moved-blocks-lines {
+	position: absolute;
+	pointer-events: none;
+}
+
+.monaco-diff-editor .moved-blocks-lines path {
+	fill: none;
+	stroke: var(--vscode-diffEditor-move-border);
+	stroke-width: 2;
+}
+
+.monaco-editor .char-delete.diff-range-empty {
+	margin-left: -1px;
+	border-left: solid var(--vscode-diffEditor-removedTextBackground) 3px;
+}
+
+.monaco-editor .char-insert.diff-range-empty {
+	border-left: solid var(--vscode-diffEditor-insertedTextBackground) 3px;
+}
+
+.monaco-editor .fold-unchanged {
+	cursor: pointer;
+}
+
+.monaco-diff-editor .diff-moved-code-block {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: -4px;
+}
+
+.monaco-diff-editor .diff-moved-code-block .action-bar .action-label.codicon {
+	width: 12px;
+	height: 12px;
+	font-size: 12px;
+}
+
+/* ---------- DiffEditor ---------- */
+
+.monaco-diff-editor .diffOverview {
+	z-index: 9;
+}
+
+.monaco-diff-editor .diffOverview .diffViewport {
+	z-index: 10;
+}
+
+/* colors not externalized: using transparancy on background */
+.monaco-diff-editor.vs			.diffOverview { background: rgba(0, 0, 0, 0.03); }
+.monaco-diff-editor.vs-dark		.diffOverview { background: rgba(255, 255, 255, 0.01); }
+
+.monaco-scrollable-element.modified-in-monaco-diff-editor.vs		.scrollbar { background: rgba(0,0,0,0); }
+.monaco-scrollable-element.modified-in-monaco-diff-editor.vs-dark	.scrollbar { background: rgba(0,0,0,0); }
+.monaco-scrollable-element.modified-in-monaco-diff-editor.hc-black	.scrollbar { background: none; }
+.monaco-scrollable-element.modified-in-monaco-diff-editor.hc-light	.scrollbar { background: none; }
+
+.monaco-scrollable-element.modified-in-monaco-diff-editor .slider {
+	z-index: 10;
+}
+.modified-in-monaco-diff-editor				.slider.active { background: rgba(171, 171, 171, .4); }
+.modified-in-monaco-diff-editor.hc-black	.slider.active { background: none; }
+.modified-in-monaco-diff-editor.hc-light	.slider.active { background: none; }
+
+/* ---------- Diff ---------- */
+
+.monaco-editor .insert-sign,
+.monaco-diff-editor .insert-sign,
+.monaco-editor .delete-sign,
+.monaco-diff-editor .delete-sign {
+	font-size: 11px !important;
+	opacity: 0.7 !important;
+	display: flex !important;
+	align-items: center;
+}
+.monaco-editor.hc-black .insert-sign,
+.monaco-diff-editor.hc-black .insert-sign,
+.monaco-editor.hc-black .delete-sign,
+.monaco-diff-editor.hc-black .delete-sign,
+.monaco-editor.hc-light .insert-sign,
+.monaco-diff-editor.hc-light .insert-sign,
+.monaco-editor.hc-light .delete-sign,
+.monaco-diff-editor.hc-light .delete-sign {
+	opacity: 1;
+}
+
+.monaco-editor .inline-deleted-margin-view-zone {
+	text-align: right;
+}
+.monaco-editor .inline-added-margin-view-zone {
+	text-align: right;
+}
+
+.monaco-editor .arrow-revert-change {
+	z-index: 10;
+	position: absolute;
+}
+
+.monaco-editor .arrow-revert-change:hover {
+	cursor: pointer;
+}
+
+/* ---------- Inline Diff ---------- */
+
+.monaco-editor .view-zones .view-lines .view-line span {
+	display: inline-block;
+}
+
+.monaco-editor .margin-view-zones .lightbulb-glyph:hover {
+	cursor: pointer;
+}
+
+.monaco-editor .char-insert, .monaco-diff-editor .char-insert {
+	background-color: var(--vscode-diffEditor-insertedTextBackground);
+}
+
+.monaco-editor .line-insert, .monaco-diff-editor .line-insert {
+	background-color: var(--vscode-diffEditor-insertedLineBackground, var(--vscode-diffEditor-insertedTextBackground));
+}
+
+.monaco-editor .line-insert,
+.monaco-editor .char-insert {
+	box-sizing: border-box;
+	border: 1px solid var(--vscode-diffEditor-insertedTextBorder);
+}
+.monaco-editor.hc-black .line-insert, .monaco-editor.hc-light .line-insert,
+.monaco-editor.hc-black .char-insert, .monaco-editor.hc-light .char-insert {
+	border-style: dashed;
+}
+
+.monaco-editor .line-delete,
+.monaco-editor .char-delete {
+	box-sizing: border-box;
+	border: 1px solid var(--vscode-diffEditor-removedTextBorder);
+}
+.monaco-editor.hc-black .line-delete, .monaco-editor.hc-light .line-delete,
+.monaco-editor.hc-black .char-delete, .monaco-editor.hc-light .char-delete {
+	border-style: dashed;
+}
+
+.monaco-editor .inline-added-margin-view-zone,
+.monaco-editor .gutter-insert, .monaco-diff-editor .gutter-insert {
+	background-color: var(--vscode-diffEditorGutter-insertedLineBackground, var(--vscode-diffEditor-insertedLineBackground), var(--vscode-diffEditor-insertedTextBackground));
+}
+
+.monaco-editor .char-delete, .monaco-diff-editor .char-delete, .monaco-editor .inline-deleted-text {
+	background-color: var(--vscode-diffEditor-removedTextBackground);
+}
+
+.monaco-editor .inline-deleted-text {
+	text-decoration: line-through;
+}
+
+.monaco-editor .line-delete, .monaco-diff-editor .line-delete {
+	background-color: var(--vscode-diffEditor-removedLineBackground, var(--vscode-diffEditor-removedTextBackground));
+}
+
+.monaco-editor .inline-deleted-margin-view-zone,
+.monaco-editor .gutter-delete, .monaco-diff-editor .gutter-delete {
+	background-color: var(--vscode-diffEditorGutter-removedLineBackground, var(--vscode-diffEditor-removedLineBackground), var(--vscode-diffEditor-removedTextBackground));
+}
+
+.monaco-diff-editor.side-by-side .editor.modified {
+	box-shadow: -6px 0 5px -5px var(--vscode-scrollbar-shadow);
+	border-left: 1px solid var(--vscode-diffEditor-border);
+}
+
+.monaco-diff-editor.side-by-side .editor.original {
+	box-shadow: 6px 0 5px -5px var(--vscode-scrollbar-shadow);
+	border-right: 1px solid var(--vscode-diffEditor-border);
+}
+
+.monaco-diff-editor .diffViewport {
+	background: var(--vscode-scrollbarSlider-background);
+}
+
+.monaco-diff-editor .diffViewport:hover {
+	background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+.monaco-diff-editor .diffViewport:active {
+	background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+.monaco-editor .diagonal-fill {
+	background-image: linear-gradient(
+		-45deg,
+		var(--vscode-diffEditor-diagonalFill) 12.5%,
+		#0000 12.5%, #0000 50%,
+		var(--vscode-diffEditor-diagonalFill) 50%, var(--vscode-diffEditor-diagonalFill) 62.5%,
+		#0000 62.5%, #0000 100%
+	);
+	background-size: 8px 8px;
+}
+
+.monaco-diff-editor .gutter {
+	position: relative;
+	overflow: hidden;
+	flex-shrink: 0;
+	flex-grow: 0;
+
+	& > div {
+		position: absolute;
+	}
+
+	.gutterItem {
+		opacity: 0;
+		transition: opacity 0.7s;
+
+		&.showAlways {
+			opacity: 1;
+			transition: none;
+		}
+
+		&.noTransition {
+			transition: none;
+		}
+	}
+
+	&:hover .gutterItem {
+		opacity: 1;
+		transition: opacity 0.1s ease-in-out;
+	}
+
+	.gutterItem {
+		.background {
+			position: absolute;
+			height: 100%;
+			left: 50%;
+			width: 1px;
+
+			border-left: 2px var(--vscode-menu-separatorBackground) solid;
+		}
+
+		.buttons {
+			position: absolute;
+			/*height: 100%;*/
+			width: 100%;
+
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			.monaco-toolbar {
+				height: fit-content;
+				.monaco-action-bar  {
+					line-height: 1;
+
+					.actions-container {
+						width: fit-content;
+						border-radius: 4px;
+						background: var(--vscode-editorGutter-itemBackground);
+
+						.action-item {
+							&:hover {
+								background: var(--vscode-toolbar-hoverBackground);
+							}
+
+							.action-label {
+								color: var(--vscode-editorGutter-itemGlyphForeground);
+								padding: 1px 2px;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+.monaco-diff-editor .diff-hidden-lines-compact {
+	display: flex;
+	height: 11px;
+	.line-left, .line-right {
+		height: 1px;
+		border-top: 1px solid;
+		border-color: var(--vscode-editorCodeLens-foreground);
+		opacity: 0.5;
+		margin: auto;
+		width: 100%;
+	}
+
+	.line-left {
+		width: 20px;
+	}
+
+	.text {
+		color: var(--vscode-editorCodeLens-foreground);
+		text-wrap: nowrap;
+		font-size: 11px;
+		line-height: 11px;
+		margin: 0 4px;
+	}
+}
+
+.monaco-editor .line-delete-selectable {
+	user-select: text !important;
+	-webkit-user-select: text !important;
+	z-index: 1 !important;
+}
+
+.line-delete-selectable .view-line {
+	user-select: text !important;
+	-webkit-user-select: text !important;
+}
+
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/style.css ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.monaco-component.multiDiffEditor {
+	background: var(--vscode-multiDiffEditor-background);
+
+	position: relative;
+
+	height: 100%;
+	width: 100%;
+
+	overflow-y: hidden;
+
+	> div {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+
+		height: 100%;
+		width: 100%;
+
+		&.placeholder {
+			visibility: hidden;
+
+			&.visible {
+				visibility: visible;
+			}
+
+			display: grid;
+			place-items: center;
+			place-content: center;
+		}
+	}
+
+	.active {
+		--vscode-multiDiffEditor-border: var(--vscode-focusBorder);
+	}
+
+	.multiDiffEntry {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		overflow: hidden;
+
+
+		.collapse-button {
+			margin: 0 5px;
+			cursor: pointer;
+
+			a {
+				display: block;
+			}
+		}
+
+		.header {
+			z-index: 1000;
+			background: var(--vscode-editor-background);
+
+			&:not(.collapsed) .header-content {
+				border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
+			}
+
+			.header-content {
+				margin: 8px 0px 0px 0px;
+				padding: 4px 5px;
+
+				border-top: 1px solid var(--vscode-multiDiffEditor-border);
+
+				display: flex;
+				align-items: center;
+
+				color: var(--vscode-foreground);
+				background: var(--vscode-multiDiffEditor-headerBackground);
+
+				&.shadow {
+					box-shadow: var(--vscode-scrollbar-shadow) 0px 6px 6px -6px;
+				}
+
+				.file-path {
+					display: flex;
+					flex: 1;
+					min-width: 0;
+
+					.title {
+						font-size: 14px;
+						line-height: 22px;
+
+						&.original {
+							flex: 1;
+							min-width: 0;
+							text-overflow: ellipsis;
+						}
+					}
+
+					.status {
+						font-weight: 600;
+						opacity: 0.75;
+						margin: 0px 10px;
+						line-height: 22px;
+
+						/*
+							TODO@hediet: move colors from git extension to core!
+						&.renamed {
+							color: v ar(--vscode-gitDecoration-renamedResourceForeground);
+						}
+
+						&.deleted {
+							color: v ar(--vscode-gitDecoration-deletedResourceForeground);
+						}
+
+						&.added {
+							color: v ar(--vscode-gitDecoration-addedResourceForeground);
+						}
+						*/
+					}
+				}
+
+				.actions {
+					padding: 0 8px;
+				}
+			}
+
+
+		}
+
+		.editorParent {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+
+			border-bottom: 1px solid var(--vscode-multiDiffEditor-border);
+			overflow: hidden;
+		}
+
+		.editorContainer {
+			flex: 1;
+		}
+	}
+}
+
+/*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./mu-plugins/codelag-blocks/blocks/src/lagoon-viewer/style.scss ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * Frontend styles for the Lagoon Viewer block.
+ *
+ * Loaded via the `style` field in block.json, so this is enqueued on both
+ * the editor and the frontend. Editor-only styling lives in editor.scss.
+ *
+ * All colour / radius values flow through CSS custom properties emitted by
+ * the theme's SiteThemeService (`var(--cl-*)`). Fallback hex values are the
+ * Obsidian Cyan defaults so the block still looks right when the theme's
+ * variable block hasn't loaded (e.g. in the Gutenberg inserter preview).
+ *
+ * Prism and github-markdown CSS are imported from view.js (JS-side imports
+ * get extracted into view.css and enqueued through the block.json `viewStyle`
+ * field). Do not `@import` them here — sass-loader does not inline native
+ * CSS @import statements.
+ */
+.wp-block-codelag-lagoon-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 0 20px;
+  color: var(--cl-on-surface, #e5e2e1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+}
+.wp-block-codelag-lagoon-viewer .lagoon-viewer__empty {
+  font-style: italic;
+  color: var(--cl-on-surface-variant, #b9cacb);
+  padding: 1rem;
+  background: var(--cl-surface-low, #1c1b1b);
+  border-radius: var(--cl-radius, 1rem);
+  text-align: center;
+}
+
+.lagoon-file {
+  background: var(--cl-surface-lowest, #0e0e0e);
+  border-radius: var(--cl-radius, 1rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.lagoon-file__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--cl-surface-low, #1c1b1b);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.82rem;
+}
+.lagoon-file__name {
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-weight: 600;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lagoon-file__name::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 0.45rem;
+  vertical-align: -2px;
+  background-color: currentColor;
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27><path d=%27M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z%27 fill=%27black%27/></svg>");
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27><path d=%27M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z%27 fill=%27black%27/></svg>");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+.lagoon-file__lang {
+  color: var(--cl-primary, #00f0ff);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  padding: 0.18rem 0.5rem;
+  border-radius: var(--cl-radius-pill, 9999px);
+  background: var(--cl-surface-container, #201f1f);
+}
+.lagoon-file__action {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--cl-surface-container, #201f1f);
+  color: var(--cl-on-surface-variant, #b9cacb);
+  border: 0;
+  border-radius: var(--cl-radius-pill, 9999px);
+  padding: 0.22rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.lagoon-file__action:hover, .lagoon-file__action:focus-visible {
+  color: var(--cl-primary, #00f0ff);
+  background: var(--cl-surface-high, #2a2a2a);
+  transform: scale(0.97);
+}
+.lagoon-file__action:focus-visible {
+  outline: 2px solid var(--cl-primary, #00f0ff);
+  outline-offset: 1px;
+}
+.lagoon-file__description {
+  margin: 0;
+  padding: 0.65rem 1rem;
+  background: var(--cl-surface-low, #1c1b1b);
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.lagoon-file__code {
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  background: var(--cl-surface-lowest, #0e0e0e);
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  border-radius: 0;
+}
+.lagoon-file__code code {
+  background: transparent;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+.lagoon-file__md.markdown-body {
+  padding: 1.5rem 1.75rem;
+  background: #ffffff;
+  color: #111111;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  border-radius: 0;
+}
+.lagoon-file__md.markdown-body > *:first-child {
+  margin-top: 0;
+}
+.lagoon-file__md.markdown-body > *:last-child {
+  margin-bottom: 0;
+}
+.lagoon-file__md.markdown-body h1, .lagoon-file__md.markdown-body h2, .lagoon-file__md.markdown-body h3, .lagoon-file__md.markdown-body h4, .lagoon-file__md.markdown-body h5, .lagoon-file__md.markdown-body h6 {
+  color: #111111;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+}
+.lagoon-file__md.markdown-body h1 {
+  font-size: 1.75rem;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 0.3em;
+}
+.lagoon-file__md.markdown-body h2 {
+  font-size: 1.4rem;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 0.3em;
+}
+.lagoon-file__md.markdown-body h3 {
+  font-size: 1.15rem;
+}
+.lagoon-file__md.markdown-body h4 {
+  font-size: 1rem;
+}
+.lagoon-file__md.markdown-body h5 {
+  font-size: 0.92rem;
+}
+.lagoon-file__md.markdown-body h6 {
+  font-size: 0.85rem;
+  color: #555555;
+}
+.lagoon-file__md.markdown-body p {
+  margin: 0 0 1em;
+}
+.lagoon-file__md.markdown-body a {
+  color: #0969da;
+  text-decoration: none;
+}
+.lagoon-file__md.markdown-body a:hover, .lagoon-file__md.markdown-body a:focus-visible {
+  text-decoration: underline;
+}
+.lagoon-file__md.markdown-body strong {
+  font-weight: 700;
+}
+.lagoon-file__md.markdown-body em {
+  font-style: italic;
+}
+.lagoon-file__md.markdown-body blockquote {
+  margin: 1em 0;
+  padding: 0.25em 1em;
+  color: #555555;
+  border-left: 4px solid #dddddd;
+  background: transparent;
+}
+.lagoon-file__md.markdown-body blockquote > *:first-child {
+  margin-top: 0;
+}
+.lagoon-file__md.markdown-body blockquote > *:last-child {
+  margin-bottom: 0;
+}
+.lagoon-file__md.markdown-body ul, .lagoon-file__md.markdown-body ol {
+  margin: 0 0 1em;
+  padding-left: 1.6em;
+}
+.lagoon-file__md.markdown-body li + li {
+  margin-top: 0.2em;
+}
+.lagoon-file__md.markdown-body hr {
+  border: 0;
+  border-top: 1px solid #e5e5e5;
+  margin: 1.6em 0;
+}
+.lagoon-file__md.markdown-body code {
+  background: #f3f3f3;
+  color: #111111;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.88em;
+}
+.lagoon-file__md.markdown-body pre {
+  background: #f6f6f6;
+  color: #111111;
+  padding: 0.9em 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0 0 1em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  box-shadow: none;
+}
+.lagoon-file__md.markdown-body pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+.lagoon-file__md.markdown-body pre::before, .lagoon-file__md.markdown-body pre::after {
+  content: none !important;
+  display: none !important;
+}
+.lagoon-file__md.markdown-body pre[class*=language-]::before,
+.lagoon-file__md.markdown-body pre[class*=language-]::after {
+  content: none !important;
+  display: none !important;
+}
+.lagoon-file__md.markdown-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.lagoon-file__md.markdown-body table th, .lagoon-file__md.markdown-body table td {
+  padding: 0.5em 0.85em;
+  border: 1px solid #e5e5e5;
+}
+.lagoon-file__md.markdown-body table th {
+  background: #f6f6f6;
+  font-weight: 700;
+}
+.lagoon-file__md.markdown-body table tr:nth-child(2n) td {
+  background: #fafafa;
+}
+.lagoon-file__md.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+.lagoon-file__md.markdown-body input[type=checkbox] {
+  margin-right: 0.35em;
+}
+.lagoon-file__md.markdown-body .footnotes {
+  font-size: 0.85rem;
+  color: #555555;
+  border-top: 1px solid #e5e5e5;
+  margin-top: 2em;
+  padding-top: 1em;
+}
+.lagoon-file__code--md-source {
+  border-top: 0;
+  background: var(--cl-surface-low, #1c1b1b);
+}
+.lagoon-file__raw {
+  display: none !important;
+}
+
+/*# sourceMappingURL=style-index.css.map*/

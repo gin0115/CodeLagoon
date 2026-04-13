@@ -1,0 +1,59 @@
+/**
+ * Term Index — frontend styles.
+ *
+ * Flat pill-style list matching the palette system. Each term is a wide
+ * clickable tile with the name on the left and the post count on the right.
+ */
+
+.codelag-term-index {
+	&__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat( auto-fill, minmax( 14rem, 1fr ) );
+		gap: 0.6rem;
+	}
+
+	&__item {
+		margin: 0;
+		padding: 0;
+	}
+
+	&__link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 0.75rem 1rem;
+		background: var(--cl-surface-container, #201f1f);
+		border: 1px solid var(--cl-outline-variant, #3b494b);
+		border-radius: var(--cl-radius, 0.75rem);
+		color: var(--cl-on-surface, #e5e2e1);
+		text-decoration: none;
+		font-size: 0.95rem;
+		transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-primary, #00f0ff);
+			border-color: var(--cl-primary, #00f0ff);
+			background: var(--cl-surface-high, #2a2a2a);
+		}
+	}
+
+	&__name {
+		font-weight: 600;
+	}
+
+	&__count {
+		font-variant-numeric: tabular-nums;
+		font-size: 0.8rem;
+		min-width: 1.5em;
+		text-align: center;
+		padding: 0.15rem 0.55rem;
+		background: var(--cl-surface-lowest, #0e0e0e);
+		border-radius: var(--cl-radius-pill, 9999px);
+		color: var(--cl-on-surface-variant, #b9cacb);
+	}
+}

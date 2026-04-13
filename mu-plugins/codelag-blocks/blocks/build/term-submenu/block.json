@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "codelag/term-submenu",
+  "version": "0.1.0",
+  "title": "Term Submenu",
+  "category": "design",
+  "icon": "list-view",
+  "description": "A navigation submenu that lists taxonomy terms dynamically, with a link to a parent landing page.",
+  "textdomain": "codelag-blocks",
+  "keywords": [
+    "navigation",
+    "submenu",
+    "taxonomy",
+    "terms"
+  ],
+  "parent": [
+    "core/navigation"
+  ],
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "anchor": false,
+    "customClassName": true,
+    "__experimentalExposeControlsToChildren": false
+  },
+  "attributes": {
+    "taxonomy": {
+      "type": "string",
+      "default": ""
+    },
+    "count": {
+      "type": "number",
+      "default": 5
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "count"
+    },
+    "parentLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "parentUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "showCount": {
+      "type": "boolean",
+      "default": false
+    },
+    "openOnHover": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "usesContext": [
+    "textColor",
+    "customTextColor",
+    "backgroundColor",
+    "customBackgroundColor",
+    "overlayTextColor",
+    "customOverlayTextColor",
+    "overlayBackgroundColor",
+    "customOverlayBackgroundColor",
+    "fontSize",
+    "customFontSize",
+    "showSubmenuIcon",
+    "openSubmenusOnClick",
+    "style"
+  ],
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php"
+}
