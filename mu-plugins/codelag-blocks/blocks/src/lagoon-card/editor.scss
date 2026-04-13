@@ -1,0 +1,12 @@
+/**
+ * Lagoon Card — editor-only styles.
+ *
+ * The render.php output uses style.scss. These rules only apply inside
+ * Gutenberg where the block renders its static placeholder preview.
+ */
+
+.codelag-card--editor-preview {
+	outline: 1px dashed rgba(0, 240, 255, 0.35);
+	outline-offset: 2px;
+	cursor: pointer;
+}

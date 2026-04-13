@@ -1,0 +1,14 @@
+/**
+ * Lagoon Filters — editor-only styles.
+ *
+ * Static preview shape — real filter UI comes from render.php at runtime.
+ */
+
+.codelag-filters--editor-preview {
+	outline: 1px dashed rgba(0, 240, 255, 0.35);
+	outline-offset: 2px;
+
+	.codelag-filters__placeholder {
+		opacity: 0.6;
+	}
+}

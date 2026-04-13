@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "codelag/lagoon-filters",
+  "version": "0.1.0",
+  "title": "Lagoon Filters",
+  "category": "widgets",
+  "icon": "filter",
+  "description": "Filter bar for lagoon archives: search, language, date, purpose, tags.",
+  "textdomain": "codelag-blocks",
+  "keywords": [
+    "lagoon",
+    "filter",
+    "archive"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "anchor": false,
+    "customClassName": false,
+    "align": [
+      "wide",
+      "full"
+    ]
+  },
+  "attributes": {
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLanguage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPurpose": {
+      "type": "boolean",
+      "default": true
+    },
+    "showTags": {
+      "type": "boolean",
+      "default": true
+    },
+    "showNewCta": {
+      "type": "boolean",
+      "default": true
+    },
+    "newEntryUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "autoHideCurrentTerm": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style-index.css",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php"
+}

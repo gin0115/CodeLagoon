@@ -1,0 +1,10 @@
+includes:
+    - %currentWorkingDirectory%/vendor/a8cteam51/team51-configs/quality-assurance/phpstan.dist.neon
+
+parameters:
+    scanDirectories:
+        - %currentWorkingDirectory%/plugins
+    paths:
+        - %currentWorkingDirectory%/mu-plugins/codelag-blocks
+    WPCompat:
+        pluginFile: %currentWorkingDirectory%/mu-plugins/codelag-blocks/codelag-blocks.php

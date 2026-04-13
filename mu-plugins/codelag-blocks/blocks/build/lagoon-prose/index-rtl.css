@@ -1,0 +1,20 @@
+/*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./mu-plugins/codelag-blocks/blocks/src/lagoon-prose/editor.scss ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * Lagoon Prose — editor-only styles.
+ *
+ * Adds a faint dashed outline so the prose slot is visible in the editor
+ * even when empty. Removed on the frontend (style.scss has no outline).
+ */
+.wp-block-codelag-lagoon-prose {
+  border: 1px dashed transparent;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.wp-block-codelag-lagoon-prose:hover, .wp-block-codelag-lagoon-prose.has-child-selected, .wp-block-codelag-lagoon-prose.is-selected {
+  border-color: rgba(0, 124, 186, 0.4);
+  background: rgba(0, 124, 186, 0.03);
+}

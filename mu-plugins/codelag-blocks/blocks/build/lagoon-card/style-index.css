@@ -1,0 +1,164 @@
+/*!************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./mu-plugins/codelag-blocks/blocks/src/lagoon-card/style.scss ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * Lagoon Card — frontend styles.
+ *
+ * All colour / radius values come from CSS custom properties emitted by
+ * the theme's SiteThemeService (`var(--cl-*)`). Fallbacks are the Obsidian
+ * Cyan defaults so the card still reads correctly in editor previews where
+ * the palette block hasn't been injected yet.
+ */
+.codelag-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  background: var(--cl-surface-low, #1c1b1b);
+  border: 1px solid transparent;
+  border-radius: var(--cl-radius, 1rem);
+  color: var(--cl-on-surface, #e5e2e1);
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.codelag-card:hover, .codelag-card:focus-within {
+  background: var(--cl-surface-container, #201f1f);
+  border-color: var(--cl-outline-variant, #3b494b);
+}
+.codelag-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.codelag-card__avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--cl-surface-container, #201f1f);
+  object-fit: cover;
+  display: block;
+}
+.codelag-card__ident {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.codelag-card__title {
+  color: var(--cl-on-surface, #e5e2e1);
+  font-weight: 700;
+  font-size: 0.98rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.codelag-card__title:hover, .codelag-card__title:focus-visible {
+  color: var(--cl-primary, #00f0ff);
+}
+.codelag-card__meta {
+  margin: 0;
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+.codelag-card__author {
+  color: var(--cl-primary, #00f0ff);
+  text-decoration: none;
+  font-weight: 600;
+}
+.codelag-card__author:hover, .codelag-card__author:focus-visible {
+  text-decoration: underline;
+}
+.codelag-card__preview {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  background: var(--cl-surface-lowest, #0e0e0e);
+  border-left: 2px solid var(--cl-primary, #00f0ff);
+  border-radius: var(--cl-radius-sm, 0.5rem);
+  color: var(--cl-on-surface-variant, #b9cacb);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  max-height: 8.7em;
+  overflow: hidden;
+  position: relative;
+  white-space: pre;
+}
+.codelag-card__preview code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+.codelag-card__preview::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2rem;
+  background: linear-gradient(to bottom, transparent, var(--cl-surface-lowest, #0e0e0e));
+  pointer-events: none;
+}
+.codelag-card__tags {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.codelag-card__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.2rem;
+}
+.codelag-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 0;
+  border-radius: var(--cl-radius-pill, 9999px);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.codelag-card__action .material-symbols-outlined {
+  font-size: 1rem !important;
+}
+.codelag-card__action--ghost {
+  background: var(--cl-surface-container, #201f1f);
+  color: var(--cl-on-surface-variant, #b9cacb);
+}
+.codelag-card__action--ghost:hover, .codelag-card__action--ghost:focus-visible {
+  background: var(--cl-surface-high, #2a2a2a);
+  color: var(--cl-primary, #00f0ff);
+}
+.codelag-card__action--primary {
+  background: linear-gradient(135deg, var(--cl-primary, #00f0ff) 0%, var(--cl-primary-dim, #00dbe9) 100%);
+  color: var(--cl-primary-text, #00363a);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
+}
+.codelag-card__action--primary:hover, .codelag-card__action--primary:focus-visible {
+  transform: scale(0.97);
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.3);
+}
+.codelag-card__action--primary[disabled] {
+  cursor: progress;
+  opacity: 0.65;
+  transform: none;
+}
+
+/*# sourceMappingURL=style-index.css.map*/

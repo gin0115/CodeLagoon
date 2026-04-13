@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "codelag/term-index",
+  "version": "0.1.0",
+  "title": "Term Index",
+  "category": "widgets",
+  "icon": "category",
+  "description": "A flat index of taxonomy terms: name, post count, link. Auto-detects the current term-index page when no taxonomy is set.",
+  "textdomain": "codelag-blocks",
+  "keywords": [
+    "taxonomy",
+    "terms",
+    "index",
+    "archive"
+  ],
+  "supports": {
+    "html": false,
+    "anchor": false,
+    "customClassName": true,
+    "align": [
+      "wide",
+      "full"
+    ]
+  },
+  "attributes": {
+    "taxonomy": {
+      "type": "string",
+      "default": ""
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "name"
+    },
+    "hideEmpty": {
+      "type": "boolean",
+      "default": false
+    },
+    "showCount": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "editorStyle": "file:./index.css",
+  "render": "file:./render.php"
+}

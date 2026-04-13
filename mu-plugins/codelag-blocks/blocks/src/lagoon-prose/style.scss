@@ -1,0 +1,21 @@
+/**
+ * Lagoon Prose — frontend styles.
+ *
+ * Loaded via the `style` field in block.json (frontend + editor). Kept tiny
+ * because the inner blocks are core blocks and they bring their own styles.
+ */
+
+.wp-block-codelag-lagoon-prose {
+	margin-block: 1.25rem;
+
+	> *:first-child {
+		margin-top: 0;
+	}
+	> *:last-child {
+		margin-bottom: 0;
+	}
+
+	&:empty {
+		display: none;
+	}
+}
