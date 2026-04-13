@@ -8,7 +8,7 @@
   "authors": [
     {
       "name": "Contributors",
-      "homepage": "https://github.com/a8cteam51/team51-project-scaffold/graphs/contributors"
+      "homepage": "https://github.com/gin0115/codelagoon/graphs/contributors"
     }
   ],
 
@@ -20,7 +20,8 @@
   ],
   "require": {
     "php": ">=8.3",
-    "ext-json": "*"
+    "ext-json": "*",
+    "league/commonmark": "^2.8"
   },
   "require-dev": {
     "a8cteam51/team51-configs": "dev-trunk",
@@ -29,26 +30,37 @@
     "roave/security-advisories": "dev-latest"
   },
 
+  "autoload": {
+    "psr-4": {
+      "Gin0115\\Codelagoon\\Features\\": "mu-plugins/codelag-features/src/",
+      "Gin0115\\Codelagoon\\Blocks\\": "mu-plugins/codelag-blocks/src/",
+      "Gin0115\\Codelagoon\\Theme\\": "themes/codelagoon/src/"
+    }
+  },
+
   "scripts": {
     "format:php": [
       "@format:php:theme",
-      "@format:php:features"
+      "@format:php:features",
+      "@format:php:blocks"
     ],
-    "format:php:theme": "phpcbf --standard=./themes/codelag-scaffold/.phpcs.xml --basepath=. ./themes/codelag-scaffold -v",
+    "format:php:theme": "phpcbf --standard=./themes/codelagoon/.phpcs.xml --basepath=. ./themes/codelagoon -v",
     "format:php:features": "phpcbf --standard=./mu-plugins/codelag-features/.phpcs.xml --basepath=. ./mu-plugins/codelag-features -v",
+    "format:php:blocks": "phpcbf --standard=./mu-plugins/codelag-blocks/.phpcs.xml --basepath=. ./mu-plugins/codelag-blocks -v",
 
     "lint:php": [
       "@lint:php:theme",
-      "@lint:php:features"
+      "@lint:php:features",
+      "@lint:php:blocks"
     ],
     "lint:php:theme": [
       "@lint:php:theme:phpcs",
       "@lint:php:theme:phpmd",
       "@lint:php:theme:phpstan"
     ],
-    "lint:php:theme:phpcs": "phpcs --standard=./themes/codelag-scaffold/.phpcs.xml --basepath=. ./themes/codelag-scaffold -v",
-    "lint:php:theme:phpmd": "phpmd ./themes/codelag-scaffold ansi ./themes/codelag-scaffold/.phpmd.xml -v",
-    "lint:php:theme:phpstan": "phpstan analyse -c ./themes/codelag-scaffold/.phpstan.neon -v --memory-limit=1G",
+    "lint:php:theme:phpcs": "phpcs --standard=./themes/codelagoon/.phpcs.xml --basepath=. ./themes/codelagoon -v",
+    "lint:php:theme:phpmd": "phpmd ./themes/codelagoon ansi ./themes/codelagoon/.phpmd.xml -v",
+    "lint:php:theme:phpstan": "phpstan analyse -c ./themes/codelagoon/.phpstan.neon -v --memory-limit=1G",
 
     "lint:php:features": [
       "@lint:php:features:phpcs",
@@ -59,21 +71,37 @@
     "lint:php:features:phpmd": "phpmd ./mu-plugins/codelag-features ansi ./mu-plugins/codelag-features/.phpmd.xml -v",
     "lint:php:features:phpstan": "phpstan analyse -c ./mu-plugins/codelag-features/.phpstan.neon -v --memory-limit=1G",
 
+    "lint:php:blocks": [
+      "@lint:php:blocks:phpcs",
+      "@lint:php:blocks:phpmd",
+      "@lint:php:blocks:phpstan"
+    ],
+    "lint:php:blocks:phpcs": "phpcs --standard=./mu-plugins/codelag-blocks/.phpcs.xml --basepath=. ./mu-plugins/codelag-blocks -v",
+    "lint:php:blocks:phpmd": "phpmd ./mu-plugins/codelag-blocks ansi ./mu-plugins/codelag-blocks/.phpmd.xml -v",
+    "lint:php:blocks:phpstan": "phpstan analyse -c ./mu-plugins/codelag-blocks/.phpstan.neon -v --memory-limit=1G",
+
     "internationalize": [
       "@makepot:theme",
       "@updatepo:theme",
 
       "@makepot:features",
-      "@updatepo:features"
+      "@updatepo:features",
+
+      "@makepot:blocks",
+      "@updatepo:blocks"
     ],
 
-    "makepot:theme": "wp i18n make-pot themes/codelag-scaffold",
-    "updatepo:theme": "wp i18n update-po themes/codelag-scaffold/languages/codelagoon.pot",
-    "makemo:theme": "wp i18n make-mo themes/codelag-scaffold/languages",
+    "makepot:theme": "wp i18n make-pot themes/codelagoon",
+    "updatepo:theme": "wp i18n update-po themes/codelagoon/languages/codelagoon.pot",
+    "makemo:theme": "wp i18n make-mo themes/codelagoon/languages",
 
     "makepot:features": "wp i18n make-pot mu-plugins/codelag-features",
     "updatepo:features": "wp i18n update-po mu-plugins/codelag-features/languages/codelag-features.pot",
     "makemo:features": "wp i18n make-mo mu-plugins/codelag-features/languages",
+
+    "makepot:blocks": "wp i18n make-pot mu-plugins/codelag-blocks",
+    "updatepo:blocks": "wp i18n update-po mu-plugins/codelag-blocks/languages/codelag-blocks.pot",
+    "makemo:blocks": "wp i18n make-mo mu-plugins/codelag-blocks/languages",
 
     "packages-install": "@composer install --ignore-platform-reqs --no-interaction",
     "packages-update": [

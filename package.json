@@ -3,17 +3,17 @@
   "version": "1.0.0",
   "description": "Its a site where devs can share snippets etc",
   "author": {
-    "name": "Automattic Special Projects Team",
-    "url": "https://wpspecialprojects.com"
+    "name": "gin0115 & WP Special Projects",
+    "url": "https://github.com/gin0115/codelagoon"
   },
   "license": "GPL-2.0-or-later",
   "keywords": [
     "wordpress",
-    "scaffold"
+    "codelagoon"
   ],
   "homepage": "https://github.com/gin0115/CodeLagoon",
-  "repository": "https://github.com/a8cteam51/team51-project-scaffold",
-  "bugs": "https://github.com/a8cteam51/team51-project-scaffold/issues",
+  "repository": "https://github.com/gin0115/codelagoon",
+  "bugs": "https://github.com/gin0115/codelagoon/issues",
   "private": true,
   "engines": {
     "node": ">=20.0",
@@ -21,14 +21,22 @@
   },
   "devDependencies": {
     "@csstools/postcss-sass": "^5.1.1",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@monaco-editor/react": "^4.7.0",
     "@wordpress/block-editor": "^14.10.1",
     "@wordpress/blocks": "^14.4.1",
     "@wordpress/browserslist-config": "^6.15.0",
     "@wordpress/i18n": "^5.15.1",
     "@wordpress/postcss-plugins-preset": "^5.15.1",
     "@wordpress/scripts": "^30.8.1",
+    "monaco-editor": "^0.55.1",
+    "monaco-editor-webpack-plugin": "^7.1.1",
+    "monaco-themes": "^0.4.8",
     "npm-run-all": "^4.1.5",
     "postcss-cli": "^11.0.0",
+    "react-icons": "^5.6.0",
     "rtlcss": "^4.1.1"
   },
   "rtlcssConfig": {
@@ -49,15 +57,16 @@
   ],
   "scripts": {
     "build": "npm-run-all --sequential build:**",
-    "build:scripts:theme": "wp-scripts build --webpack-src-dir=themes/codelag-scaffold/assets/js/src --output-path=themes/codelag-scaffold/assets/js/build",
+    "build:scripts:theme": "wp-scripts build --webpack-src-dir=themes/codelagoon/assets/js/src --output-path=themes/codelagoon/assets/js/build",
     "build:scripts:features": "wp-scripts build --webpack-src-dir=mu-plugins/codelag-features/assets/js/src --output-path=mu-plugins/codelag-features/assets/js/build",
-    "build:styles:theme": "postcss themes/codelag-scaffold/assets/css/src/*.scss --dir themes/codelag-scaffold/assets/css/build --ext css --env production",
-    "build:styles:theme-stylesheet": "postcss themes/codelag-scaffold/assets/sass/style.scss --output themes/codelag-scaffold/style.css --env production",
-    "build:styles:theme-stylesheet-rtl": "rtlcss themes/codelag-scaffold/style.css themes/codelag-scaffold/style-rtl.css",
-    "build:styles:theme-editor": "postcss themes/codelag-scaffold/assets/sass/style-editor.scss --output themes/codelag-scaffold/style-editor.css --env production",
+    "build:scripts:blocks": "wp-scripts build --webpack-src-dir=mu-plugins/codelag-blocks/blocks/src --output-path=mu-plugins/codelag-blocks/blocks/build",
+    "build:styles:theme": "postcss themes/codelagoon/assets/css/src/*.scss --dir themes/codelagoon/assets/css/build --ext css --env production",
+    "build:styles:theme-stylesheet": "postcss themes/codelagoon/assets/sass/style.scss --output themes/codelagoon/style.css --env production",
+    "build:styles:theme-stylesheet-rtl": "rtlcss themes/codelagoon/style.css themes/codelagoon/style-rtl.css",
+    "build:styles:theme-editor": "postcss themes/codelagoon/assets/sass/style-editor.scss --output themes/codelagoon/style-editor.css --env production",
     "build:styles:features": "postcss mu-plugins/codelag-features/assets/css/src/*.scss --dir mu-plugins/codelag-features/assets/css/build --ext css --env production",
     "format:scripts": "npm-run-all --sequential format:scripts:**",
-    "format:scripts:theme": "wp-scripts format themes/codelag-scaffold --no-error-on-unmatched-pattern",
+    "format:scripts:theme": "wp-scripts format themes/codelagoon --no-error-on-unmatched-pattern",
     "format:scripts:mu-plugins": "wp-scripts format mu-plugins --no-error-on-unmatched-pattern",
     "format:styles": "npm-run-all --sequential format:styles:**",
     "format:styles:theme": "npm run lint:styles:theme -- --fix",
@@ -65,20 +74,27 @@
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "lint:readme-md": "wp-scripts lint-md-docs README.md",
     "lint:scripts": "npm-run-all --sequential lint:scripts:**",
-    "lint:scripts:theme": "wp-scripts lint-js themes/codelag-scaffold --no-error-on-unmatched-pattern",
+    "lint:scripts:theme": "wp-scripts lint-js themes/codelagoon --no-error-on-unmatched-pattern",
     "lint:scripts:mu-plugins": "wp-scripts lint-js mu-plugins --no-error-on-unmatched-pattern",
     "lint:styles": "npm-run-all --sequential lint:styles:**",
-    "lint:styles:theme": "wp-scripts lint-style themes/codelag-scaffold/**/*.{css,sass,scss} !themes/codelag-scaffold/style*.css --allow-empty-input --report-descriptionless-disables --report-invalid-scope-disables --report-needless-disables",
+    "lint:styles:theme": "wp-scripts lint-style themes/codelagoon/**/*.{css,sass,scss} !themes/codelagoon/style*.css --allow-empty-input --report-descriptionless-disables --report-invalid-scope-disables --report-needless-disables",
     "lint:styles:mu-plugins": "wp-scripts lint-style mu-plugins/**/*.{css,sass,scss} --allow-empty-input --report-descriptionless-disables --report-invalid-scope-disables --report-needless-disables",
     "packages-update": "wp-scripts packages-update --dist-tag=latest",
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses",
     "start": "npm-run-all --parallel start:**",
-    "start:scripts:theme": "wp-scripts start --webpack-src-dir=themes/codelag-scaffold/assets/js/src --output-path=themes/codelag-scaffold/assets/js/build",
+    "start:scripts:theme": "wp-scripts start --webpack-src-dir=themes/codelagoon/assets/js/src --output-path=themes/codelagoon/assets/js/build",
     "start:scripts:features": "wp-scripts start --webpack-src-dir=mu-plugins/codelag-features/assets/js/src --output-path=mu-plugins/codelag-features/assets/js/build",
-    "start:styles:theme": "postcss themes/codelag-scaffold/assets/css/src/*.scss --dir themes/codelag-scaffold/assets/css/build --ext css --env development --watch --verbose",
-    "start:styles:theme-stylesheet": "postcss themes/codelag-scaffold/assets/sass/style.scss --output themes/codelag-scaffold/style.css --env development --watch --verbose",
-    "start:styles:theme-editor": "postcss themes/codelag-scaffold/assets/sass/style-editor.scss --output themes/codelag-scaffold/style-editor.css --env development --watch --verbose",
+    "start:scripts:blocks": "wp-scripts start --webpack-src-dir=mu-plugins/codelag-blocks/blocks/src --output-path=mu-plugins/codelag-blocks/blocks/build",
+    "start:styles:theme": "postcss themes/codelagoon/assets/css/src/*.scss --dir themes/codelagoon/assets/css/build --ext css --env development --watch --verbose",
+    "start:styles:theme-stylesheet": "postcss themes/codelagoon/assets/sass/style.scss --output themes/codelagoon/style.css --env development --watch --verbose",
+    "start:styles:theme-editor": "postcss themes/codelagoon/assets/sass/style-editor.scss --output themes/codelagoon/style-editor.css --env development --watch --verbose",
     "start:styles:features": "postcss mu-plugins/codelag-features/assets/css/src/*.scss --dir mu-plugins/codelag-features/assets/css/build --ext css --env development --watch --verbose"
+  },
+  "dependencies": {
+    "github-markdown-css": "^5.9.0",
+    "prismjs": "^1.30.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   }
 }

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unzip -l /media/glynn/2024/devilbox_public/CodeLagoon/htdocs/wp-content/xwcgs5atxc.zip)",
+      "Bash(ls mu-plugins/codelag-blocks/languages/*.pot)",
+      "Bash(grep -n \"Automattic Special Projects\\\\|wordpress.org/support\" mu-plugins/codelag-blocks/languages/*.pot)",
+      "Read(//media/glynn/2024/devilbox_public/CodeLagoon/**)"
+    ]
+  }
+}
