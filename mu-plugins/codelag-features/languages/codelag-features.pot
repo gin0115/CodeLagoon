@@ -1,9 +1,10 @@
-# Copyright (C) 2024 Automattic Special Projects
+# Copyright (C) 2026 gin0115 & WP Special Projects
 # This file is distributed under the GPL-3.0-or-later.
+# Created with the a8cteam51/team51-project-scaffold — https://github.com/a8cteam51/team51-project-scaffold
 msgid ""
 msgstr ""
 "Project-Id-Version: CodeLagoon Features 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/codelag-features\n"
+"Report-Msgid-Bugs-To: https://github.com/gin0115/codelagoon/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"

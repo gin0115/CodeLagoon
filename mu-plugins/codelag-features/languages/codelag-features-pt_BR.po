@@ -12,7 +12,7 @@ msgstr ""
 "Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.2.2\n"
-"X-Domain: wpcomsp-project-scaffold-features\n"
+"X-Domain: codelag-features\n"
 
 #: includes/custom-post-types.php:13
 msgctxt "Post Type General Name"
