@@ -20,6 +20,7 @@ mu-plugins/*
 
 team51-plugin-scaffold-trunk
 !themes/codelagoon
+!themes/codelagoon
 
 themes/*
 !themes/codelag-scaffold
