@@ -28,6 +28,7 @@ import {
 	Modal,
 	Dropdown,
 } from '@wordpress/components';
+// eslint-disable-next-line import/no-extraneous-dependencies -- installed transitively via @wordpress/components; listing it explicitly would require a package-lock refresh we can't run from CI.
 import {
 	search,
 	// eslint-disable-next-line import/named -- exported at runtime; not in the package's type declarations.

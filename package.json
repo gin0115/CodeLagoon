@@ -29,7 +29,6 @@
     "@wordpress/blocks": "^14.4.1",
     "@wordpress/browserslist-config": "^6.15.0",
     "@wordpress/i18n": "^5.15.1",
-    "@wordpress/icons": "^10.27.0",
     "@wordpress/postcss-plugins-preset": "^5.15.1",
     "@wordpress/scripts": "^30.8.1",
     "monaco-editor": "^0.55.1",
