@@ -1,0 +1,42 @@
+<!--
+	Lagoon archive shell. Reused by the CPT archive template and the three
+	taxonomy archive templates so the same layout covers every archive
+	route. The `wp:query` uses `inherit: true` so the main query's term /
+	post-type filtering automatically narrows the grid on taxonomy archives.
+-->
+<!-- wp:group {"tagName":"main","align":"full","className":"codelag-archive","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|70","left":"20px","right":"20px"},"blockGap":"1.25rem"}},"layout":{"type":"constrained","contentSize":"100%","wideSize":"100%"}} -->
+<main class="wp-block-group alignfull codelag-archive" style="padding-top:var(--wp--preset--spacing--40);padding-right:20px;padding-bottom:var(--wp--preset--spacing--70);padding-left:20px">
+
+	<!-- wp:group {"className":"codelag-archive__hero","layout":{"type":"default"}} -->
+	<div class="wp-block-group codelag-archive__hero">
+		<!-- wp:query-title {"type":"archive","textAlign":"left","showPrefix":true,"className":"codelag-archive__title","style":{"typography":{"fontSize":"clamp(1.5rem, 3vw, 2.25rem)","fontWeight":"800","letterSpacing":"-0.02em"},"spacing":{"margin":{"top":"0","bottom":"0.35rem"}}}} /-->
+		<!-- wp:term-description {"className":"codelag-archive__desc"} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:codelag/lagoon-filters /-->
+
+	<!-- wp:codelag/term-index /-->
+
+	<!-- wp:query {"queryId":1,"query":{"perPage":12,"pages":0,"offset":0,"postType":"lagoon","order":"desc","orderBy":"date","inherit":true},"className":"codelag-archive__query"} -->
+	<div class="wp-block-query codelag-archive__query" data-codelag-grid>
+		<!-- wp:post-template {"className":"codelag-archive__grid","layout":{"type":"grid","minimumColumnWidth":"280px"}} -->
+			<!-- wp:codelag/lagoon-card /-->
+		<!-- /wp:post-template -->
+
+		<!-- wp:query-pagination {"paginationArrow":"arrow","className":"codelag-archive__pagination","layout":{"type":"flex","justifyContent":"center"}} -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:query-no-results -->
+			<!-- wp:paragraph {"align":"center","className":"codelag-archive__empty"} -->
+			<p class="has-text-align-center codelag-archive__empty">No snippets match those filters.</p>
+			<!-- /wp:paragraph -->
+		<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+
+</main>
+<!-- /wp:group -->

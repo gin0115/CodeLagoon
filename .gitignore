@@ -19,12 +19,12 @@ mu-plugins/*
 !mu-plugins/codelag-blocks
 
 team51-plugin-scaffold-trunk
-!themes/codelagoon
-!themes/codelagoon
+
 
 themes/*
 !themes/codelag-scaffold
-
+!themes/codelagoon
+!themes/codelagoon
 # Other wp-content exclusions
 upgrade/*
 uploads/*

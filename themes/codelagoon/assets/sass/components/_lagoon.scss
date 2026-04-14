@@ -1,0 +1,982 @@
+/**
+ * Lagoon-specific theme styles.
+ *
+ * All colour and radius values come from CSS custom properties emitted by
+ * Gin0115\Codelagoon\Theme\SiteThemeService. Palette swaps are driven by the
+ * `data-site-theme` attribute on <html>; component rules only read variables.
+ *
+ * Do NOT add hex values here. Define them in SiteThemes::THEMES.
+ */
+
+// ---------------------------------------------------------------------------
+// Site header (top nav, site-wide)
+// ---------------------------------------------------------------------------
+
+.codelag-site-header {
+	align-items: center;
+	padding: 0.6rem clamp(1rem, 3vw, 2.5rem) !important;
+	margin: 0 !important;
+	background: var(--cl-surface) !important;
+	border-bottom: 1px solid var(--cl-outline-variant);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+
+	&__brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		text-decoration: none;
+		color: var(--cl-primary);
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: -0.02em;
+
+		&:hover,
+		&:focus-visible {
+			opacity: 0.85;
+		}
+	}
+
+	&__brand-icon {
+		font-size: 1.25rem !important;
+		color: var(--cl-primary);
+	}
+
+	&__brand-text {
+		font-size: 1.05rem;
+		font-weight: 900;
+		letter-spacing: -0.03em;
+	}
+
+	.codelag-site-header__nav {
+		.wp-block-navigation__container {
+			gap: 1.25rem !important;
+		}
+
+		.wp-block-navigation-item__content {
+			color: var(--cl-on-surface);
+			opacity: 0.65;
+			font-size: 0.72rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.12em;
+			text-decoration: none;
+			padding: 0.25rem 0 !important;
+			transition: color 160ms ease, opacity 160ms ease;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--cl-primary);
+				opacity: 1;
+			}
+		}
+
+		.current-menu-item .wp-block-navigation-item__content {
+			color: var(--cl-primary);
+			opacity: 1;
+			border-bottom: 2px solid var(--cl-primary);
+		}
+	}
+
+	&__icon-button {
+		appearance: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		background: transparent;
+		border: 0;
+		color: var(--cl-on-surface);
+		opacity: 0.7;
+		cursor: pointer;
+		border-radius: var(--cl-radius-pill);
+		transition: color 160ms ease, background 160ms ease, opacity 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-primary);
+			opacity: 1;
+			background: var(--cl-surface-high);
+		}
+	}
+
+}
+
+// ---------------------------------------------------------------------------
+// Header card
+// ---------------------------------------------------------------------------
+
+.codelag-lagoon-header {
+	background: var(--cl-surface-low) !important;
+	color: var(--cl-on-surface);
+	border: 0 !important;
+	border-radius: var(--cl-radius-lg) !important;
+	padding: 1.25rem clamp(1rem, 2vw, 1.75rem) !important;
+	gap: 1.25rem !important;
+	align-items: flex-start !important;
+
+	&__left {
+		flex: 1 1 auto;
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	&__avatar {
+		flex: 0 0 auto;
+		align-self: flex-start;
+		margin-top: 0.1rem;
+
+		img {
+			width: 36px !important;
+			height: 36px !important;
+			border-radius: 50%;
+			display: block;
+		}
+	}
+
+	&__title {
+		color: var(--cl-on-surface);
+		word-break: break-word;
+	}
+}
+
+.codelag-lagoon-meta {
+	align-items: center;
+	gap: 0.6rem !important;
+	color: var(--cl-on-surface-variant);
+
+	.codelag-meta-author {
+		color: var(--cl-primary);
+		font-weight: 600;
+
+		a {
+			color: inherit;
+			text-decoration: none;
+
+			&::before {
+				content: "@";
+				opacity: 0.8;
+			}
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	.codelag-meta-date {
+		color: var(--cl-on-surface-variant);
+		font-size: 0.78rem;
+		opacity: 0.8;
+
+		&::before {
+			content: "•";
+			margin-right: 0.55rem;
+			color: var(--cl-on-surface-variant);
+			opacity: 0.5;
+		}
+	}
+}
+
+.codelag-lagoon-excerpt {
+	color: var(--cl-on-surface-variant);
+}
+
+// Chip row below the meta — language / purpose / tags.
+.codelag-lagoon-chips {
+	align-items: center;
+}
+
+// Base chip — shared shape/padding/line-height for language/purpose/tags so
+// they sit at identical heights regardless of content. Font weight + colour
+// vary per variant.
+.codelag-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.28rem 0.75rem;
+	border-radius: var(--cl-radius-pill);
+	background: var(--cl-surface-container);
+	color: var(--cl-on-surface-variant);
+	font-size: 0.72rem;
+	font-family: inherit;
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	letter-spacing: 0;
+
+	a {
+		color: inherit;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-primary);
+		}
+	}
+
+	.wp-block-post-terms__prefix,
+	.wp-block-post-terms__suffix {
+		font-size: inherit;
+	}
+}
+
+.codelag-chip--lang a {
+	color: var(--cl-primary);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-weight: 700;
+	font-size: 0.68rem;
+}
+
+.codelag-chip--purpose a,
+.codelag-chip--tag a {
+	&:hover,
+	&:focus-visible {
+		color: var(--cl-primary);
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Header actions group (theme / share / download / fork)
+//
+// Absolute-positioned cluster top-right of the header card.
+// ---------------------------------------------------------------------------
+
+.codelag-header-actions {
+	flex: 0 0 auto !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: flex-end !important;
+	justify-content: flex-start;
+	gap: 0.55rem !important;
+	margin: 0 0 0 auto !important;
+	align-self: flex-start;
+	text-align: right;
+}
+
+// Shared pill styling for the neutral buttons (theme / share / download).
+// Fork button gets the primary-gradient treatment below.
+%codelag-pill-neutral {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.4rem 0.95rem;
+	border-radius: var(--cl-radius-pill);
+	border: 0;
+	background: var(--cl-surface-high);
+	color: var(--cl-on-surface);
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background 160ms ease, transform 160ms ease, color 160ms ease;
+
+	&:hover,
+	&:focus-visible {
+		background: var(--cl-surface-container);
+		color: var(--cl-primary);
+		transform: scale(0.97);
+	}
+
+	&[disabled] {
+		opacity: 0.65;
+		cursor: progress;
+		transform: none;
+	}
+}
+
+.codelag-theme-picker {
+	@extend %codelag-pill-neutral;
+	padding: 0.25rem 0.35rem 0.25rem 0.8rem;
+	gap: 0.35rem;
+
+	&__label {
+		font-size: 0.62rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--cl-on-surface-variant);
+	}
+
+	&__select {
+		appearance: none;
+		-webkit-appearance: none;
+		padding: 0.25rem 1.75rem 0.25rem 0.6rem;
+		border-radius: var(--cl-radius-pill);
+		border: 0;
+		background-color: var(--cl-surface-container);
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%2300f0ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+		background-repeat: no-repeat;
+		background-position: right 0.55rem center;
+		background-size: 10px 10px;
+		color: var(--cl-on-surface);
+		font-size: 0.72rem;
+		font-weight: 600;
+		cursor: pointer;
+		line-height: 1.3;
+
+		&:focus-visible {
+			outline: 2px solid var(--cl-primary);
+			outline-offset: 1px;
+		}
+	}
+}
+
+.codelag-share-button,
+.codelag-download-button {
+	@extend %codelag-pill-neutral;
+
+	&::before {
+		content: "";
+		display: inline-block;
+		width: 13px;
+		height: 13px;
+		background-color: currentColor;
+		mask-repeat: no-repeat;
+		mask-size: contain;
+		-webkit-mask-repeat: no-repeat;
+		-webkit-mask-size: contain;
+	}
+}
+
+.codelag-share-button::before {
+	mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z' fill='black'/></svg>");
+	-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z' fill='black'/></svg>");
+}
+
+.codelag-download-button::before {
+	mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z' fill='black'/></svg>");
+	-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z' fill='black'/></svg>");
+}
+
+// Edit button — tertiary/yellow accent. Only renders when the viewer can
+// edit the current lagoon (author + editors/admins).
+.codelag-edit-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.3rem 0.75rem;
+	border-radius: var(--cl-radius-pill);
+	border: 0;
+	background: var(--cl-accent);
+	color: var(--cl-surface-lowest);
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	text-decoration: none;
+	cursor: pointer;
+	transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+
+	&::before {
+		content: "";
+		display: inline-block;
+		width: 13px;
+		height: 13px;
+		background-color: currentColor;
+		mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z' fill='black'/></svg>");
+		mask-repeat: no-repeat;
+		mask-size: contain;
+		-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z' fill='black'/></svg>");
+		-webkit-mask-repeat: no-repeat;
+		-webkit-mask-size: contain;
+	}
+
+	&:hover,
+	&:focus-visible {
+		background: var(--cl-accent-dim);
+		transform: scale(0.97);
+		box-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
+	}
+}
+
+// Primary CTA — cyan gradient pill.
+.codelag-fork-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.45rem 1.15rem;
+	border-radius: var(--cl-radius-pill);
+	border: 0;
+	background: linear-gradient(135deg, var(--cl-primary) 0%, var(--cl-primary-dim) 100%);
+	color: var(--cl-primary-text);
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	cursor: pointer;
+	box-shadow: 0 0 20px rgba(0, 240, 255, 0.22);
+	transition: transform 160ms ease, box-shadow 160ms ease;
+
+	&::before {
+		content: "";
+		display: inline-block;
+		width: 13px;
+		height: 13px;
+		background-color: currentColor;
+		mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878ZM8.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm3-8.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z' fill='black'/></svg>");
+		mask-repeat: no-repeat;
+		mask-size: contain;
+		-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878ZM8.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm3-8.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z' fill='black'/></svg>");
+		-webkit-mask-repeat: no-repeat;
+		-webkit-mask-size: contain;
+	}
+
+	&:hover,
+	&:focus-visible {
+		transform: scale(0.97);
+		box-shadow: 0 0 28px rgba(0, 240, 255, 0.35);
+	}
+
+	&[disabled] {
+		opacity: 0.65;
+		cursor: progress;
+		transform: none;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Fork lineage
+// ---------------------------------------------------------------------------
+
+.codelag-lineage {
+	margin-top: 0.9rem;
+	color: var(--cl-on-surface-variant);
+	font-size: 0.82rem;
+	line-height: 1.55;
+
+	&__icon {
+		flex: 0 0 auto;
+		margin-right: 0.35rem;
+		vertical-align: -2px;
+		color: var(--cl-primary);
+		opacity: 0.9;
+	}
+
+	&__parent {
+		margin: 0;
+
+		a {
+			color: var(--cl-primary);
+			text-decoration: none;
+			font-weight: 600;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	&__chain {
+		display: inline-block;
+		margin-top: 0.55rem;
+
+		summary {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+			padding: 0.22rem 0.75rem;
+			border-radius: var(--cl-radius-pill);
+			background: var(--cl-surface-container);
+			color: var(--cl-on-surface-variant);
+			cursor: pointer;
+			user-select: none;
+			font-size: 0.68rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			list-style: none;
+
+			&::-webkit-details-marker {
+				display: none;
+			}
+
+			&::before {
+				content: "▸";
+				font-size: 0.65rem;
+				color: var(--cl-primary);
+				transition: transform 160ms ease;
+			}
+
+			&:hover,
+			&:focus-visible {
+				color: var(--cl-primary);
+			}
+		}
+
+		&[open] summary::before {
+			content: "▾";
+		}
+	}
+
+	&__list {
+		margin: 0.5rem 0 0;
+		padding-left: 1.25rem;
+
+		li {
+			margin: 0.2rem 0;
+		}
+
+		a {
+			color: var(--cl-primary);
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	&__meta {
+		color: var(--cl-on-surface-variant);
+		opacity: 0.7;
+		font-size: 0.72rem;
+	}
+
+	&__deleted {
+		opacity: 0.55;
+		font-style: italic;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Comments section (full-width, own surface)
+// ---------------------------------------------------------------------------
+
+.codelag-lagoon-comments {
+	background: var(--cl-surface-low) !important;
+	color: var(--cl-on-surface);
+	border: 0 !important;
+
+	&__title {
+		color: var(--cl-on-surface);
+		padding-bottom: 0.5rem;
+		border-bottom: 0;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+
+		&::before {
+			content: "";
+			display: inline-block;
+			width: 1.1em;
+			height: 1.1em;
+			background-color: var(--cl-primary);
+			mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z' fill='black'/></svg>");
+			-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z' fill='black'/></svg>");
+			mask-repeat: no-repeat;
+			mask-size: contain;
+			-webkit-mask-repeat: no-repeat;
+			-webkit-mask-size: contain;
+		}
+	}
+
+	.codelag-comments-list {
+		.wp-block-columns {
+			padding: 1rem;
+			margin-bottom: 0.5rem !important;
+			background: var(--cl-surface-container);
+			border-radius: var(--cl-radius);
+			border: 0;
+		}
+
+		.wp-block-avatar img {
+			border-radius: 50%;
+			display: block;
+		}
+
+		.wp-block-comment-author-name {
+			color: var(--cl-primary);
+			font-weight: 700;
+			font-size: 0.88rem;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+
+				&::before {
+					content: "@";
+					opacity: 0.85;
+				}
+
+				&:hover,
+				&:focus-visible {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		.wp-block-comment-date {
+			color: var(--cl-on-surface-variant);
+			opacity: 0.8;
+			font-size: 0.78rem;
+		}
+
+		.wp-block-comment-content {
+			margin-top: 0.3rem;
+			color: var(--cl-on-surface-variant);
+			font-size: 0.88rem;
+			line-height: 1.55;
+
+			p {
+				margin: 0.3rem 0;
+			}
+
+			code {
+				background: var(--cl-surface-lowest);
+				padding: 0.1rem 0.35rem;
+				border-radius: var(--cl-radius-sm);
+				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+				font-size: 0.88em;
+				color: var(--cl-primary);
+			}
+
+			pre {
+				background: var(--cl-surface-lowest);
+				padding: 0.75rem 1rem;
+				border-radius: var(--cl-radius-sm);
+				overflow-x: auto;
+			}
+
+			blockquote {
+				border-left: 2px solid var(--cl-primary);
+				margin: 0.5rem 0;
+				padding: 0.25rem 0 0.25rem 0.9rem;
+				color: var(--cl-on-surface-variant);
+				opacity: 0.85;
+			}
+
+			a {
+				color: var(--cl-primary);
+			}
+		}
+
+		.wp-block-comment-reply-link,
+		.wp-block-comment-edit-link {
+			a {
+				color: var(--cl-primary);
+				text-decoration: none;
+				font-size: 0.78rem;
+				font-weight: 600;
+
+				&:hover,
+				&:focus-visible {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+
+	// Placeholder paragraph WordPress wraps around the editor. Keep a touch
+	// of top margin so it doesn't hug the last comment.
+	.codelag-comment-form-editor {
+		margin-top: 0.75rem;
+	}
+
+	// TinyMCE chrome (toolbar, tabs, wrapper). The iframe body is styled
+	// separately via content_style injection in theme-comment-editor.php.
+	// Note: `.wp-editor-wrap` is a SIBLING of `.codelag-comment-form-editor`,
+	// not a child — so these rules are scoped to `.codelag-lagoon-comments`
+	// (the outer full-width section) rather than the paragraph wrapper.
+	.wp-editor-wrap {
+		border-radius: var(--cl-radius);
+		overflow: hidden;
+		border: 0 !important;
+		background: var(--cl-surface-low) !important;
+		box-shadow: none !important;
+	}
+
+	// Visual / Code tabs above the editor — shared pill container with a
+	// subtle outline. Both tabs look identical until active: the active tab
+	// lights up cyan.
+	.wp-editor-tools {
+		background: transparent !important;
+		padding: 0 !important;
+		margin-bottom: 0.45rem !important;
+	}
+
+	.wp-editor-tabs {
+		display: inline-flex !important;
+		gap: 0 !important;
+		padding: 0.2rem !important;
+		background: var(--cl-surface-container) !important;
+		border: 1px solid var(--cl-outline-variant) !important;
+		border-radius: var(--cl-radius-pill) !important;
+	}
+
+	.wp-switch-editor {
+		background: transparent !important;
+		color: var(--cl-on-surface-variant) !important;
+		border: 0 !important;
+		border-radius: var(--cl-radius-pill) !important;
+		font-size: 0.68rem !important;
+		font-weight: 700 !important;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		padding: 0.35rem 0.95rem !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+		transition: color 160ms ease, background 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-primary) !important;
+			background: var(--cl-surface-high) !important;
+		}
+
+		&.switch-tmce[aria-pressed="true"],
+		&.switch-html[aria-pressed="true"] {
+			color: var(--cl-primary-text) !important;
+			background: var(--cl-primary) !important;
+		}
+	}
+
+	// TinyMCE visual-mode toolbar (icons). Use `html body` prefix for
+	// maximum specificity to beat the TinyMCE skin stylesheet.
+	html body & .mce-toolbar-grp,
+	html body & .mce-tinymce .mce-toolbar-grp,
+	.mce-toolbar-grp {
+		background: var(--cl-toolbar) !important;
+		border: 0 !important;
+		box-shadow: none !important;
+	}
+
+	.mce-tinymce {
+		border: 0 !important;
+		box-shadow: none !important;
+		background: var(--cl-surface-low) !important;
+	}
+
+	.mce-toolbar .mce-btn,
+	.mce-toolbar .mce-btn button {
+		background: transparent !important;
+		color: var(--cl-on-surface-variant) !important;
+		border: 0 !important;
+		box-shadow: none !important;
+
+		.mce-ico {
+			color: var(--cl-on-surface-variant) !important;
+		}
+
+		&:hover,
+		&.mce-active,
+		&[aria-pressed="true"] {
+			background: var(--cl-surface-high) !important;
+			color: var(--cl-primary) !important;
+
+			.mce-ico {
+				color: var(--cl-primary) !important;
+			}
+		}
+	}
+
+	.mce-toolbar .mce-btn-group {
+		border: 0 !important;
+	}
+
+	.mce-container,
+	.mce-container *,
+	.mce-panel {
+		background-color: transparent !important;
+		border-color: transparent !important;
+	}
+
+	// HTML-mode quicktags toolbar.
+	.quicktags-toolbar {
+		background: var(--cl-surface-container) !important;
+		border: 0 !important;
+		padding: 0.3rem 0.45rem !important;
+
+		input.ed_button,
+		input.button {
+			background: var(--cl-surface-high) !important;
+			color: var(--cl-on-surface-variant) !important;
+			border: 0 !important;
+			box-shadow: none !important;
+			font-size: 0.7rem !important;
+			padding: 0.25rem 0.55rem !important;
+			border-radius: var(--cl-radius-sm) !important;
+
+			&:hover,
+			&:focus-visible {
+				background: var(--cl-surface-highest) !important;
+				color: var(--cl-primary) !important;
+			}
+		}
+	}
+
+	// HTML-mode textarea.
+	.wp-editor-area,
+	textarea.wp-editor-area {
+		background: var(--cl-surface-lowest) !important;
+		color: var(--cl-on-surface) !important;
+		border: 0 !important;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+		padding: 0.85rem 1rem !important;
+	}
+
+	.mce-edit-area {
+		background: var(--cl-surface-lowest) !important;
+		border: 0 !important;
+	}
+
+	// Status bar — matches the toolbar tone so top and bottom chrome read
+	// as a paired frame around the body.
+	.mce-statusbar {
+		background: var(--cl-toolbar) !important;
+		border: 0 !important;
+		border-top: 1px solid var(--cl-secondary) !important;
+		color: var(--cl-on-surface-variant) !important;
+	}
+
+	// The path indicator ("p" / "blockquote" breadcrumb) picks up a subtle
+	// yellow accent — the only place yellow appears in this UI, used
+	// sparingly as a warm accent. Given its own chip background so it
+	// stands out from the statusbar behind it.
+	.mce-path {
+		background: transparent !important;
+	}
+
+	.mce-path-item {
+		display: inline-block;
+		padding: 0.15rem 0.5rem !important;
+		margin: 0.2rem !important;
+		border-radius: var(--cl-radius-sm) !important;
+		background: var(--cl-surface-highest) !important;
+		color: var(--cl-accent) !important;
+		opacity: 0.8;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+		font-size: 0.72rem !important;
+		letter-spacing: 0.04em;
+		text-transform: lowercase;
+
+		&:hover,
+		&:focus-visible {
+			color: var(--cl-accent) !important;
+			opacity: 1;
+		}
+	}
+
+	// Resize handle at the bottom-right — dim yellow tick so you can see
+	// where to grab it without screaming.
+	.mce-resizehandle {
+		background: transparent !important;
+		color: var(--cl-accent) !important;
+		opacity: 0.55;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	// Right-align submit button below the editor.
+	.form-submit {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 0.75rem;
+	}
+
+	// "Leave a comment" / "Reply to X" heading above the form.
+	.comment-reply-title {
+		color: var(--cl-on-surface);
+		font-family: inherit;
+		font-size: 0.78rem !important;
+		font-weight: 800 !important;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		margin: 1.25rem 0 0.5rem !important;
+
+		small {
+			font-size: 0.7rem;
+			margin-left: 0.75rem;
+			font-weight: 600;
+
+			a {
+				color: var(--cl-primary);
+				text-decoration: none;
+			}
+		}
+	}
+
+	// "Logged in as X. Edit your profile. Log out?" + "Required fields…" notice lines.
+	.logged-in-as,
+	.comment-notes,
+	.comment-form-cookies-consent {
+		font-size: 0.75rem;
+		color: var(--cl-on-surface-variant);
+		opacity: 0.7;
+		margin: 0.25rem 0 0.5rem;
+
+		a {
+			color: var(--cl-primary);
+			text-decoration: underline;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 2px;
+		}
+	}
+
+	// The submit button. Core renders as <input type="submit">, which inherits
+	// browser form-control defaults. We nuke those with `all: unset` then
+	// rebuild the pill by hand so it's indistinguishable from the Fork button.
+	input.codelag-comment-submit,
+	input[type="submit"].codelag-comment-submit,
+	.form-submit .codelag-comment-submit,
+	.form-submit input[type="submit"] {
+		all: unset;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+		padding: 0.6rem 1.5rem;
+		border-radius: var(--cl-radius-pill);
+		background: linear-gradient(135deg, var(--cl-primary) 0%, var(--cl-primary-dim) 100%);
+		color: var(--cl-primary-text);
+		font-family: inherit;
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		cursor: pointer;
+		box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
+		transition: transform 160ms ease, box-shadow 160ms ease;
+
+		&:hover,
+		&:focus-visible {
+			transform: scale(0.97);
+			box-shadow: 0 0 26px rgba(0, 240, 255, 0.32);
+		}
+	}
+}
+
+// Belt-and-braces: hide the whole comments section for logged-out viewers.
+body:not(.logged-in) .codelag-lagoon-comments {
+	display: none;
+}
+
+// ---------------------------------------------------------------------------
+// Prose slot (editable intro/outro blocks around the lagoon viewer)
+// ---------------------------------------------------------------------------
+
+.wp-block-codelag-lagoon-prose {
+	color: var(--cl-on-surface-variant);
+	font-size: 0.9rem;
+	line-height: 1.6;
+
+	a {
+		color: var(--cl-primary);
+	}
+
+	code {
+		background: var(--cl-surface-container);
+		color: var(--cl-primary);
+		padding: 0.1rem 0.4rem;
+		border-radius: var(--cl-radius-sm);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	}
+}
