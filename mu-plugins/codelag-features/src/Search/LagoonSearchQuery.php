@@ -53,9 +53,9 @@ final class LagoonSearchQuery {
 	 */
 	public function apply_filters( array &$args, array $input ): void {
 		$tax_map = array(
-			'language' => LagoonLanguageTaxonomy::TAXONOMY,
-			'tag'      => LagoonTagTaxonomy::TAXONOMY,
-			'purpose'  => LagoonPurposeTaxonomy::TAXONOMY,
+			'filter_language' => LagoonLanguageTaxonomy::TAXONOMY,
+			'filter_tag'      => LagoonTagTaxonomy::TAXONOMY,
+			'filter_purpose'  => LagoonPurposeTaxonomy::TAXONOMY,
 		);
 
 		$new_tax_clauses = array();

@@ -1,0 +1,71 @@
+/* ---------------------------------------------------------------------------
+ * Collect button (single lagoon header)
+ *
+ * Mirrors the pill proportions of the Share / Download buttons so the
+ * buttons in the header action cluster line up visually. Two states:
+ *  - [data-collected="false"] — outline star, neutral surface
+ *  - [data-collected="true"]  — filled star, accent surface
+ * ------------------------------------------------------------------------- */
+.codelag-collect-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.3rem 0.75rem;
+	border-radius: 999px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	background: rgba(255, 255, 255, 0.6);
+	color: inherit;
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.codelag-collect-button:hover {
+	background: rgba(255, 255, 255, 0.9);
+	border-color: rgba(0, 0, 0, 0.25);
+}
+
+.codelag-collect-button:focus-visible {
+	outline: 2px solid #f5c518;
+	outline-offset: 2px;
+}
+
+.codelag-collect-button:disabled {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+/* Star glyph rendered as a mask so it inherits the button colour. */
+.codelag-collect-button__star {
+	display: inline-block;
+	width: 0.9rem;
+	height: 0.9rem;
+	background-color: currentColor;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	-webkit-mask-size: contain;
+	/* Outline star */
+	mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='none' stroke='black' stroke-width='2' stroke-linejoin='round' d='M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L2 9.5l7.1-.6z'/></svg>");
+	-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='none' stroke='black' stroke-width='2' stroke-linejoin='round' d='M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L2 9.5l7.1-.6z'/></svg>");
+}
+
+.codelag-collect-button[data-collected="true"] {
+	background: #f5c518;
+	border-color: #d9ad10;
+	color: #2a1f00;
+}
+
+.codelag-collect-button[data-collected="true"]:hover {
+	background: #ffd330;
+}
+
+.codelag-collect-button[data-collected="true"] .codelag-collect-button__star {
+	/* Filled star */
+	mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L2 9.5l7.1-.6z'/></svg>");
+	-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7L2 9.5l7.1-.6z'/></svg>");
+}

@@ -79,6 +79,7 @@ final class Plugin {
 		( new Taxonomy\DefaultTermsSeeder() )->register();
 		( new Meta\LagoonMeta() )->register();
 		( new Meta\UserPreferences() )->register();
+		( new Meta\UserCollection() )->register();
 
 		$file_repository = new Database\FileRepository();
 		( new Database\Denormalisation( $file_repository ) )->register();
@@ -87,6 +88,7 @@ final class Plugin {
 		$search_query = new Search\LagoonSearchQuery( $file_repository );
 
 		( new Query\ArchiveQueryFilter( $search_query ) )->register();
+		( new Query\CollectionQueryFilter( $search_query ) )->register();
 		( new Query\TermIndexRewrite() )->register();
 		( new Query\AuthorArchiveRewrite() )->register();
 
@@ -94,6 +96,7 @@ final class Plugin {
 		( new Rest\FilesController( $file_repository ) )->register();
 		( new Rest\FileSearchController( $file_repository ) )->register();
 		( new Rest\ForkController( $fork_service ) )->register();
+		( new Rest\CollectionController() )->register();
 		( new Rest\TermsController( Taxonomy\LagoonLanguageTaxonomy::TAXONOMY, 'lagoon-languages' ) )->register();
 		( new Rest\TermsController( Taxonomy\LagoonTagTaxonomy::TAXONOMY, 'lagoon-tags' ) )->register();
 		( new Rest\TermsController( Taxonomy\LagoonPurposeTaxonomy::TAXONOMY, 'lagoon-purposes' ) )->register();
@@ -104,6 +107,7 @@ final class Plugin {
 		( new Shortcode\ShareButtonShortcode() )->register();
 		( new Shortcode\DownloadButtonShortcode() )->register();
 		( new Shortcode\EditButtonShortcode() )->register();
+		( new Shortcode\CollectButtonShortcode() )->register();
 
 		( new Download\ZipDownloadHandler( $file_repository ) )->register();
 

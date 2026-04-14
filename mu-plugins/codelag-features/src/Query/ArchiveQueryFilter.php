@@ -115,11 +115,11 @@ final class ArchiveQueryFilter {
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return array(
-			'language'   => $get['language']   ?? null,
-			'tag'        => $get['tag']        ?? null,
-			'purpose'    => $get['purpose']    ?? null,
-			'date_range' => isset( $get['date_range'] ) ? (string) $get['date_range'] : '',
-			'search'     => isset( $get['search'] ) ? (string) $get['search'] : '',
+			'filter_language' => $get['filter_language'] ?? null,
+			'filter_tag'      => $get['filter_tag'] ?? null,
+			'filter_purpose'  => $get['filter_purpose'] ?? null,
+			'date_range'      => isset( $get['date_range'] ) ? (string) $get['date_range'] : '',
+			'search'          => isset( $get['search'] ) ? (string) $get['search'] : '',
 		);
 	}
 }

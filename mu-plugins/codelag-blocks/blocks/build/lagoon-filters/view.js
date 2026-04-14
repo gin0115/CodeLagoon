@@ -41,11 +41,17 @@
         }, DEBOUNCE_MS);
       });
     }
-    form.querySelectorAll('select').forEach(function (select) {
-      select.addEventListener('change', function () {
+    if (window.jQuery) {
+      window.jQuery(form).find('select').on('change.codelag', function () {
         submit(form, grid);
       });
-    });
+    } else {
+      form.querySelectorAll('select').forEach(function (select) {
+        select.addEventListener('change', function () {
+          submit(form, grid);
+        });
+      });
+    }
     form.addEventListener('submit', function (event) {
       event.preventDefault();
       submit(form, grid);
@@ -92,21 +98,56 @@
       });
     });
   }
+  function syncPagination(grid, totalPages) {
+    var pagination = grid.querySelector('.wp-block-query-pagination');
+    if (!pagination) {
+      return;
+    }
+    pagination.style.display = totalPages > 1 ? '' : 'none';
+  }
+  function syncClearButton(form) {
+    var clear = form.querySelector('[data-codelag-filters-clear]');
+    if (!clear) {
+      return;
+    }
+    var params = formToParams(form);
+    clear.style.display = 0 === params.toString().length ? 'none' : '';
+  }
   function submit(form, grid) {
+    syncClearButton(form);
     var params = formToParams(form);
     var qs = params.toString();
     grid.setAttribute('aria-busy', 'true');
+    var fetchParams = new URLSearchParams(qs);
+    var scopedAuthor = form.getAttribute('data-codelag-author');
+    if (scopedAuthor) {
+      fetchParams.set('author', scopedAuthor);
+    }
+    var fetchQs = fetchParams.toString();
     var restBase = getRestBase(grid);
-    var url = restBase + 'codelag/v1/lagoons' + (qs ? '?' + qs : '');
+    var url = restBase + 'codelag/v1/lagoons' + (fetchQs ? '?' + fetchQs : '');
+    var fetchHeaders = {};
+    if (window.wpApiSettings && window.wpApiSettings.nonce) {
+      fetchHeaders['X-WP-Nonce'] = window.wpApiSettings.nonce;
+    }
+    if ('1' === (grid.getAttribute('data-codelag-collection') || '')) {
+      fetchHeaders['X-Codelag-Collection'] = '1';
+    }
     fetch(url, {
-      credentials: 'same-origin'
+      credentials: 'same-origin',
+      headers: fetchHeaders
     }).then(function (response) {
       if (!response.ok) {
         throw new Error('REST ' + response.status);
       }
-      return response.json();
-    }).then(function (items) {
+      var totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1', 10);
+      return response.json().then(function (items) {
+        return { items: items, totalPages: totalPages };
+      });
+    }).then(function (result) {
+      var items = result.items;
       renderCards(grid, items);
+      syncPagination(grid, result.totalPages);
       grid.setAttribute('aria-busy', 'false');
       var nextUrl = window.location.pathname + (qs ? '?' + qs : '');
       if (window.location.pathname + window.location.search !== nextUrl) {
@@ -162,7 +203,7 @@
     }
 
     // language / purpose / tag are all multi-selects with name="X[]".
-    ['language', 'purpose', 'tag'].forEach(function (name) {
+    ['filter_language', 'filter_purpose', 'filter_tag'].forEach(function (name) {
       var sel = form.querySelector('select[name="' + name + '[]"]');
       if (!sel) {
         return;
@@ -199,7 +240,7 @@
     var tags = (item.tags || []).slice(0, 4).map(function (t) {
       return '<li class="codelag-chip codelag-chip--tag">#' + escape(t.name) + '</li>';
     }).join('');
-    return '' + '<article class="wp-block-codelag-lagoon-card codelag-card" data-lagoon-id="' + escape(item.id) + '">' + '<header class="codelag-card__head">' + '<div class="codelag-card__avatar" aria-hidden="true"></div>' + '<div class="codelag-card__ident">' + '<a class="codelag-card__title" href="' + permalink + '">' + title + '</a>' + '<p class="codelag-card__meta">' + (authorDisp ? 'by ' + authorDisp + ' · ' : '') + escape(ago) + '</p>' + '</div>' + (langName ? '<span class="codelag-chip codelag-chip--lang">' + langName + '</span>' : '') + '</header>' + (preview ? '<pre class="codelag-card__preview"><code>' + preview + '</code></pre>' : '') + (tags ? '<ul class="codelag-card__tags">' + tags + '</ul>' : '') + '<footer class="codelag-card__actions">' + '<a class="codelag-card__action codelag-card__action--ghost" href="' + permalink + '">' + '<span class="material-symbols-outlined" aria-hidden="true">visibility</span>' + '<span>View</span>' + '</a>' + '</footer>' + '</article>';
+    return '' + '<li class="wp-block-post codelag-archive__card">' + '<article class="wp-block-codelag-lagoon-card codelag-card" data-lagoon-id="' + escape(item.id) + '">' + '<header class="codelag-card__head">' + '<div class="codelag-card__avatar" aria-hidden="true"></div>' + '<div class="codelag-card__ident">' + '<a class="codelag-card__title" href="' + permalink + '">' + title + '</a>' + '<p class="codelag-card__meta">' + (authorDisp ? 'by ' + authorDisp + ' · ' : '') + escape(ago) + '</p>' + '</div>' + (langName ? '<span class="codelag-chip codelag-chip--lang">' + langName + '</span>' : '') + '</header>' + (preview ? '<pre class="codelag-card__preview"><code>' + preview + '</code></pre>' : '') + (tags ? '<ul class="codelag-card__tags">' + tags + '</ul>' : '') + '<footer class="codelag-card__actions">' + '<a class="codelag-card__action codelag-card__action--ghost" href="' + permalink + '">' + '<span class="material-symbols-outlined" aria-hidden="true">visibility</span>' + '<span>View</span>' + '</a>' + '</footer>' + '</article>' + '</li>';
   }
   function escape(value) {
     return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');

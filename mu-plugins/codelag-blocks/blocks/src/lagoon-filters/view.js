@@ -43,11 +43,22 @@
 			} );
 		}
 
-		form.querySelectorAll( 'select' ).forEach( function ( select ) {
-			select.addEventListener( 'change', function () {
+		// select2 fires jQuery `change` events rather than native ones, so a
+		// plain `addEventListener('change')` misses chip adds/removes on the
+		// language / purpose / tag multi-selects. Route through jQuery when
+		// it's present (always, when select2 is active) and fall back to
+		// native listeners for the plain-HTML path.
+		if ( window.jQuery ) {
+			window.jQuery( form ).find( 'select' ).on( 'change.codelag', function () {
 				submit( form, grid );
 			} );
-		} );
+		} else {
+			form.querySelectorAll( 'select' ).forEach( function ( select ) {
+				select.addEventListener( 'change', function () {
+					submit( form, grid );
+				} );
+			} );
+		}
 
 		form.addEventListener( 'submit', function ( event ) {
 			event.preventDefault();
@@ -100,24 +111,96 @@
 		} );
 	}
 
+	/**
+	 * Show or hide the "Clear" button based on whether the form currently
+	 * carries any active filter. Server-rendered Clear state is only right
+	 * at page load; after a JS-driven submit the URL has new params but the
+	 * markup is stale, so we resync from the current form state.
+	 */
+	/**
+	 * Keep the server-rendered pagination honest under JS filtering. We
+	 * can't cheaply re-render the numbered links from REST data, so:
+	 *   - More than one page total → leave pagination visible (page numbers
+	 *     may be stale, but at least the "next" affordance is correct).
+	 *   - Single page / no results → hide the pagination block so users
+	 *     don't see stale page counts against zero (or one) results.
+	 * A full page reload of the new filter URL re-renders pagination
+	 * correctly, so the stale-number state is short-lived.
+	 */
+	function syncPagination( grid, totalPages ) {
+		var pagination = grid.querySelector( '.wp-block-query-pagination' );
+		if ( ! pagination ) {
+			return;
+		}
+		pagination.style.display = totalPages > 1 ? '' : 'none';
+	}
+
+	function syncClearButton( form ) {
+		var clear = form.querySelector( '[data-codelag-filters-clear]' );
+		if ( ! clear ) {
+			return;
+		}
+		// Toggle via inline style rather than the [hidden] attribute —
+		// the block's stylesheet sets `display: inline-flex` on the
+		// clear pill, which wins over `[hidden]`'s `display: none`.
+		var params = formToParams( form );
+		clear.style.display = 0 === params.toString().length ? 'none' : '';
+	}
+
 	function submit( form, grid ) {
+		syncClearButton( form );
+
 		var params = formToParams( form );
 		var qs     = params.toString();
 
 		grid.setAttribute( 'aria-busy', 'true' );
 
-		var restBase = getRestBase( grid );
-		var url      = restBase + 'codelag/v1/lagoons' + ( qs ? '?' + qs : '' );
+		// Author-archive scoping: when rendering on /snippets/by/<name>/,
+		// the form carries `data-codelag-author="<id>"`. Append it to the
+		// REST fetch URL only — not to `qs` — so the visible URL stays
+		// clean (/snippets/by/<name>/?tag=…) while REST still scopes to
+		// the author.
+		var fetchParams = new URLSearchParams( qs );
+		var scopedAuthor = form.getAttribute( 'data-codelag-author' );
+		if ( scopedAuthor ) {
+			fetchParams.set( 'author', scopedAuthor );
+		}
+		var fetchQs = fetchParams.toString();
 
-		fetch( url, { credentials: 'same-origin' } )
+		var restBase = getRestBase( grid );
+		var url      = restBase + 'codelag/v1/lagoons' + ( fetchQs ? '?' + fetchQs : '' );
+
+		// Send the REST nonce so WP recognises the caller as the logged-in
+		// user — otherwise scoped responses (e.g. the collection view below)
+		// see an anon caller and return zero results.
+		var fetchHeaders = {};
+		if ( window.wpApiSettings && window.wpApiSettings.nonce ) {
+			fetchHeaders['X-WP-Nonce'] = window.wpApiSettings.nonce;
+		}
+
+		// Collection-page marker: the grid wrapper carries
+		// `data-codelag-collection="1"` on the My Collection template.
+		// Forward it to REST as a header so the endpoint can scope to the
+		// caller's saved lagoons without us polluting the URL with a
+		// `collection=1` query arg.
+		if ( '1' === ( grid.getAttribute( 'data-codelag-collection' ) || '' ) ) {
+			fetchHeaders['X-Codelag-Collection'] = '1';
+		}
+
+		fetch( url, { credentials: 'same-origin', headers: fetchHeaders } )
 			.then( function ( response ) {
 				if ( ! response.ok ) {
 					throw new Error( 'REST ' + response.status );
 				}
-				return response.json();
+				var totalPages = parseInt( response.headers.get( 'X-WP-TotalPages' ) || '1', 10 );
+				return response.json().then( function ( items ) {
+					return { items: items, totalPages: totalPages };
+				} );
 			} )
-			.then( function ( items ) {
+			.then( function ( result ) {
+				var items = result.items;
 				renderCards( grid, items );
+				syncPagination( grid, result.totalPages );
 				grid.setAttribute( 'aria-busy', 'false' );
 
 				var nextUrl = window.location.pathname + ( qs ? '?' + qs : '' );
@@ -175,7 +258,9 @@
 		}
 
 		// language / purpose / tag are all multi-selects with name="X[]".
-		[ 'language', 'purpose', 'tag' ].forEach( function ( name ) {
+		// Param names are prefixed with the taxonomy name to avoid colliding
+		// with WP's reserved core query vars (notably `tag`).
+		[ 'filter_language', 'filter_purpose', 'filter_tag' ].forEach( function ( name ) {
 			var sel = form.querySelector( 'select[name="' + name + '[]"]' );
 			if ( ! sel ) {
 				return;
@@ -214,7 +299,12 @@
 			return '<li class="codelag-chip codelag-chip--tag">#' + escape( t.name ) + '</li>';
 		} ).join( '' );
 
+		// Wrap in <li class="wp-block-post"> to match core/post-template's
+		// server-rendered structure. The grid layout CSS the block emits
+		// (`.is-layout-grid > li`) only positions direct `<li>` children;
+		// bare `<article>` children fall out of the grid and render unstyled.
 		return ''
+			+ '<li class="wp-block-post codelag-archive__card">'
 			+ '<article class="wp-block-codelag-lagoon-card codelag-card" data-lagoon-id="' + escape( item.id ) + '">'
 			+   '<header class="codelag-card__head">'
 			+     '<div class="codelag-card__avatar" aria-hidden="true"></div>'
@@ -235,7 +325,8 @@
 			+       '<span>View</span>'
 			+     '</a>'
 			+   '</footer>'
-			+ '</article>';
+			+ '</article>'
+			+ '</li>';
 	}
 
 	function escape( value ) {

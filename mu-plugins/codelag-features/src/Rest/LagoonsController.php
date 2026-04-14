@@ -11,6 +11,7 @@ namespace Gin0115\Codelagoon\Features\Rest;
 
 use Gin0115\Codelagoon\Features\Database\FileRepository;
 use Gin0115\Codelagoon\Features\Meta\LagoonMeta;
+use Gin0115\Codelagoon\Features\Meta\UserCollection;
 use Gin0115\Codelagoon\Features\PostType\LagoonPostType;
 use Gin0115\Codelagoon\Features\Search\LagoonSearchQuery;
 use Gin0115\Codelagoon\Features\Taxonomy\LagoonLanguageTaxonomy;
@@ -201,15 +202,30 @@ final class LagoonsController {
 			$args['author'] = (int) $request->get_param( 'author' );
 		}
 
+		// Collection scope: the collection page template marks its grid with
+		// `data-codelag-collection="1"`, and view.js forwards that as the
+		// `X-Codelag-Collection` request header when it re-fetches. No URL
+		// param, no hidden input — the signal lives in the DOM marker the
+		// server already rendered. Narrow to the caller's saved lagoons
+		// before any other filter runs so search hits below intersect
+		// against this pool rather than replacing it.
+		$collection_pool = null;
+		if ( '1' === (string) $request->get_header( 'x_codelag_collection' ) ) {
+			$collection_pool  = is_user_logged_in()
+				? UserCollection::get_ids( get_current_user_id() )
+				: array();
+			$args['post__in'] = array() === $collection_pool ? array( 0 ) : $collection_pool;
+		}
+
 		// Tax + date filters via shared helper (also drives the frontend
 		// archive's pre_get_posts so semantics stay aligned).
 		$this->search_query->apply_filters(
 			$args,
 			array(
-				'language'   => $request->get_param( 'language' ),
-				'tag'        => $request->get_param( 'tag' ),
-				'purpose'    => $request->get_param( 'purpose' ),
-				'date_range' => (string) $request->get_param( 'date_range' ),
+				'filter_language' => $request->get_param( 'filter_language' ),
+				'filter_tag'      => $request->get_param( 'filter_tag' ),
+				'filter_purpose'  => $request->get_param( 'filter_purpose' ),
+				'date_range'      => (string) $request->get_param( 'date_range' ),
 			)
 		);
 
@@ -219,6 +235,15 @@ final class LagoonsController {
 		$search = trim( (string) $request->get_param( 'search' ) );
 		if ( '' !== $search ) {
 			$ids = $this->search_query->resolve_search_post_ids( $search, $args );
+
+			// When the collection scope is active, intersect the search hits
+			// with the saved set rather than replacing it — otherwise search
+			// would widen the collection back out to the whole CPT.
+			if ( null !== $collection_pool ) {
+				$pool = array() === $collection_pool ? array( 0 ) : $collection_pool;
+				$ids  = array_values( array_intersect( $pool, $ids ) );
+			}
+
 			if ( array() === $ids ) {
 				$args['post__in'] = array( 0 );
 			} else {
@@ -519,37 +544,42 @@ final class LagoonsController {
 	 */
 	private function list_args(): array {
 		return array(
-			'page'       => array(
+			'page'            => array(
 				'type'    => 'integer',
 				'default' => 1,
 				'minimum' => 1,
 			),
-			'per_page'   => array(
+			'per_page'        => array(
 				'type'    => 'integer',
 				'default' => 20,
 				'minimum' => 1,
 				'maximum' => 100,
 			),
-			'author'     => array(
+			'author'          => array(
 				'type'    => 'integer',
 				'minimum' => 0,
 			),
-			// All three taxonomy params accept a single slug string OR an array of
-			// slugs so the filter UI can select multiple (e.g. ?language[]=php&language[]=go).
-			'language'   => array(
+			// All three taxonomy params accept a single slug string OR an array
+			// of slugs so the filter UI can select multiple (e.g.
+			// `?filter_language[]=php&filter_language[]=go`). Param names are
+			// `filter_*` prefixed to avoid colliding with either WP's reserved
+			// query vars (notably `tag`, which WP auto-maps to core `post_tag`)
+			// or our own taxonomy query_vars (`lagoon_tag`, etc. — using those
+			// names triggers `redirect_canonical` to the taxonomy archive).
+			'filter_language' => array(
 				'type'  => array( 'string', 'array' ),
 				'items' => array( 'type' => 'string' ),
 			),
-			'tag'        => array(
+			'filter_tag'      => array(
 				'type'  => array( 'string', 'array' ),
 				'items' => array( 'type' => 'string' ),
 			),
-			'purpose'    => array(
+			'filter_purpose'  => array(
 				'type'  => array( 'string', 'array' ),
 				'items' => array( 'type' => 'string' ),
 			),
-			'search'     => array( 'type' => 'string' ),
-			'date_range' => array(
+			'search'          => array( 'type' => 'string' ),
+			'date_range'      => array(
 				'type' => 'string',
 				'enum' => array( 'any', '7d', '30d', '90d', 'year' ),
 			),
