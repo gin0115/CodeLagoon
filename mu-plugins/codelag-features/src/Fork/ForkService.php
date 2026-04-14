@@ -145,6 +145,27 @@ final class ForkService {
 		// FileRepository::clone_files (denormalised on insert).
 		$this->files->clone_files( $source_id, $new_id );
 
+		// Inherit taxonomy assignments from the source. Without this the new
+		// lagoon has no language / tags / purpose, so it disappears from
+		// every archive filter until the forker re-enters them manually.
+		$this->copy_terms( $source_id, $new_id );
+
 		return $new_id;
+	}
+
+	/**
+	 * Copy every taxonomy term from one lagoon to another by term ID. Uses
+	 * all taxonomies currently registered against the lagoon CPT so new
+	 * taxonomies added later are picked up automatically.
+	 */
+	private function copy_terms( int $source_id, int $target_id ): void {
+		$taxonomies = get_object_taxonomies( LagoonPostType::POST_TYPE );
+		foreach ( $taxonomies as $taxonomy ) {
+			$terms = wp_get_object_terms( $source_id, $taxonomy, array( 'fields' => 'ids' ) );
+			if ( is_wp_error( $terms ) || array() === $terms ) {
+				continue;
+			}
+			wp_set_object_terms( $target_id, array_map( 'intval', $terms ), $taxonomy, false );
+		}
 	}
 }
