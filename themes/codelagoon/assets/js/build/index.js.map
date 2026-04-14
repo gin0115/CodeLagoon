@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","mappings":";;;;AAAAA,OAAO,CAACC,GAAG,CAAE,qBAAsB,CAAC,CAAC,CAAC,iC","sources":["webpack://codelagoon/./themes/codelagoon/assets/js/src/index.js"],"sourcesContent":["console.log( 'hey look, it works!' ); // eslint-disable-line no-console\n"],"names":["console","log"],"sourceRoot":""}

@@ -10,9 +10,9 @@
  *        with a hidden raw `<pre>` for the toggle to reveal
  *      - All other files: `<pre><code class="language-X">` for Prism to highlight
  *
- * @var array    $attributes
- * @var string   $content
- * @var WP_Block $block
+ * @var array<string,mixed> $attributes
+ * @var string              $content
+ * @var WP_Block            $block
  *
  * @package Gin0115\Codelagoon\Blocks
  */
@@ -25,13 +25,10 @@ defined( 'ABSPATH' ) || exit;
 // Wrap the whole template in a closure so all locals stay scoped to the render
 // call. Avoids leaking $post_id / $files / $file etc. into the global symbol
 // table and keeps WPCS PrefixAllGlobals happy without uglifying every name.
-( static function ( $attributes, $content, $block ): void {
+( static function ( array $attributes, string $content, WP_Block $block ): void {
 	unset( $attributes, $content );
 
-	$post_id = 0;
-	if ( $block instanceof WP_Block ) {
-		$post_id = isset( $block->context['postId'] ) ? (int) $block->context['postId'] : 0;
-	}
+	$post_id = isset( $block->context['postId'] ) ? (int) $block->context['postId'] : 0;
 	if ( 0 === $post_id ) {
 		$post_id = (int) get_the_ID();
 	}
@@ -92,7 +89,7 @@ defined( 'ABSPATH' ) || exit;
 	};
 	?>
 	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<?php if ( empty( $files ) ) : ?>
+		<?php if ( array() === $files ) : ?>
 			<p class="lagoon-viewer__empty"><?php esc_html_e( 'No files in this lagoon yet.', 'codelag-blocks' ); ?></p>
 		<?php else : ?>
 			<?php

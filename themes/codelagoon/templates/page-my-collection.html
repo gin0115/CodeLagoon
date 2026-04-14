@@ -1,0 +1,47 @@
+<!--
+	"My Collection" page template.
+
+	Regular WP Page — the query loop below is non-inheriting so the Page's
+	own main query (post_type=page) doesn't control what's listed. Scoping to
+	the current user's saved lagoons is done server-side in
+	CollectionQueryFilter via pre_get_posts, which also honours the same
+	?language=&search=&date_range= grammar the lagoon archive uses, so the
+	filter bar works the same way here.
+-->
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","align":"full","className":"codelag-archive codelag-collection-page","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|70","left":"20px","right":"20px"},"blockGap":"1.25rem"}},"layout":{"type":"constrained","contentSize":"100%","wideSize":"100%"}} -->
+<main class="wp-block-group alignfull codelag-archive codelag-collection-page" style="padding-top:var(--wp--preset--spacing--40);padding-right:20px;padding-bottom:var(--wp--preset--spacing--70);padding-left:20px">
+
+	<!-- wp:group {"className":"codelag-archive__hero","layout":{"type":"default"}} -->
+	<div class="wp-block-group codelag-archive__hero">
+		<!-- wp:post-title {"level":1,"className":"codelag-archive__title","style":{"typography":{"fontSize":"clamp(1.5rem, 3vw, 2.25rem)","fontWeight":"800","letterSpacing":"-0.02em"},"spacing":{"margin":{"top":"0","bottom":"0.35rem"}}}} /-->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:codelag/lagoon-filters /-->
+
+	<!-- wp:query {"queryId":20,"query":{"perPage":12,"pages":0,"offset":0,"postType":"lagoon","order":"desc","orderBy":"date","inherit":false},"className":"codelag-archive__query"} -->
+	<div class="wp-block-query codelag-archive__query" data-codelag-grid data-codelag-collection="1">
+		<!-- wp:post-template {"className":"codelag-archive__grid","layout":{"type":"grid","minimumColumnWidth":"280px"}} -->
+			<!-- wp:codelag/lagoon-card /-->
+		<!-- /wp:post-template -->
+
+		<!-- wp:query-pagination {"paginationArrow":"arrow","className":"codelag-archive__pagination","layout":{"type":"flex","justifyContent":"center"}} -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next /-->
+		<!-- /wp:query-pagination -->
+
+		<!-- wp:query-no-results -->
+			<!-- wp:paragraph {"align":"center","className":"codelag-archive__empty"} -->
+			<p class="has-text-align-center codelag-archive__empty">No snippets in your collection match those filters.</p>
+			<!-- /wp:paragraph -->
+		<!-- /wp:query-no-results -->
+	</div>
+	<!-- /wp:query -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

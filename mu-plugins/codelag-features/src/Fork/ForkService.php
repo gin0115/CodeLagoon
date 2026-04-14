@@ -51,9 +51,16 @@ final class ForkService {
 
 	/**
 	 * Shared file repository (owns the files custom table).
+	 *
+	 * @var FileRepository
 	 */
 	private FileRepository $files;
 
+	/**
+	 * Wire in the shared file repository.
+	 *
+	 * @param FileRepository $files Files-table repository the fork copies through.
+	 */
 	public function __construct( FileRepository $files ) {
 		$this->files = $files;
 	}
@@ -61,11 +68,44 @@ final class ForkService {
 	/**
 	 * Create a fork of `$source_id` owned by `$user_id`.
 	 *
+	 * Pipeline: validate inputs → compute lineage (root + history snapshot)
+	 * → insert the new post → stamp lineage meta + clone files + copy terms.
+	 *
 	 * @param int $source_id Lagoon being forked.
 	 * @param int $user_id   New owner (typically the current logged-in user).
 	 * @return int|WP_Error  ID of the new lagoon, or WP_Error on failure.
 	 */
 	public function fork( int $source_id, int $user_id ) {
+		$source = $this->validate_fork_source( $source_id, $user_id );
+		if ( $source instanceof WP_Error ) {
+			return $source;
+		}
+
+		$root_id = $this->resolve_root_id( $source_id );
+		$history = $this->build_fork_history( $source );
+
+		$new_id = $this->insert_fork_post( $source, $user_id );
+		if ( $new_id instanceof WP_Error ) {
+			return $new_id;
+		}
+
+		$this->stamp_lineage_meta( $new_id, $source_id, $root_id, $history );
+		$this->files->clone_files( $source_id, $new_id );
+		$this->copy_terms( $source_id, $new_id );
+
+		return $new_id;
+	}
+
+	/**
+	 * Validate the fork inputs — source must be an existing lagoon post,
+	 * user must be a positive ID. Returns the source post on success or
+	 * a WP_Error the caller can pass straight back to REST.
+	 *
+	 * @param int $source_id Lagoon post ID being forked.
+	 * @param int $user_id   Prospective new owner.
+	 * @return WP_Post|WP_Error
+	 */
+	private function validate_fork_source( int $source_id, int $user_id ) {
 		$source = get_post( $source_id );
 		if ( ! $source instanceof WP_Post || LagoonPostType::POST_TYPE !== $source->post_type ) {
 			return new WP_Error(
@@ -74,7 +114,6 @@ final class ForkService {
 				array( 'status' => 404 )
 			);
 		}
-
 		if ( $user_id <= 0 ) {
 			return new WP_Error(
 				'codelag_fork_invalid_user',
@@ -82,15 +121,29 @@ final class ForkService {
 				array( 'status' => 400 )
 			);
 		}
+		return $source;
+	}
 
-		// Resolve the chain root. If the source already has a root recorded,
-		// the new fork inherits it; otherwise the source itself is the root.
+	/**
+	 * Resolve the chain root. If the source already has a root recorded,
+	 * the new fork inherits it; otherwise the source itself is the root.
+	 *
+	 * @param int $source_id Lagoon being forked.
+	 */
+	private function resolve_root_id( int $source_id ): int {
 		$source_root = (int) get_post_meta( $source_id, LagoonMeta::META_FORK_ROOT, true );
-		$root_id     = $source_root > 0 ? $source_root : $source_id;
+		return $source_root > 0 ? $source_root : $source_id;
+	}
 
-		// Build the new history list: prepend a snapshot of the source onto
-		// the source's existing history, then cap at MAX_HISTORY entries.
-		$source_history = get_post_meta( $source_id, LagoonMeta::META_FORK_HISTORY, true );
+	/**
+	 * Build the new fork's history list: prepend a snapshot of the source
+	 * onto the source's existing history, capped at MAX_HISTORY entries.
+	 *
+	 * @param WP_Post $source Lagoon being forked.
+	 * @return array<int,array<string,mixed>>
+	 */
+	private function build_fork_history( WP_Post $source ): array {
+		$source_history = get_post_meta( (int) $source->ID, LagoonMeta::META_FORK_HISTORY, true );
 		if ( ! is_array( $source_history ) ) {
 			$source_history = array();
 		}
@@ -107,10 +160,19 @@ final class ForkService {
 		if ( count( $history ) > self::MAX_HISTORY ) {
 			$history = array_slice( $history, 0, self::MAX_HISTORY );
 		}
+		return $history;
+	}
 
-		// Insert the new post. SlugGenerator's wp_insert_post_data filter will
-		// stamp a fresh random slug on it because the new ID has no auto-draft
-		// history (the post is born straight as `draft`).
+	/**
+	 * Insert the new fork post as a draft owned by the forker. SlugGenerator's
+	 * `wp_insert_post_data` filter stamps a fresh random slug because the new
+	 * post has no auto-draft history (born straight as `draft`).
+	 *
+	 * @param WP_Post $source  Lagoon being forked.
+	 * @param int     $user_id New owner.
+	 * @return int|WP_Error New post ID, or WP_Error on insert failure.
+	 */
+	private function insert_fork_post( WP_Post $source, int $user_id ) {
 		$new_id = wp_insert_post(
 			array(
 				'post_type'    => LagoonPostType::POST_TYPE,
@@ -133,30 +195,32 @@ final class ForkService {
 				array( 'status' => 500 )
 			);
 		}
+		return $new_id;
+	}
 
-		// Stamp lineage meta before cloning files so any meta-driven
-		// denormalisation hooks see the right values during the file insert.
+	/**
+	 * Stamp the three lineage meta keys on the new fork. Done before the
+	 * files clone so meta-driven denormalisation hooks see the right values
+	 * when the file rows are inserted.
+	 *
+	 * @param int                            $new_id    Newly-inserted post ID.
+	 * @param int                            $source_id Direct parent post ID.
+	 * @param int                            $root_id   Chain-root post ID.
+	 * @param array<int,array<string,mixed>> $history   Pre-built history list.
+	 */
+	private function stamp_lineage_meta( int $new_id, int $source_id, int $root_id, array $history ): void {
 		update_post_meta( $new_id, LagoonMeta::META_FORKED_FROM, $source_id );
 		update_post_meta( $new_id, LagoonMeta::META_FORK_ROOT, $root_id );
 		update_post_meta( $new_id, LagoonMeta::META_FORK_HISTORY, $history );
-
-		// Clone every file row from the source into the new lagoon. Owner
-		// and visibility columns are filled from the new post inside
-		// FileRepository::clone_files (denormalised on insert).
-		$this->files->clone_files( $source_id, $new_id );
-
-		// Inherit taxonomy assignments from the source. Without this the new
-		// lagoon has no language / tags / purpose, so it disappears from
-		// every archive filter until the forker re-enters them manually.
-		$this->copy_terms( $source_id, $new_id );
-
-		return $new_id;
 	}
 
 	/**
 	 * Copy every taxonomy term from one lagoon to another by term ID. Uses
 	 * all taxonomies currently registered against the lagoon CPT so new
 	 * taxonomies added later are picked up automatically.
+	 *
+	 * @param int $source_id Lagoon being forked from.
+	 * @param int $target_id Newly-created lagoon to copy terms onto.
 	 */
 	private function copy_terms( int $source_id, int $target_id ): void {
 		$taxonomies = get_object_taxonomies( LagoonPostType::POST_TYPE );

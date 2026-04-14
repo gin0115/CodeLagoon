@@ -10,10 +10,12 @@
 ( function () {
 	'use strict';
 
-	var COPY_RESET_MS = 2000;
+	const COPY_RESET_MS = 2000;
 
 	function init() {
-		document.querySelectorAll( '[data-codelag-fork-lagoon]' ).forEach( wireForkButton );
+		document
+			.querySelectorAll( '[data-codelag-fork-lagoon]' )
+			.forEach( wireForkButton );
 	}
 
 	function wireForkButton( button ) {
@@ -22,15 +24,17 @@
 		}
 		button.dataset.codelagForkWired = '1';
 
-		var lagoonId = button.getAttribute( 'data-lagoon-id' );
-		var nonce    = button.getAttribute( 'data-fork-nonce' );
-		var restRoot = button.getAttribute( 'data-fork-rest-root' );
+		const lagoonId = button.getAttribute( 'data-lagoon-id' );
+		const nonce = button.getAttribute( 'data-fork-nonce' );
+		const restRoot = button.getAttribute( 'data-fork-rest-root' );
 		if ( ! lagoonId || ! nonce || ! restRoot ) {
 			return;
 		}
 
-		var labelDefault = button.querySelector( '[data-codelag-fork-default]' );
-		var labelBusy    = button.querySelector( '[data-codelag-fork-busy]' );
+		const labelDefault = button.querySelector(
+			'[data-codelag-fork-default]'
+		);
+		const labelBusy = button.querySelector( '[data-codelag-fork-busy]' );
 
 		button.addEventListener( 'click', function () {
 			if ( button.disabled ) {
@@ -42,10 +46,11 @@
 				labelBusy.removeAttribute( 'hidden' );
 			}
 
-			var url = restRoot.replace( /\/$/, '' )
-				+ '/codelag/v1/lagoons/'
-				+ encodeURIComponent( lagoonId )
-				+ '/fork';
+			const url =
+				restRoot.replace( /\/$/, '' ) +
+				'/codelag/v1/lagoons/' +
+				encodeURIComponent( lagoonId ) +
+				'/fork';
 
 			fetch( url, {
 				method: 'POST',
@@ -57,11 +62,20 @@
 			} )
 				.then( function ( response ) {
 					if ( ! response.ok ) {
-						return response.json().catch( function () { return {}; } ).then( function ( body ) {
-							throw new Error(
-								body && body.message ? body.message : 'Fork request failed (' + response.status + ').'
-							);
-						} );
+						return response
+							.json()
+							.catch( function () {
+								return {};
+							} )
+							.then( function ( body ) {
+								throw new Error(
+									body && body.message
+										? body.message
+										: 'Fork request failed (' +
+										  response.status +
+										  ').'
+								);
+							} );
 					}
 					return response.json();
 				} )

@@ -7,9 +7,9 @@
  * to the current global post when the block is rendered outside a loop
  * (e.g. a designer dropping it into a fixed template for mockups).
  *
- * @var array    $attributes
- * @var string   $content
- * @var WP_Block $block
+ * @var array<string,mixed> $attributes
+ * @var string              $content
+ * @var WP_Block            $block
  *
  * @package Gin0115\Codelagoon\Blocks
  */
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 	$post_id = 0;
 	if ( isset( $block->context['postId'] ) && (int) $block->context['postId'] > 0 ) {
 		$post_id = (int) $block->context['postId'];
-	} elseif ( get_the_ID() ) {
+	} elseif ( false !== get_the_ID() ) {
 		$post_id = (int) get_the_ID();
 	}
 
@@ -51,7 +51,7 @@ defined( 'ABSPATH' ) || exit;
 	$author_display = $author instanceof WP_User ? (string) $author->display_name : '';
 	$avatar_url     = $author_id > 0 ? (string) get_avatar_url( $author_id, array( 'size' => 40 ) ) : '';
 
-	$languages = get_the_terms( $post_id, LagoonLanguageTaxonomy::TAXONOMY );
+	$languages  = get_the_terms( $post_id, LagoonLanguageTaxonomy::TAXONOMY );
 	$first_lang = is_array( $languages ) && array() !== $languages ? $languages[0] : null;
 
 	$tags = get_the_terms( $post_id, LagoonTagTaxonomy::TAXONOMY );
@@ -67,21 +67,22 @@ defined( 'ABSPATH' ) || exit;
 	$files   = ( new FileRepository() )->list_for_lagoon( $post_id );
 	$preview = '';
 	if ( array() !== $files ) {
-		$first  = $files[0];
-		$lines  = preg_split( "/\r\n|\r|\n/", (string) $first['content'] ) ?: array();
-		$slice  = array_slice( $lines, 0, $preview_lines );
+		$first   = $files[0];
+		$split   = preg_split( "/\r\n|\r|\n/", (string) $first['content'] );
+		$lines   = is_array( $split ) ? $split : array();
+		$slice   = array_slice( $lines, 0, $preview_lines );
 		$preview = implode( "\n", $slice );
 	}
 
-	$ago = human_time_diff( (int) get_post_timestamp( $post ), current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'codelag-blocks' );
+	$ago = human_time_diff( (int) get_post_timestamp( $post ), time() ) . ' ' . __( 'ago', 'codelag-blocks' );
 
 	$nonce     = wp_create_nonce( 'wp_rest' );
 	$rest_root = esc_url_raw( rest_url() );
 
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
-			'class'           => 'codelag-card',
-			'data-lagoon-id'  => (string) $post_id,
+			'class'          => 'codelag-card',
+			'data-lagoon-id' => (string) $post_id,
 		)
 	);
 	?>

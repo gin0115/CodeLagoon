@@ -7,7 +7,7 @@
  * the palette block hasn't been injected yet.
  */
 
-$card-mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+$card-mono: ui-monospace, "SFMono-Regular", consolas, "Liberation Mono", menlo, monospace;
 
 .codelag-card {
 	display: flex;

@@ -18,6 +18,8 @@ defined( 'ABSPATH' ) || exit;
  * the custom tables and repositories, REST routes, visibility, and forking. Services
  * will be registered in later phases; for now this is a no-op placeholder that proves
  * the PSR-4 autoloader and bootstrap are working end-to-end.
+ *
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 final class Plugin {
 
@@ -79,21 +81,26 @@ final class Plugin {
 		( new Taxonomy\DefaultTermsSeeder() )->register();
 		( new Meta\LagoonMeta() )->register();
 		( new Meta\UserPreferences() )->register();
+		( new Meta\UserCollection() )->register();
 
 		$file_repository = new Database\FileRepository();
+		$file_search     = new Database\FileSearch();
 		( new Database\Denormalisation( $file_repository ) )->register();
 
 		$fork_service = new Fork\ForkService( $file_repository );
-		$search_query = new Search\LagoonSearchQuery( $file_repository );
+		$search_query = new Search\LagoonSearchQuery( $file_search );
 
 		( new Query\ArchiveQueryFilter( $search_query ) )->register();
+		( new Query\CollectionQueryFilter( $search_query ) )->register();
 		( new Query\TermIndexRewrite() )->register();
 		( new Query\AuthorArchiveRewrite() )->register();
 
 		( new Rest\LagoonsController( $file_repository, $search_query ) )->register();
+		( new Rest\LagoonsWriteController( $file_repository ) )->register();
 		( new Rest\FilesController( $file_repository ) )->register();
-		( new Rest\FileSearchController( $file_repository ) )->register();
+		( new Rest\FileSearchController( $file_search ) )->register();
 		( new Rest\ForkController( $fork_service ) )->register();
+		( new Rest\CollectionController() )->register();
 		( new Rest\TermsController( Taxonomy\LagoonLanguageTaxonomy::TAXONOMY, 'lagoon-languages' ) )->register();
 		( new Rest\TermsController( Taxonomy\LagoonTagTaxonomy::TAXONOMY, 'lagoon-tags' ) )->register();
 		( new Rest\TermsController( Taxonomy\LagoonPurposeTaxonomy::TAXONOMY, 'lagoon-purposes' ) )->register();
@@ -104,6 +111,7 @@ final class Plugin {
 		( new Shortcode\ShareButtonShortcode() )->register();
 		( new Shortcode\DownloadButtonShortcode() )->register();
 		( new Shortcode\EditButtonShortcode() )->register();
+		( new Shortcode\CollectButtonShortcode() )->register();
 
 		( new Download\ZipDownloadHandler( $file_repository ) )->register();
 

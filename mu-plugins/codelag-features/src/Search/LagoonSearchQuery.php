@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Gin0115\Codelagoon\Features\Search;
 
-use Gin0115\Codelagoon\Features\Database\FileRepository;
+use Gin0115\Codelagoon\Features\Database\FileSearch;
 use Gin0115\Codelagoon\Features\PostType\LagoonPostType;
 use Gin0115\Codelagoon\Features\Taxonomy\LagoonLanguageTaxonomy;
 use Gin0115\Codelagoon\Features\Taxonomy\LagoonPurposeTaxonomy;
@@ -34,9 +34,19 @@ final class LagoonSearchQuery {
 	 */
 	private const SEARCH_POOL_LIMIT = 500;
 
-	private FileRepository $files;
+	/**
+	 * Shared file-search service used for FULLTEXT lookups against file rows.
+	 *
+	 * @var FileSearch
+	 */
+	private FileSearch $files;
 
-	public function __construct( FileRepository $files ) {
+	/**
+	 * Wire in the shared file-search service.
+	 *
+	 * @param FileSearch $files File-search service used to search file content.
+	 */
+	public function __construct( FileSearch $files ) {
 		$this->files = $files;
 	}
 
@@ -50,12 +60,14 @@ final class LagoonSearchQuery {
 	 *
 	 * @param array<string,mixed> $args  Existing WP_Query args — mutated in place.
 	 * @param array<string,mixed> $input Raw filter input (language/tag/purpose/date_range).
+	 *
+	 * @SuppressWarnings("PHPMD.CyclomaticComplexity")
 	 */
 	public function apply_filters( array &$args, array $input ): void {
 		$tax_map = array(
-			'language' => LagoonLanguageTaxonomy::TAXONOMY,
-			'tag'      => LagoonTagTaxonomy::TAXONOMY,
-			'purpose'  => LagoonPurposeTaxonomy::TAXONOMY,
+			'filter_language' => LagoonLanguageTaxonomy::TAXONOMY,
+			'filter_tag'      => LagoonTagTaxonomy::TAXONOMY,
+			'filter_purpose'  => LagoonPurposeTaxonomy::TAXONOMY,
 		);
 
 		$new_tax_clauses = array();
@@ -138,7 +150,7 @@ final class LagoonSearchQuery {
 		$posts_by_s = get_posts( array_merge( $pool_args, array( 's' => $term ) ) );
 
 		// (b) lagoon IDs referenced by file rows matching the keyword via FULLTEXT.
-		$file_hits = $this->files->search(
+		$file_hits      = $this->files->search(
 			array(
 				'q'        => $term,
 				'per_page' => 100,
@@ -160,7 +172,7 @@ final class LagoonSearchQuery {
 				'fields'         => 'ID',
 			)
 		);
-		if ( ! empty( $matching_users ) ) {
+		if ( is_array( $matching_users ) && array() !== $matching_users ) {
 			$posts_by_author = get_posts(
 				array_merge(
 					$pool_args,
@@ -174,7 +186,7 @@ final class LagoonSearchQuery {
 		$union = array_values(
 			array_unique(
 				array_map(
-					'intval',
+					static fn( $post_id ): int => $post_id instanceof \WP_Post ? (int) $post_id->ID : $post_id,
 					array_merge( $posts_by_s, $posts_by_files, $posts_by_author )
 				)
 			)
@@ -204,7 +216,7 @@ final class LagoonSearchQuery {
 	 * Normalise a taxonomy filter value into an array of sanitised slugs.
 	 * Accepts null, string (single slug or CSV), or array of slugs.
 	 *
-	 * @param mixed $value
+	 * @param mixed $value Raw input value (null, string, CSV, or array).
 	 * @return array<int,string>
 	 */
 	private function normalise_terms( $value ): array {

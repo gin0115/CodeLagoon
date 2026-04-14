@@ -139,9 +139,10 @@ final class CommentsEnhancer {
 		// fields are marked *" chrome. The form is self-explanatory — the
 		// editor itself plus its submit button are the only chrome we want.
 		// `title_reply_to` stays so inline replies still carry a label.
-		$defaults['title_reply']          = '';
-		$defaults['title_reply_before']   = '';
-		$defaults['title_reply_after']    = '';
+		$defaults['title_reply']        = '';
+		$defaults['title_reply_before'] = '';
+		$defaults['title_reply_after']  = '';
+		/* translators: %s: name of the parent comment's author. */
 		$defaults['title_reply_to']       = __( 'Reply to %s', 'codelag-features' );
 		$defaults['comment_notes_before'] = '';
 		$defaults['comment_notes_after']  = '';

@@ -7,9 +7,9 @@
  * the current term-index page's query var so a single block can be dropped
  * into all three (language / tag / purpose) index templates.
  *
- * @var array    $attributes
- * @var string   $content
- * @var WP_Block $block
+ * @var array<string,mixed> $attributes
+ * @var string              $content
+ * @var WP_Block            $block
  *
  * @package Gin0115\Codelagoon\Blocks
  */
@@ -26,9 +26,9 @@ defined( 'ABSPATH' ) || exit;
 
 	// Resolution order when no explicit taxonomy is set:
 	// 1) Term-index pages (e.g. /snippets/language/) — list all top-level terms
-	//    of the taxonomy carried by the query var.
+	// of the taxonomy carried by the query var.
 	// 2) Single-term archives of hierarchical taxonomies — list the queried
-	//    term's direct children as a sub-navigation.
+	// term's direct children as a sub-navigation.
 	if ( '' === $taxonomy_slug && class_exists( TermIndexRewrite::class ) ) {
 		$taxonomy_slug = TermIndexRewrite::current_taxonomy();
 	}
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
 		$queried = get_queried_object();
 		if ( $queried instanceof \WP_Term ) {
 			$queried_tax = get_taxonomy( $queried->taxonomy );
-			if ( $queried_tax && $queried_tax->hierarchical ) {
+			if ( $queried_tax instanceof \WP_Taxonomy && $queried_tax->hierarchical ) {
 				$taxonomy_slug   = $queried->taxonomy;
 				$scope_parent_id = (int) $queried->term_id;
 			}
@@ -52,7 +52,7 @@ defined( 'ABSPATH' ) || exit;
 	}
 
 	$order_by   = isset( $attributes['orderBy'] ) && 'count' === $attributes['orderBy'] ? 'count' : 'name';
-	$hide_empty = ! empty( $attributes['hideEmpty'] );
+	$hide_empty = isset( $attributes['hideEmpty'] ) && (bool) $attributes['hideEmpty'];
 	$show_count = ! isset( $attributes['showCount'] ) || (bool) $attributes['showCount'];
 
 	$term_args = array(
@@ -107,7 +107,7 @@ defined( 'ABSPATH' ) || exit;
 		if ( isset( $publish_count_cache[ $cache_key ] ) ) {
 			return $publish_count_cache[ $cache_key ];
 		}
-		$query = new \WP_Query(
+		$query                             = new \WP_Query(
 			array(
 				'post_type'              => $taxonomy->object_type,
 				'post_status'            => 'publish',

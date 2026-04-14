@@ -48,34 +48,18 @@
     "format:php:features": "phpcbf --standard=./mu-plugins/codelag-features/.phpcs.xml --basepath=. ./mu-plugins/codelag-features -v",
     "format:php:blocks": "phpcbf --standard=./mu-plugins/codelag-blocks/.phpcs.xml --basepath=. ./mu-plugins/codelag-blocks -v",
 
-    "lint:php": [
-      "@lint:php:theme",
-      "@lint:php:features",
-      "@lint:php:blocks"
-    ],
-    "lint:php:theme": [
-      "@lint:php:theme:phpcs",
-      "@lint:php:theme:phpmd",
-      "@lint:php:theme:phpstan"
-    ],
+    "lint:php": "composer run lint:php:theme; composer run lint:php:features; composer run lint:php:blocks",
+    "lint:php:theme": "composer run lint:php:theme:phpcs; composer run lint:php:theme:phpmd; composer run lint:php:theme:phpstan",
     "lint:php:theme:phpcs": "phpcs --standard=./themes/codelagoon/.phpcs.xml --basepath=. ./themes/codelagoon -v",
     "lint:php:theme:phpmd": "phpmd ./themes/codelagoon ansi ./themes/codelagoon/.phpmd.xml -v",
     "lint:php:theme:phpstan": "phpstan analyse -c ./themes/codelagoon/.phpstan.neon -v --memory-limit=1G",
 
-    "lint:php:features": [
-      "@lint:php:features:phpcs",
-      "@lint:php:features:phpmd",
-      "@lint:php:features:phpstan"
-    ],
+    "lint:php:features": "composer run lint:php:features:phpcs; composer run lint:php:features:phpmd; composer run lint:php:features:phpstan",
     "lint:php:features:phpcs": "phpcs --standard=./mu-plugins/codelag-features/.phpcs.xml --basepath=. ./mu-plugins/codelag-features -v",
     "lint:php:features:phpmd": "phpmd ./mu-plugins/codelag-features ansi ./mu-plugins/codelag-features/.phpmd.xml -v",
     "lint:php:features:phpstan": "phpstan analyse -c ./mu-plugins/codelag-features/.phpstan.neon -v --memory-limit=1G",
 
-    "lint:php:blocks": [
-      "@lint:php:blocks:phpcs",
-      "@lint:php:blocks:phpmd",
-      "@lint:php:blocks:phpstan"
-    ],
+    "lint:php:blocks": "composer run lint:php:blocks:phpcs; composer run lint:php:blocks:phpmd; composer run lint:php:blocks:phpstan",
     "lint:php:blocks:phpcs": "phpcs --standard=./mu-plugins/codelag-blocks/.phpcs.xml --basepath=. ./mu-plugins/codelag-blocks -v",
     "lint:php:blocks:phpmd": "phpmd ./mu-plugins/codelag-blocks ansi ./mu-plugins/codelag-blocks/.phpmd.xml -v",
     "lint:php:blocks:phpstan": "phpstan analyse -c ./mu-plugins/codelag-blocks/.phpstan.neon -v --memory-limit=1G",

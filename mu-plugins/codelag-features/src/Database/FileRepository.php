@@ -38,6 +38,13 @@ defined( 'ABSPATH' ) || exit;
  * `owner_id` and `visibility` are derived from the parent lagoon at write time;
  * callers cannot set them directly. The `Denormalisation` class keeps them in
  * sync when the lagoon's author or visibility meta later changes.
+ *
+ * FULLTEXT search lives in the sibling {@see FileSearch} class — this
+ * repository is pure CRUD + counts.
+ *
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods") Surface is a deliberate thin
+ *   CRUD API — further splitting would scatter closely related wpdb calls
+ *   across sibling classes for no readability gain.
  */
 final class FileRepository {
 
@@ -234,8 +241,8 @@ final class FileRepository {
 	 * @param array<int,int|string> $ordered_ids Ordered list of file IDs.
 	 */
 	public function reorder( int $lagoon_id, array $ordered_ids ): bool {
-		$table = Schema::files_table();
-		$ok    = true;
+		$table   = Schema::files_table();
+		$success = true;
 
 		foreach ( array_values( $ordered_ids ) as $index => $file_id ) {
 			$file_id = (int) $file_id;
@@ -245,7 +252,7 @@ final class FileRepository {
 
 			$result = $this->wpdb->update(
 				$table,
-				array( 'file_order' => (int) $index ),
+				array( 'file_order' => $index ),
 				array(
 					'id'        => $file_id,
 					'lagoon_id' => $lagoon_id,
@@ -255,11 +262,11 @@ final class FileRepository {
 			);
 
 			if ( false === $result ) {
-				$ok = false;
+				$success = false;
 			}
 		}
 
-		return $ok;
+		return $success;
 	}
 
 	/**
@@ -282,9 +289,11 @@ final class FileRepository {
 			WHERE lagoon_id = %d
 			ORDER BY file_order ASC, id ASC";
 
-		$result = $this->wpdb->query(
-			$this->wpdb->prepare( $sql, $new_lagoon_id, $owner_id, $visibility, $source_lagoon_id )
-		);
+		$prepared = $this->wpdb->prepare( $sql, $new_lagoon_id, $owner_id, $visibility, $source_lagoon_id );
+		if ( null === $prepared ) {
+			return 0;
+		}
+		$result = $this->wpdb->query( $prepared );
 
 		return false === $result ? 0 : (int) $result;
 	}
@@ -329,126 +338,6 @@ final class FileRepository {
 		);
 
 		return false === $result ? 0 : (int) $result;
-	}
-
-	/**
-	 * Full-text search across file name / description / content.
-	 *
-	 * Uses the dedicated `codelag_files_fulltext` FULLTEXT index in BOOLEAN MODE,
-	 * so callers can pass operator queries like `+php -wordpress "wp_insert_post"`.
-	 * Results are scoped by the caller's current capabilities — see
-	 * {@see FileRepository::build_visibility_where()}.
-	 *
-	 * Accepted keys in `$args`:
-	 *  - q          (string, required) search term
-	 *  - language   (string, optional) filter by language slug
-	 *  - owner_id   (int,    optional) restrict to a single owner
-	 *  - lagoon_id  (int,    optional) restrict to a single lagoon
-	 *  - page       (int,    optional, default 1)
-	 *  - per_page   (int,    optional, default 20, max 100)
-	 *
-	 * @param array<string,mixed> $args Search parameters.
-	 *
-	 * @return array{files:array<int,array<string,mixed>>,total:int,page:int,per_page:int}
-	 */
-	public function search( array $args ): array {
-		$query_string = isset( $args['q'] ) ? trim( (string) $args['q'] ) : '';
-		$page         = isset( $args['page'] ) ? max( 1, (int) $args['page'] ) : 1;
-		$per_page     = isset( $args['per_page'] ) ? max( 1, min( 100, (int) $args['per_page'] ) ) : 20;
-		$offset       = ( $page - 1 ) * $per_page;
-
-		$empty = array(
-			'files'    => array(),
-			'total'    => 0,
-			'page'     => $page,
-			'per_page' => $per_page,
-		);
-
-		if ( '' === $query_string ) {
-			return $empty;
-		}
-
-		$files_table = Schema::files_table();
-		$posts_table = $this->wpdb->posts;
-
-		$where  = array( 'MATCH(f.name, f.description, f.content) AGAINST (%s IN BOOLEAN MODE)' );
-		$params = array( $query_string );
-
-		$visibility_sql = $this->build_visibility_where( $params );
-		$where[]        = $visibility_sql;
-
-		if ( isset( $args['language'] ) && '' !== (string) $args['language'] ) {
-			$where[]  = 'f.language = %s';
-			$params[] = substr( sanitize_key( (string) $args['language'] ), 0, 32 );
-		}
-		if ( isset( $args['owner_id'] ) && (int) $args['owner_id'] > 0 ) {
-			$where[]  = 'f.owner_id = %d';
-			$params[] = (int) $args['owner_id'];
-		}
-		if ( isset( $args['lagoon_id'] ) && (int) $args['lagoon_id'] > 0 ) {
-			$where[]  = 'f.lagoon_id = %d';
-			$params[] = (int) $args['lagoon_id'];
-		}
-
-		$where_sql = implode( ' AND ', $where );
-		$base_sql  = "FROM {$files_table} f
-				INNER JOIN {$posts_table} p ON p.ID = f.lagoon_id AND p.post_type = %s
-				WHERE {$where_sql}";
-
-		$count_params = array_merge( array( LagoonPostType::POST_TYPE ), $params );
-
-		$total = (int) $this->wpdb->get_var(
-			$this->wpdb->prepare( "SELECT COUNT(*) {$base_sql}", $count_params )
-		);
-
-		if ( 0 === $total ) {
-			return $empty;
-		}
-
-		$list_sql    = "SELECT f.*, MATCH(f.name, f.description, f.content) AGAINST (%s IN BOOLEAN MODE) AS score
-			{$base_sql}
-			ORDER BY score DESC, f.updated_at DESC
-			LIMIT %d OFFSET %d";
-		$list_params = array_merge( array( $query_string ), $count_params, array( $query_string, $per_page, $offset ) );
-
-		$rows = $this->wpdb->get_results(
-			$this->wpdb->prepare( $list_sql, $list_params ),
-			ARRAY_A
-		);
-
-		return array(
-			'files'    => is_array( $rows ) ? $rows : array(),
-			'total'    => $total,
-			'page'     => $page,
-			'per_page' => $per_page,
-		);
-	}
-
-	/**
-	 * Build a WHERE fragment enforcing visibility rules for the current user.
-	 * Appends placeholder values to `$params` by reference.
-	 *
-	 *  - `read_private_posts` caps → no filter (admins/editors see everything).
-	 *  - Logged-in non-admins → public published files OR any of their own files.
-	 *  - Anonymous → public published files only.
-	 *
-	 * @param array<int,mixed> $params Placeholder values accumulator.
-	 */
-	private function build_visibility_where( array &$params ): string {
-		if ( current_user_can( 'read_private_posts' ) ) {
-			return '1=1';
-		}
-
-		$user_id = get_current_user_id();
-
-		if ( 0 === $user_id ) {
-			$params[] = 'public';
-			return "( f.visibility = %s AND p.post_status = 'publish' )";
-		}
-
-		$params[] = 'public';
-		$params[] = $user_id;
-		return "( ( f.visibility = %s AND p.post_status = 'publish' ) OR f.owner_id = %d )";
 	}
 
 	/**

@@ -18,6 +18,8 @@
 			<property name="prefixes" type="array">
 				<element value="gin0115_codelagoon_blocks"/>
 				<element value="codelag_blocks"/>
+				<element value="codelag_filters"/>
+				<element value="codelag"/>
 				<element value="Gin0115\Codelagoon\Blocks"/>
 			</property>
 		</properties>

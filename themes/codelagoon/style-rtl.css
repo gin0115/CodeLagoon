@@ -1,0 +1,88 @@
+/*
+Theme Name:         CodeLagoon
+Theme URI:          https://github.com/gin0115/codelagoon
+Author:             gin0115
+Author URI:         https://github.com/gin0115
+Description:        The CodeLagoon theme — a pro-tool aesthetic for a code-snippet sharing site.
+Version:            1.0.0
+Update URI:			false
+Requires at least:  6.1
+Requires PHP:       8.3
+License:            GNU General Public License v3 or later
+License URI:        http://www.gnu.org/licenses/gpl-3.0.html
+Text Domain:        codelagoon
+Domain Path:        /languages
+Tags:               codelagoon
+*/
+/* Smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: smooth;
+  }
+}
+body {
+  line-height: 20px;
+  /* Font smoothing */
+  text-rendering: geometricprecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+@media (max-width: 781px) {
+  body {
+    line-height: 16px;
+  }
+}
+
+/* Reduce widows and orphans */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+caption,
+figcaption,
+li {
+  text-wrap: pretty;
+}
+
+/* Remove double-bold headings */
+.wp-block-heading strong,
+.wp-block-heading b {
+  font-weight: inherit;
+}
+
+/**
+ * Page
+ * - Description of page styles
+ */
+.wp-theme-style {
+  color: #fff;
+  padding: 2px;
+  appearance: auto;
+  direction: rtl;
+}
+@media (min-width: 960px) {
+  .wp-theme-style {
+    background-color: #21759b;
+  }
+}
+@media (max-width: 781px) {
+  .wp-theme-style {
+    background-color: #d54e21;
+  }
+}
+@media (min-width: 782px) and (max-width: 959px) {
+  .wp-theme-style {
+    background-color: #7ad03a;
+  }
+}
+
+button {
+  padding: 8px 15px;
+}
+button:hover {
+  text-decoration: underline;
+}
