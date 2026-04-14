@@ -52,6 +52,7 @@ final class UserCollection {
 	/**
 	 * Return the collected lagoon IDs for a user, oldest-first.
 	 *
+	 * @param int $user_id The user whose collection to look up.
 	 * @return int[]
 	 */
 	public static function get_ids( int $user_id ): array {
@@ -65,12 +66,21 @@ final class UserCollection {
 		return self::sanitize( $raw );
 	}
 
+	/**
+	 * True when the given lagoon is in the user's collection.
+	 *
+	 * @param int $user_id User to check.
+	 * @param int $post_id Lagoon post ID to check for.
+	 */
 	public static function has( int $user_id, int $post_id ): bool {
 		return in_array( $post_id, self::get_ids( $user_id ), true );
 	}
 
 	/**
 	 * Add a lagoon to the user's collection. No-op if already present.
+	 *
+	 * @param int $user_id User adding to their collection.
+	 * @param int $post_id Lagoon post ID to add.
 	 */
 	public static function add( int $user_id, int $post_id ): void {
 		if ( $user_id <= 0 || $post_id <= 0 ) {
@@ -86,13 +96,16 @@ final class UserCollection {
 
 	/**
 	 * Remove a lagoon from the user's collection. No-op if absent.
+	 *
+	 * @param int $user_id User removing from their collection.
+	 * @param int $post_id Lagoon post ID to remove.
 	 */
 	public static function remove( int $user_id, int $post_id ): void {
 		if ( $user_id <= 0 || $post_id <= 0 ) {
 			return;
 		}
 		$ids      = self::get_ids( $user_id );
-		$filtered = array_values( array_filter( $ids, static fn( int $id ): bool => $id !== $post_id ) );
+		$filtered = array_values( array_filter( $ids, static fn( int $candidate ): bool => $candidate !== $post_id ) );
 		if ( $filtered === $ids ) {
 			return;
 		}

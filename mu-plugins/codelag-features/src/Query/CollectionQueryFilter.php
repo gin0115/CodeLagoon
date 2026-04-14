@@ -91,6 +91,11 @@ final class CollectionQueryFilter {
 	/**
 	 * Filter secondary lagoon queries while the main query is on the
 	 * collection page. See class docblock for the gating rationale.
+	 *
+	 * @param WP_Query $query The query being prepared.
+	 *
+	 * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+	 * @SuppressWarnings("PHPMD.NPathComplexity")
 	 */
 	public function apply( WP_Query $query ): void {
 		if ( is_admin() || $query->is_main_query() ) {
@@ -119,8 +124,9 @@ final class CollectionQueryFilter {
 		// filter bar on the collection page narrows within the collection.
 		$input = $this->read_input();
 
-		$args = array(
-			'tax_query' => $query->get( 'tax_query' ) ?: array(),
+		$existing_tax_query = $query->get( 'tax_query' );
+		$args               = array(
+			'tax_query' => is_array( $existing_tax_query ) ? $existing_tax_query : array(),
 		);
 		$this->search_query->apply_filters( $args, $input );
 
@@ -139,7 +145,7 @@ final class CollectionQueryFilter {
 					'date_query' => $args['date_query'] ?? null,
 				)
 			);
-			$matched = $this->search_query->resolve_search_post_ids( $search, $base_args );
+			$matched   = $this->search_query->resolve_search_post_ids( $search, $base_args );
 
 			// Intersect search hits with the collection so we always narrow
 			// within the user's saved set. Empty intersection → [0].

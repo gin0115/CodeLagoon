@@ -62,7 +62,7 @@
 
 		select {
 			padding-right: 1.2rem;
-			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%2300f0ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+			background-image: url(data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%2300f0ff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>);
 			background-repeat: no-repeat;
 			background-position: right 0 center;
 			background-size: 10px 10px;
@@ -271,9 +271,6 @@
 
 		.select2-selection__choice {
 			flex: 0 0 auto;
-		}
-
-		.select2-selection__choice {
 			display: inline-flex;
 			align-items: center;
 			gap: 0.25rem;
@@ -329,7 +326,6 @@
 // Dropdown panel — we use `dropdownParent: $(form)` in view.js, so it
 // ends up as a child of the form rather than body. Target it both ways so
 // it looks right regardless of where select2 renders it.
-//
 // `min-width: 18rem` so the option list is comfortably readable even when
 // the source slot is narrower — the dropdown will grow horizontally past
 // the anchor to accommodate.

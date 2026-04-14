@@ -107,6 +107,8 @@ final class ForkLineageShortcode {
 
 	/**
 	 * Render a single ancestor as an inline link (or plain text fallback).
+	 * Dispatches to the live-post renderer when the post still exists, or
+	 * the snapshot/deleted renderer otherwise.
 	 *
 	 * @param int                      $ancestor_id Live post ID, may no longer exist.
 	 * @param array<string,mixed>|null $snapshot    Frozen history record, used as fallback.
@@ -115,44 +117,64 @@ final class ForkLineageShortcode {
 	private function render_ancestor_inline( int $ancestor_id, $snapshot ): string {
 		$live = $ancestor_id > 0 ? get_post( $ancestor_id ) : null;
 		if ( $live instanceof WP_Post && LagoonPostType::POST_TYPE === $live->post_type ) {
-			$label = trim( (string) $live->post_title );
-			if ( '' === $label ) {
-				$label = (string) $live->post_name;
-			}
-			if ( '' === $label ) {
-				$label = sprintf( '#%d', (int) $live->ID );
-			}
-
-			return sprintf(
-				'<a href="%1$s">%2$s</a>',
-				esc_url( (string) get_permalink( $live ) ),
-				esc_html( $label )
-			);
+			return $this->render_live_ancestor( $live );
 		}
 
-		// Live post is gone — use the frozen snapshot if we have one.
-		if ( is_array( $snapshot ) ) {
-			$username    = isset( $snapshot['username'] ) ? (string) $snapshot['username'] : '';
-			$snapshot_id = isset( $snapshot['id'] ) ? (int) $snapshot['id'] : 0;
+		return $this->render_deleted_ancestor( $snapshot );
+	}
 
-			$label = '' !== $username ? $username : ( $snapshot_id > 0 ? sprintf( '#%d', $snapshot_id ) : '' );
-			if ( '' === $label ) {
-				return esc_html__( 'a deleted lagoon', 'codelag-features' );
-			}
+	/**
+	 * Render the "live post still exists" case — a normal anchor linking to
+	 * the ancestor's permalink, with label fallback chain: title → slug → #ID.
+	 *
+	 * @param WP_Post $live Ancestor post, verified to be the `lagoon` CPT.
+	 */
+	private function render_live_ancestor( WP_Post $live ): string {
+		$label = trim( (string) $live->post_title );
+		if ( '' === $label ) {
+			$label = (string) $live->post_name;
+		}
+		if ( '' === $label ) {
+			$label = sprintf( '#%d', (int) $live->ID );
+		}
 
-			return sprintf(
-				'<span class="codelag-lineage__deleted">%s</span>',
-				esc_html(
-					sprintf(
-						/* translators: %s: original author username */
-						__( '%s (deleted)', 'codelag-features' ),
-						$label
-					)
+		return sprintf(
+			'<a href="%1$s">%2$s</a>',
+			esc_url( (string) get_permalink( $live ) ),
+			esc_html( $label )
+		);
+	}
+
+	/**
+	 * Render the "live post is gone" case — uses the frozen snapshot for
+	 * the author label, or a generic "a deleted lagoon" string when no
+	 * snapshot is available or the snapshot is unusable.
+	 *
+	 * @param array<string,mixed>|null $snapshot Frozen history record.
+	 */
+	private function render_deleted_ancestor( $snapshot ): string {
+		if ( ! is_array( $snapshot ) ) {
+			return esc_html__( 'a deleted lagoon', 'codelag-features' );
+		}
+
+		$username    = isset( $snapshot['username'] ) ? (string) $snapshot['username'] : '';
+		$snapshot_id = isset( $snapshot['id'] ) ? (int) $snapshot['id'] : 0;
+
+		$label = '' !== $username ? $username : ( $snapshot_id > 0 ? sprintf( '#%d', $snapshot_id ) : '' );
+		if ( '' === $label ) {
+			return esc_html__( 'a deleted lagoon', 'codelag-features' );
+		}
+
+		return sprintf(
+			'<span class="codelag-lineage__deleted">%s</span>',
+			esc_html(
+				sprintf(
+					/* translators: %s: original author username */
+					__( '%s (deleted)', 'codelag-features' ),
+					$label
 				)
-			);
-		}
-
-		return esc_html__( 'a deleted lagoon', 'codelag-features' );
+			)
+		);
 	}
 
 	/**
@@ -167,14 +189,14 @@ final class ForkLineageShortcode {
 			if ( ! is_array( $entry ) ) {
 				continue;
 			}
-			$id   = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
-			$line = $this->render_ancestor_inline( $id, $entry );
+			$ancestor_id = isset( $entry['id'] ) ? (int) $entry['id'] : 0;
+			$line        = $this->render_ancestor_inline( $ancestor_id, $entry );
 
 			$meta_bits = array();
-			if ( ! empty( $entry['username'] ) ) {
+			if ( isset( $entry['username'] ) && '' !== (string) $entry['username'] ) {
 				$meta_bits[] = '@' . (string) $entry['username'];
 			}
-			if ( ! empty( $entry['forked_at'] ) ) {
+			if ( isset( $entry['forked_at'] ) && '' !== (string) $entry['forked_at'] ) {
 				$meta_bits[] = (string) $entry['forked_at'];
 			}
 			$meta = '' !== implode( '', $meta_bits )

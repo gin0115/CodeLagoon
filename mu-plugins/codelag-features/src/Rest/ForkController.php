@@ -31,16 +31,32 @@ final class ForkController {
 	private const NAMESPACE = 'codelag/v1';
 	private const ROUTE     = '/lagoons/(?P<id>\d+)/fork';
 
+	/**
+	 * Shared fork service.
+	 *
+	 * @var ForkService
+	 */
 	private ForkService $fork_service;
 
+	/**
+	 * Wire in the shared fork service.
+	 *
+	 * @param ForkService $fork_service Service that performs the post + files copy.
+	 */
 	public function __construct( ForkService $fork_service ) {
 		$this->fork_service = $fork_service;
 	}
 
+	/**
+	 * Hook REST route registration.
+	 */
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
+	/**
+	 * Register the `POST /lagoons/{id}/fork` route.
+	 */
 	public function register_routes(): void {
 		register_rest_route(
 			self::NAMESPACE,
@@ -135,11 +151,11 @@ final class ForkController {
 
 		$response = rest_ensure_response(
 			array(
-				'id'         => (int) $new_id,
-				'slug'       => (string) $new_post->post_name,
-				'title'      => (string) $new_post->post_title,
-				'edit_link'  => admin_url( 'post.php?post=' . $new_id . '&action=edit' ),
-				'view_link'  => (string) get_permalink( $new_id ),
+				'id'          => (int) $new_id,
+				'slug'        => (string) $new_post->post_name,
+				'title'       => (string) $new_post->post_title,
+				'edit_link'   => admin_url( 'post.php?post=' . $new_id . '&action=edit' ),
+				'view_link'   => (string) get_permalink( $new_id ),
 				'forked_from' => $source_id,
 			)
 		);

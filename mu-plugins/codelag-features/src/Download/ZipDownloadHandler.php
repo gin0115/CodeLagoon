@@ -67,6 +67,8 @@ final class ZipDownloadHandler {
 	/**
 	 * If the request carries `?codelag_download_lagoon`, validate and serve.
 	 * Returns silently for every other request.
+	 *
+	 * @SuppressWarnings("PHPMD.ExitExpression")
 	 */
 	public function maybe_handle_download(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -102,7 +104,7 @@ final class ZipDownloadHandler {
 		}
 
 		$files = $this->files->list_for_lagoon( $post_id );
-		if ( empty( $files ) ) {
+		if ( array() === $files ) {
 			$this->fail_404();
 		}
 
@@ -230,8 +232,10 @@ final class ZipDownloadHandler {
 	/**
 	 * Send a 404 response and die. Used for "lagoon doesn't exist" and
 	 * "lagoon has no files" cases.
+	 *
+	 * @return never
 	 */
-	private function fail_404(): void {
+	private function fail_404(): never {
 		status_header( 404 );
 		nocache_headers();
 		wp_die(

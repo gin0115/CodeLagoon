@@ -25,6 +25,10 @@ use Gin0115\Codelagoon\Features\Taxonomy\LagoonTagTaxonomy;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Adds `/snippets/{language|tag|purpose}/` parent index pages for the lagoon
+ * taxonomies — see file docblock above for the full rationale.
+ */
 final class TermIndexRewrite {
 
 	/**
@@ -47,6 +51,9 @@ final class TermIndexRewrite {
 		);
 	}
 
+	/**
+	 * Hook the rewrite + query var + template override into WordPress.
+	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_rewrite' ) );
 		add_filter( 'query_vars', array( $this, 'register_query_var' ) );
@@ -62,6 +69,9 @@ final class TermIndexRewrite {
 		add_action( 'parse_query', array( $this, 'neutralise_archive_flags' ) );
 	}
 
+	/**
+	 * Register the rewrite tag + one rewrite rule per taxonomy index page.
+	 */
 	public function register_rewrite(): void {
 		add_rewrite_tag( '%' . self::QUERY_VAR . '%', '([a-z0-9_-]+)' );
 
@@ -78,7 +88,9 @@ final class TermIndexRewrite {
 	}
 
 	/**
-	 * @param array<int,string> $vars
+	 * Add our query var to the public query-var list so WP exposes it.
+	 *
+	 * @param array<int,string> $vars Existing public query vars.
 	 * @return array<int,string>
 	 */
 	public function register_query_var( array $vars ): array {
@@ -96,6 +108,8 @@ final class TermIndexRewrite {
 	 *
 	 * @param string $template Full path of the default selected template.
 	 * @return string
+	 *
+	 * @SuppressWarnings("PHPMD.LongVariable")
 	 */
 	public function override_template( string $template ): string {
 		$taxonomy = (string) get_query_var( self::QUERY_VAR );
@@ -106,13 +120,15 @@ final class TermIndexRewrite {
 		$theme     = get_stylesheet();
 		$slug      = 'taxonomy-index-' . $taxonomy;
 		$block_tpl = get_block_template( $theme . '//' . $slug, 'wp_template' );
-		if ( null === $block_tpl || empty( $block_tpl->content ) ) {
+		if ( null === $block_tpl || '' === (string) $block_tpl->content ) {
 			return $template;
 		}
 
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WP core globals; we don't get to rename them.
 		global $_wp_current_template_id, $_wp_current_template_content;
 		$_wp_current_template_id      = $block_tpl->id;
 		$_wp_current_template_content = $block_tpl->content;
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 		return ABSPATH . WPINC . '/template-canvas.php';
 	}
@@ -123,7 +139,7 @@ final class TermIndexRewrite {
 	 * branch on it (e.g. `lagoon-filters` hiding via archive context) fire
 	 * incorrectly, and the main query fetches lagoon posts we don't want.
 	 *
-	 * @param \WP_Query $query
+	 * @param \WP_Query $query Main query being parsed.
 	 */
 	public function neutralise_archive_flags( $query ): void {
 		if ( ! $query->is_main_query() ) {

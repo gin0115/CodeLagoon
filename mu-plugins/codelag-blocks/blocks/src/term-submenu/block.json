@@ -47,7 +47,21 @@
 			"default": false
 		}
 	},
-	"usesContext": [ "textColor", "customTextColor", "backgroundColor", "customBackgroundColor", "overlayTextColor", "customOverlayTextColor", "overlayBackgroundColor", "customOverlayBackgroundColor", "fontSize", "customFontSize", "showSubmenuIcon", "openSubmenusOnClick", "style" ],
+	"usesContext": [
+		"textColor",
+		"customTextColor",
+		"backgroundColor",
+		"customBackgroundColor",
+		"overlayTextColor",
+		"customOverlayTextColor",
+		"overlayBackgroundColor",
+		"customOverlayBackgroundColor",
+		"fontSize",
+		"customFontSize",
+		"showSubmenuIcon",
+		"openSubmenusOnClick",
+		"style"
+	],
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",
 	"editorStyle": "file:./index.css",

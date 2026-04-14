@@ -37,6 +37,11 @@ final class Denormalisation {
 	 */
 	private FileRepository $files;
 
+	/**
+	 * Wire in the shared file repository.
+	 *
+	 * @param FileRepository $files Repository the denormaliser writes through.
+	 */
 	public function __construct( FileRepository $files ) {
 		$this->files = $files;
 	}
@@ -61,7 +66,7 @@ final class Denormalisation {
 	public function on_save_lagoon( int $post_id, WP_Post $post, bool $update ): void {
 		unset( $update );
 
-		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		if ( false !== wp_is_post_revision( $post_id ) || false !== wp_is_post_autosave( $post_id ) ) {
 			return;
 		}
 

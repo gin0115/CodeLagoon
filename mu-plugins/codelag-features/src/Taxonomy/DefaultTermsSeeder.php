@@ -90,14 +90,14 @@ final class DefaultTermsSeeder {
 		$this->seed_taxonomy(
 			LagoonTagTaxonomy::TAXONOMY,
 			array(
-				'wordpress'    => 'WordPress',
-				'api'          => 'API',
-				'cli'          => 'CLI',
-				'cron'         => 'Cron',
-				'regex'        => 'Regex',
-				'debug'        => 'Debug',
-				'performance'  => 'Performance',
-				'database'     => 'Database',
+				'wordpress'   => 'WordPress',
+				'api'         => 'API',
+				'cli'         => 'CLI',
+				'cron'        => 'Cron',
+				'regex'       => 'Regex',
+				'debug'       => 'Debug',
+				'performance' => 'Performance',
+				'database'    => 'Database',
 			)
 		);
 
@@ -116,7 +116,7 @@ final class DefaultTermsSeeder {
 		}
 
 		foreach ( $terms as $slug => $name ) {
-			if ( term_exists( $slug, $taxonomy ) ) {
+			if ( null !== term_exists( $slug, $taxonomy ) ) {
 				continue;
 			}
 

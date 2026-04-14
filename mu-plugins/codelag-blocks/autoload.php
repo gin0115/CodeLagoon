@@ -14,16 +14,16 @@ declare(strict_types=1);
 defined( 'ABSPATH' ) || exit;
 
 spl_autoload_register(
-	static function ( string $class ): void {
+	static function ( string $class_name ): void {
 		$prefix   = 'Gin0115\\Codelagoon\\Blocks\\';
 		$base_dir = __DIR__ . '/src/';
 
 		$prefix_length = strlen( $prefix );
-		if ( 0 !== strncmp( $prefix, $class, $prefix_length ) ) {
+		if ( 0 !== strncmp( $prefix, $class_name, $prefix_length ) ) {
 			return;
 		}
 
-		$relative_class = substr( $class, $prefix_length );
+		$relative_class = substr( $class_name, $prefix_length );
 		$file           = $base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
 
 		if ( is_readable( $file ) ) {

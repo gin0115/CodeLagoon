@@ -62,9 +62,22 @@ final class LagoonMeta {
 	}
 
 	/**
-	 * Register all four meta keys against the `lagoon` CPT.
+	 * Register every meta key against the `lagoon` CPT. Each meta has its
+	 * own private helper below so the individual `register_post_meta()`
+	 * config blocks stay readable at ~15 lines each.
 	 */
 	public function register_meta(): void {
+		$this->register_visibility_meta();
+		$this->register_link_token_meta();
+		$this->register_forked_from_meta();
+		$this->register_fork_root_meta();
+		$this->register_fork_history_meta();
+	}
+
+	/**
+	 * Register the `visibility` meta — public / private / link.
+	 */
+	private function register_visibility_meta(): void {
 		register_post_meta(
 			LagoonPostType::POST_TYPE,
 			self::META_VISIBILITY,
@@ -84,7 +97,13 @@ final class LagoonMeta {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register the `link_token` meta — unguessable share token for
+	 * link-only visibility.
+	 */
+	private function register_link_token_meta(): void {
 		register_post_meta(
 			LagoonPostType::POST_TYPE,
 			self::META_LINK_TOKEN,
@@ -103,7 +122,12 @@ final class LagoonMeta {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register the `forked_from` meta — immediate parent's post ID.
+	 */
+	private function register_forked_from_meta(): void {
 		register_post_meta(
 			LagoonPostType::POST_TYPE,
 			self::META_FORKED_FROM,
@@ -123,7 +147,12 @@ final class LagoonMeta {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register the `fork_root` meta — top-of-chain ancestor post ID.
+	 */
+	private function register_fork_root_meta(): void {
 		register_post_meta(
 			LagoonPostType::POST_TYPE,
 			self::META_FORK_ROOT,
@@ -143,7 +172,12 @@ final class LagoonMeta {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register the `fork_history` meta — ordered list of ancestor snapshots.
+	 */
+	private function register_fork_history_meta(): void {
 		register_post_meta(
 			LagoonPostType::POST_TYPE,
 			self::META_FORK_HISTORY,

@@ -73,8 +73,8 @@ final class DownloadButtonShortcode {
 			(string) get_permalink( $post_id )
 		);
 
-		$slug   = '' !== $post->post_name ? $post->post_name : 'lagoon-' . $post_id;
-		$label  = esc_html__( 'Download', 'codelag-features' );
+		$slug    = '' !== $post->post_name ? $post->post_name : 'lagoon-' . $post_id;
+		$label   = esc_html__( 'Download', 'codelag-features' );
 		$tooltip = esc_attr__( 'Download all files as a zip', 'codelag-features' );
 
 		return sprintf(

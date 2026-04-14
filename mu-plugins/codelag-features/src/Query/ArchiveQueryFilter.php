@@ -24,18 +24,45 @@ use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Hooks the lagoon archive's main WP_Query, translating the
+ * `?filter_language[]=…&search=…` URL grammar into proper tax_query / date_query
+ * / post__in args so the no-JS path narrows the same way the REST endpoint does.
+ */
 final class ArchiveQueryFilter {
 
+	/**
+	 * Shared filter/search helper that knows how to convert input arrays
+	 * into WP_Query-compatible args.
+	 *
+	 * @var LagoonSearchQuery
+	 */
 	private LagoonSearchQuery $search_query;
 
+	/**
+	 * Wire in the shared search/filter helper.
+	 *
+	 * @param LagoonSearchQuery $search_query Shared filter/search helper.
+	 */
 	public function __construct( LagoonSearchQuery $search_query ) {
 		$this->search_query = $search_query;
 	}
 
+	/**
+	 * Hook pre_get_posts.
+	 */
 	public function register(): void {
 		add_action( 'pre_get_posts', array( $this, 'apply' ) );
 	}
 
+	/**
+	 * Apply our archive filters to the main query.
+	 *
+	 * @param WP_Query $query The query being prepared.
+	 *
+	 * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+	 * @SuppressWarnings("PHPMD.NPathComplexity")
+	 */
 	public function apply( WP_Query $query ): void {
 		if ( is_admin() || ! $query->is_main_query() ) {
 			return;
@@ -72,8 +99,9 @@ final class ArchiveQueryFilter {
 
 		// Build a temporary args container so we can reuse the shared helper,
 		// then push the resulting bits back onto the WP_Query via ->set().
-		$args = array(
-			'tax_query' => $query->get( 'tax_query' ) ?: array(),
+		$existing_tax_query = $query->get( 'tax_query' );
+		$args               = array(
+			'tax_query' => is_array( $existing_tax_query ) ? $existing_tax_query : array(),
 		);
 		$this->search_query->apply_filters( $args, $input );
 
@@ -92,7 +120,7 @@ final class ArchiveQueryFilter {
 					'date_query' => $args['date_query'] ?? null,
 				)
 			);
-			$ids = $this->search_query->resolve_search_post_ids( $search, $base_args );
+			$ids       = $this->search_query->resolve_search_post_ids( $search, $base_args );
 
 			// Empty union → force zero results so the archive shows the
 			// no-results state instead of falling back to "all posts".

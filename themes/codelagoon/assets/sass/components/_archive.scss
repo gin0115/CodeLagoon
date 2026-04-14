@@ -123,7 +123,6 @@
 // which leaves ugly vertical gaps when cards have different heights
 // (snippet previews vary). CSS columns flow top-to-bottom in each column,
 // filling the left column first, so gaps disappear.
-//
 // Scoped on <html> via `data-codelag-cols` (emitted by SiteThemeService's
 // `language_attributes` filter), so the layout follows the viewer's
 // preference site-wide. Always single column below 720px regardless.

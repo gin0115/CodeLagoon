@@ -20,7 +20,7 @@
 	--vscode-editor-background: #1e1e1e;
 	--vscode-editor-foreground: #d4d4d4;
 	--vscode-editorWidget-background: #252526;
-	--vscode-editorWidget-foreground: #cccccc;
+	--vscode-editorWidget-foreground: #ccc;
 	--vscode-editorWidget-border: #454545;
 	--vscode-editorCursor-foreground: #aeafad;
 	--vscode-editorLineNumber-foreground: #858585;
@@ -38,9 +38,9 @@
 	--vscode-editorGutter-background: #1e1e1e;
 	--vscode-editorWhitespace-foreground: #3b3a32;
 	--vscode-editorBracketMatch-background: rgba(0, 100, 0, 0.3);
-	--vscode-editorBracketMatch-border: #888888;
+	--vscode-editorBracketMatch-border: #888;
 	--vscode-editorOverviewRuler-border: #7f7f7f4d;
-	--vscode-scrollbar-shadow: #000000;
+	--vscode-scrollbar-shadow: #000;
 	--vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
 	--vscode-scrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.7);
 	--vscode-scrollbarSlider-activeBackground: rgba(191, 191, 191, 0.4);
@@ -50,7 +50,7 @@
 	--vscode-minimapSlider-activeBackground: rgba(191, 191, 191, 0.2);
 	--vscode-editorStickyScroll-background: #1e1e1e;
 	--vscode-editorStickyScrollHover-background: #2a2d2e;
-	--vscode-foreground: #cccccc;
+	--vscode-foreground: #ccc;
 	--vscode-focusBorder: #007fd4;
 
 	&__toolbar {
@@ -186,7 +186,7 @@
 	}
 
 	&__lang-badge-xml {
-		font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+		font-family: SFMono-Regular, Consolas, Menlo, monospace;
 		font-size: 0.8rem;
 		font-weight: 700;
 		color: #4479A1;
@@ -277,7 +277,7 @@
 			background: rgba(27, 31, 35, 0.05);
 			padding: 0.2em 0.4em;
 			border-radius: 3px;
-			font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+			font-family: SFMono-Regular, Consolas, Menlo, monospace;
 			font-size: 0.85em;
 		}
 

@@ -6,5 +6,10 @@ parameters:
         - %currentWorkingDirectory%/plugins
     paths:
         - %currentWorkingDirectory%/mu-plugins/codelag-features
+    bootstrapFiles:
+        # Shared constant / type stubs for phpstan across theme + plugins.
+        # The real constants are defined at runtime; this file just declares
+        # them so phpstan can resolve references in src/**.
+        - %currentWorkingDirectory%/type-def.php
     WPCompat:
         pluginFile: %currentWorkingDirectory%/mu-plugins/codelag-features/codelag-features.php

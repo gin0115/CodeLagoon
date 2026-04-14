@@ -67,7 +67,7 @@ final class SiteThemes {
 				'--cl-radius-pill'        => '9999px',
 			),
 		),
-		'neon-green' => array(
+		'neon-green'    => array(
 			'label' => 'Neon Green',
 			'vars'  => array(
 				'--cl-bg'                 => '#0b0f08',
@@ -95,7 +95,7 @@ final class SiteThemes {
 				'--cl-radius-pill'        => '9999px',
 			),
 		),
-		'paper-lime' => array(
+		'paper-lime'    => array(
 			'label' => 'Paper Lime',
 			'vars'  => array(
 				'--cl-bg'                 => '#fbfcf7',
@@ -123,7 +123,7 @@ final class SiteThemes {
 				'--cl-radius-pill'        => '9999px',
 			),
 		),
-		'paper-indigo' => array(
+		'paper-indigo'  => array(
 			'label' => 'Paper Indigo',
 			'vars'  => array(
 				'--cl-bg'                 => '#fcfcfb',
@@ -170,7 +170,7 @@ final class SiteThemes {
 	public static function choices(): array {
 		$out = array();
 		foreach ( self::THEMES as $key => $data ) {
-			$out[ $key ] = (string) $data['label'];
+			$out[ $key ] = $data['label'];
 		}
 		return $out;
 	}

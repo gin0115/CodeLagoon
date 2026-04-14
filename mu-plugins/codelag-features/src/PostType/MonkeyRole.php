@@ -23,6 +23,9 @@ use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Registers and policies the `monkey` user role — see file docblock above.
+ */
 final class MonkeyRole {
 
 	public const ROLE = 'monkey';
@@ -45,6 +48,9 @@ final class MonkeyRole {
 		);
 	}
 
+	/**
+	 * Hook role registration + admin-list scoping into WordPress.
+	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_role' ) );
 		add_action( 'pre_get_posts', array( $this, 'restrict_admin_list' ) );
@@ -75,7 +81,7 @@ final class MonkeyRole {
 	 * main query. Admins / editors (anyone with `edit_others_posts`) are
 	 * untouched so they see everything.
 	 *
-	 * @param WP_Query $query
+	 * @param WP_Query $query Admin-list main query.
 	 */
 	public function restrict_admin_list( $query ): void {
 		if ( ! is_admin() ) {
@@ -88,7 +94,7 @@ final class MonkeyRole {
 			return;
 		}
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		if ( ! $screen || 'edit-' . LagoonPostType::POST_TYPE !== $screen->id ) {
+		if ( ! $screen instanceof \WP_Screen || 'edit-' . LagoonPostType::POST_TYPE !== $screen->id ) {
 			return;
 		}
 
@@ -101,12 +107,12 @@ final class MonkeyRole {
 		// we pre-compute the allowed post IDs — cheap because we cap the
 		// candidate pool at a high but sane limit (admin list pagination
 		// already naturally restricts what's displayed).
-		$own_ids = get_posts(
+		$own_ids          = get_posts(
 			array(
 				'post_type'      => LagoonPostType::POST_TYPE,
 				'author'         => $user_id,
 				'post_status'    => 'any',
-				'posts_per_page' => 500,
+				'posts_per_page' => 500, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- deliberate ceiling; admin list pagination shrinks the visible subset.
 				'fields'         => 'ids',
 			)
 		);
@@ -115,11 +121,11 @@ final class MonkeyRole {
 				'post_type'      => LagoonPostType::POST_TYPE,
 				'author__not_in' => array( $user_id ),
 				'post_status'    => 'publish',
-				'posts_per_page' => 500,
+				'posts_per_page' => 500, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- deliberate ceiling; admin list pagination shrinks the visible subset.
 				'fields'         => 'ids',
 			)
 		);
-		$allowed = array_values( array_unique( array_merge( $own_ids, $others_published ) ) );
+		$allowed          = array_values( array_unique( array_merge( $own_ids, $others_published ) ) );
 		if ( array() === $allowed ) {
 			$allowed = array( 0 );
 		}

@@ -6,5 +6,9 @@ parameters:
         - %currentWorkingDirectory%/plugins
     paths:
         - %currentWorkingDirectory%/themes/codelagoon
+    bootstrapFiles:
+        # Shared constant / type stubs across theme + plugins — see
+        # type-def.php at wp-content root.
+        - %currentWorkingDirectory%/type-def.php
     WPCompat:
         pluginFile: %currentWorkingDirectory%/themes/codelagoon/style.css

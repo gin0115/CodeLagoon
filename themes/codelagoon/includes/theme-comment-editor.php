@@ -54,7 +54,7 @@ function codelag_tinymce_content_style(): string {
 	// `!important` on a few rules, so we pre-empt it by both (a) doubling up
 	// the selector (`html body.mce-content-body`) to beat their
 	// `body.mce-content-body`, and (b) marking every declaration `!important`.
-	$component_css = <<<CSS
+	$component_css = <<<'CSS'
 html,html body,html body.mce-content-body{
  background-color:var(--cl-surface-lowest)!important;
  color:var(--cl-on-surface)!important;
@@ -150,8 +150,8 @@ function codelag_filter_tinymce_for_comments( array $settings, string $editor_id
 		return $settings;
 	}
 
-	$injected = codelag_tinymce_content_style();
-	$existing = isset( $settings['content_style'] ) ? (string) $settings['content_style'] : '';
+	$injected                  = codelag_tinymce_content_style();
+	$existing                  = isset( $settings['content_style'] ) ? (string) $settings['content_style'] : '';
 	$settings['content_style'] = $existing . $injected;
 
 	// Add a body class so our CSS selectors (`body.mce-content-body`) keep

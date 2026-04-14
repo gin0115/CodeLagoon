@@ -21,10 +21,16 @@ use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Custom `codelag_link` post status — see file docblock above.
+ */
 final class LinkStatus {
 
 	public const STATUS = 'codelag_link';
 
+	/**
+	 * Hook the status registration + listing-exclusion filters.
+	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_status' ) );
 		add_action( 'pre_get_posts', array( $this, 'exclude_from_listings' ) );
@@ -42,6 +48,7 @@ final class LinkStatus {
 			self::STATUS,
 			array(
 				'label'                     => _x( 'Link only', 'post status label', 'codelag-features' ),
+				/* translators: %s: number of link-only posts. */
 				'label_count'               => _n_noop(
 					'Link only <span class="count">(%s)</span>',
 					'Link only <span class="count">(%s)</span>',
@@ -73,7 +80,7 @@ final class LinkStatus {
 	 * Single-post views (`is_singular`) are untouched — the main query
 	 * for a specific slug will resolve a link-only lagoon normally.
 	 *
-	 * @param WP_Query $query
+	 * @param WP_Query $query Query being prepared.
 	 */
 	public function exclude_from_listings( $query ): void {
 		if ( is_admin() ) {
@@ -84,7 +91,7 @@ final class LinkStatus {
 		}
 		// If the caller explicitly set post_status, don't override them.
 		$explicit = $query->get( 'post_status' );
-		if ( ! empty( $explicit ) ) {
+		if ( '' !== $explicit && array() !== $explicit ) {
 			return;
 		}
 		$query->set( 'post_status', array( 'publish' ) );
@@ -96,7 +103,8 @@ final class LinkStatus {
 	 * core REST controller runs just before firing WP_Query — the perfect
 	 * seam to enforce our policy.
 	 *
-	 * @param array<string,mixed> $args
+	 * @param array<string,mixed> $args    Args about to be passed to WP_Query.
+	 * @param \WP_REST_Request    $request Incoming REST request (unused).
 	 * @return array<string,mixed>
 	 */
 	public function filter_rest_wp_v2_query( array $args, $request ): array {

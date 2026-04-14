@@ -7,9 +7,9 @@
  * mirrors core/navigation-submenu so the Navigation block's CSS (including
  * overlay/submenu styles from theme.json) applies without any extra work.
  *
- * @var array    $attributes
- * @var string   $content
- * @var WP_Block $block
+ * @var array<string,mixed> $attributes
+ * @var string              $content
+ * @var WP_Block            $block
  *
  * @package Gin0115\Codelagoon\Blocks
  */
@@ -31,7 +31,7 @@ defined( 'ABSPATH' ) || exit;
 
 	$count        = isset( $attributes['count'] ) ? max( 1, min( 30, (int) $attributes['count'] ) ) : 5;
 	$order_by     = isset( $attributes['orderBy'] ) && 'name' === $attributes['orderBy'] ? 'name' : 'count';
-	$show_count   = ! empty( $attributes['showCount'] );
+	$show_count   = isset( $attributes['showCount'] ) && (bool) $attributes['showCount'];
 	$parent_label = isset( $attributes['parentLabel'] ) ? trim( (string) $attributes['parentLabel'] ) : '';
 	$parent_url   = isset( $attributes['parentUrl'] ) ? trim( (string) $attributes['parentUrl'] ) : '';
 
@@ -74,7 +74,7 @@ defined( 'ABSPATH' ) || exit;
 		$ids = array( (int) $term->term_id );
 		if ( $taxonomy->hierarchical ) {
 			$descendants = get_term_children( (int) $term->term_id, $term->taxonomy );
-			if ( ! is_wp_error( $descendants ) && ! empty( $descendants ) ) {
+			if ( is_array( $descendants ) && array() !== $descendants ) {
 				foreach ( $descendants as $child_id ) {
 					$ids[] = (int) $child_id;
 				}
@@ -84,7 +84,7 @@ defined( 'ABSPATH' ) || exit;
 		if ( isset( $term_ids_counted_cache[ $cache_key ] ) ) {
 			return $term_ids_counted_cache[ $cache_key ];
 		}
-		$query = new \WP_Query(
+		$query                                = new \WP_Query(
 			array(
 				'post_type'              => $taxonomy->object_type,
 				'post_status'            => 'publish',
@@ -111,7 +111,7 @@ defined( 'ABSPATH' ) || exit;
 	// parent "link" must be a <button> per core's a11y pattern. Otherwise it
 	// may be an <a>, and when no URL is configured we fall back to a
 	// non-interactive <span> with the toggle button alongside.
-	$open_on_click = ! empty( $block->context['openSubmenusOnClick'] );
+	$open_on_click = isset( $block->context['openSubmenusOnClick'] ) && (bool) $block->context['openSubmenusOnClick'];
 
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(

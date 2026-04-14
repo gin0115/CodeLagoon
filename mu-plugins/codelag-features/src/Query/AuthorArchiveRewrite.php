@@ -20,6 +20,9 @@ use WP_User;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Custom author archive at /snippets/by/<nicename>/ — see file docblock above.
+ */
 final class AuthorArchiveRewrite {
 
 	/**
@@ -32,6 +35,9 @@ final class AuthorArchiveRewrite {
 	 */
 	public const URL_PREFIX = 'snippets/by';
 
+	/**
+	 * Hook the rewrite + query var + template + 404 + link filters.
+	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_rewrite' ) );
 		add_filter( 'query_vars', array( $this, 'register_query_var' ) );
@@ -49,7 +55,7 @@ final class AuthorArchiveRewrite {
 	 * no idea about this route so `query-title` falls back to the CPT label
 	 * ("Archives: Lagoons"). We emit "Lagoons by @username" instead.
 	 *
-	 * @param string $title
+	 * @param string $title Default archive title from WP core.
 	 */
 	public function filter_archive_title( string $title ): string {
 		$nicename = (string) get_query_var( self::QUERY_VAR );
@@ -68,6 +74,9 @@ final class AuthorArchiveRewrite {
 		);
 	}
 
+	/**
+	 * Register the rewrite tag + the two rewrite rules (paged + bare).
+	 */
 	public function register_rewrite(): void {
 		add_rewrite_tag( '%' . self::QUERY_VAR . '%', '([^&/]+)' );
 
@@ -84,7 +93,9 @@ final class AuthorArchiveRewrite {
 	}
 
 	/**
-	 * @param array<int,string> $vars
+	 * Add our query var to the public query-var list.
+	 *
+	 * @param array<int,string> $vars Existing public query vars.
 	 * @return array<int,string>
 	 */
 	public function register_query_var( array $vars ): array {
@@ -100,6 +111,8 @@ final class AuthorArchiveRewrite {
 	 *
 	 * @param string $template Full path of the default selected template.
 	 * @return string
+	 *
+	 * @SuppressWarnings("PHPMD.LongVariable")
 	 */
 	public function override_template( string $template ): string {
 		if ( '' === (string) get_query_var( self::QUERY_VAR ) ) {
@@ -108,13 +121,15 @@ final class AuthorArchiveRewrite {
 
 		$theme     = get_stylesheet();
 		$block_tpl = get_block_template( $theme . '//author-lagoon', 'wp_template' );
-		if ( null === $block_tpl || empty( $block_tpl->content ) ) {
+		if ( null === $block_tpl || '' === (string) $block_tpl->content ) {
 			return $template;
 		}
 
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- WP core globals; we don't get to rename them.
 		global $_wp_current_template_id, $_wp_current_template_content;
 		$_wp_current_template_id      = $block_tpl->id;
 		$_wp_current_template_content = $block_tpl->content;
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 		return ABSPATH . WPINC . '/template-canvas.php';
 	}
@@ -125,7 +140,7 @@ final class AuthorArchiveRewrite {
 	 * so WP still treats the missing-user case as a canonical 404 (correct
 	 * status code + 404 template), per the user's decision.
 	 *
-	 * @param \WP_Query $query
+	 * @param \WP_Query $query Main query being parsed.
 	 */
 	public function enforce_author_exists( $query ): void {
 		if ( ! $query->is_main_query() ) {

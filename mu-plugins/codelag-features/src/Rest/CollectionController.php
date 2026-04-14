@@ -33,10 +33,16 @@ final class CollectionController {
 	private const NAMESPACE = 'codelag/v1';
 	private const ROUTE     = '/lagoons/(?P<id>\d+)/collect';
 
+	/**
+	 * Hook REST route registration.
+	 */
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
+	/**
+	 * Register the POST/DELETE routes for `/lagoons/{id}/collect`.
+	 */
 	public function register_routes(): void {
 		register_rest_route(
 			self::NAMESPACE,
@@ -59,6 +65,8 @@ final class CollectionController {
 	}
 
 	/**
+	 * Shared `args` schema fragment for the `id` URL parameter.
+	 *
 	 * @return array<string,array<string,mixed>>
 	 */
 	private static function id_arg(): array {
@@ -74,8 +82,9 @@ final class CollectionController {
 	}
 
 	/**
-	 * Login + read-access to the source lagoon.
+	 * Permission callback — login + read-access to the source lagoon.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return bool|WP_Error
 	 */
 	public function permissions( WP_REST_Request $request ) {
@@ -108,6 +117,11 @@ final class CollectionController {
 		return true;
 	}
 
+	/**
+	 * POST handler — add the lagoon to the caller's collection.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
 	public function add_item( WP_REST_Request $request ): WP_REST_Response {
 		$post_id = (int) $request['id'];
 		$user_id = get_current_user_id();
@@ -117,6 +131,11 @@ final class CollectionController {
 		return rest_ensure_response( $this->state_payload( $user_id, $post_id ) );
 	}
 
+	/**
+	 * DELETE handler — remove the lagoon from the caller's collection.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
 	public function remove_item( WP_REST_Request $request ): WP_REST_Response {
 		$post_id = (int) $request['id'];
 		$user_id = get_current_user_id();
@@ -127,6 +146,10 @@ final class CollectionController {
 	}
 
 	/**
+	 * Build the response payload for both add + remove handlers.
+	 *
+	 * @param int $user_id Caller's user ID.
+	 * @param int $post_id Lagoon post ID being added/removed.
 	 * @return array<string,mixed>
 	 */
 	private function state_payload( int $user_id, int $post_id ): array {

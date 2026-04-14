@@ -72,38 +72,63 @@ final class SlugGenerator {
 	 * @return array<string,mixed>
 	 */
 	public function enforce_slug( array $data, array $postarr ): array {
-		if ( ! isset( $data['post_type'] ) || LagoonPostType::POST_TYPE !== $data['post_type'] ) {
-			return $data;
-		}
-
-		// Don't burn a slug on the auto-draft WP creates the moment the user
-		// clicks "Add New". Wait for the first save with a real status.
-		if ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) {
+		if ( ! $this->is_lagoon_save( $data ) ) {
 			return $data;
 		}
 
 		$post_id = isset( $postarr['ID'] ) ? (int) $postarr['ID'] : 0;
 
-		if ( $post_id > 0 ) {
-			$existing_meta = get_post_meta( $post_id, self::META_KEY, true );
-			if ( is_string( $existing_meta ) && '' !== $existing_meta ) {
-				$data['post_name'] = $existing_meta;
-				return $data;
-			}
-
-			// No meta slug yet. If the previous status was `auto-draft`, this
-			// is the first real save — generate. Otherwise it's a legacy post
-			// that pre-dates this feature; leave its slug alone.
-			$existing_post = get_post( $post_id );
-			if ( $existing_post instanceof WP_Post && 'auto-draft' === $existing_post->post_status ) {
-				$data['post_name'] = $this->generate_slug();
-			}
-
+		// Brand-new insert (e.g. wp-cli). No existing post to consult.
+		if ( $post_id <= 0 ) {
+			$data['post_name'] = $this->generate_slug();
 			return $data;
 		}
 
-		// No ID at all — brand new insert (e.g. wp-cli). Generate.
-		$data['post_name'] = $this->generate_slug();
+		return $this->apply_existing_post_slug( $data, $post_id );
+	}
+
+	/**
+	 * True when the save is for the lagoon CPT and is NOT the transient
+	 * `auto-draft` record WP creates on "Add New". We defer slug generation
+	 * until the first real save so auto-drafts don't burn a slug.
+	 *
+	 * @param array<string,mixed> $data Post data from the insert filter.
+	 */
+	private function is_lagoon_save( array $data ): bool {
+		if ( ! isset( $data['post_type'] ) || LagoonPostType::POST_TYPE !== $data['post_type'] ) {
+			return false;
+		}
+		if ( isset( $data['post_status'] ) && 'auto-draft' === $data['post_status'] ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Resolve the slug for an existing post:
+	 *  - meta slug wins (lock),
+	 *  - otherwise generate only when transitioning out of `auto-draft`,
+	 *  - legacy posts without meta are left alone.
+	 *
+	 * @param array<string,mixed> $data    Post data from the insert filter.
+	 * @param int                 $post_id Existing post ID.
+	 * @return array<string,mixed>
+	 */
+	private function apply_existing_post_slug( array $data, int $post_id ): array {
+		$existing_meta = get_post_meta( $post_id, self::META_KEY, true );
+		if ( is_string( $existing_meta ) && '' !== $existing_meta ) {
+			$data['post_name'] = $existing_meta;
+			return $data;
+		}
+
+		// No meta slug yet. If the previous status was `auto-draft`, this is
+		// the first real save — generate. Otherwise it's a legacy post that
+		// pre-dates this feature; leave its slug alone.
+		$existing_post = get_post( $post_id );
+		if ( $existing_post instanceof WP_Post && 'auto-draft' === $existing_post->post_status ) {
+			$data['post_name'] = $this->generate_slug();
+		}
+
 		return $data;
 	}
 
@@ -115,7 +140,7 @@ final class SlugGenerator {
 	 * @param WP_Post $post    The post object.
 	 */
 	public function persist_slug( int $post_id, WP_Post $post ): void {
-		if ( 'auto-draft' === $post->post_status || wp_is_post_revision( $post_id ) ) {
+		if ( 'auto-draft' === $post->post_status || false !== wp_is_post_revision( $post_id ) ) {
 			return;
 		}
 

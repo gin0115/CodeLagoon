@@ -23,6 +23,14 @@ use Gin0115\Codelagoon\Theme\SiteThemeService;
 /**
  * Print the floating panel markup + config into the footer. Logged-out
  * visitors get nothing — the feature is an authenticated convenience only.
+ *
+ * @SuppressWarnings("PHPMD.CyclomaticComplexity")  Single-pass template with
+ *   per-control conditionals; splitting it fragments what should read as one
+ *   block of markup.
+ * @SuppressWarnings("PHPMD.NPathComplexity")       Same reason — branching
+ *   lives in a flat if/isset chain, not nested logic.
+ * @SuppressWarnings("PHPMD.ExcessiveMethodLength") Most of the length is
+ *   inline HTML / heredoc; extracting it would trade readability for metric.
  */
 function codelag_render_theme_panel(): void {
 	if ( ! is_user_logged_in() ) {

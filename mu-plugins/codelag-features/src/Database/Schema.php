@@ -43,6 +43,8 @@ final class Schema {
 
 	/**
 	 * Hook the schema installer onto `init` ahead of anything that queries the tables.
+	 *
+	 * @return void
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'maybe_install' ), 5 );
@@ -50,14 +52,28 @@ final class Schema {
 
 	/**
 	 * Prefixed table name for the files table.
+	 *
+	 * Declared `literal-string` so phpstan treats interpolated SQL like
+	 * `"SELECT * FROM {$table}"` as safe to pass to `wpdb::prepare()` — the
+	 * return value is composed from a class constant and `$wpdb->prefix`,
+	 * never from user input.
+	 *
+	 * @return literal-string
 	 */
 	public static function files_table(): string {
 		global $wpdb;
+		// `$wpdb->prefix` is typed plain `string` in core stubs, so phpstan
+		// infers `non-falsy-string` on the concat and can't prove literal-string.
+		// The value is composed from `$wpdb->prefix` and our own class constant —
+		// never user input — so the `@return literal-string` contract holds.
+		// @phpstan-ignore return.type
 		return $wpdb->prefix . self::TABLE_FILES;
 	}
 
 	/**
 	 * Run the installer if the stored schema version is behind {@see Schema::VERSION}.
+	 *
+	 * @return void
 	 */
 	public function maybe_install(): void {
 		$current = (string) get_option( self::OPTION_NAME, '' );
@@ -71,6 +87,8 @@ final class Schema {
 
 	/**
 	 * Create or upgrade the files table via `dbDelta`.
+	 *
+	 * @return void
 	 */
 	private function install(): void {
 		global $wpdb;

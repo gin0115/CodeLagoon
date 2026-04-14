@@ -27,14 +27,20 @@ defined( 'ABSPATH' ) || exit;
  */
 final class CollectButtonShortcode {
 
-	public const TAG    = 'codelag_collect_button';
+	public const TAG     = 'codelag_collect_button';
 	private const HANDLE = 'codelag-collect';
 
+	/**
+	 * Hook the shortcode + asset registration into WordPress.
+	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
 	}
 
+	/**
+	 * Register the shortcode tag with WordPress.
+	 */
 	public function register_shortcode(): void {
 		add_shortcode( self::TAG, array( $this, 'render' ) );
 	}
@@ -63,6 +69,8 @@ final class CollectButtonShortcode {
 	}
 
 	/**
+	 * Shortcode callback — render the collect button on a single lagoon.
+	 *
 	 * @param array<string,mixed>|string $atts Unused.
 	 */
 	public function render( $atts = array() ): string {

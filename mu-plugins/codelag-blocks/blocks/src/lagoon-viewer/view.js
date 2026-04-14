@@ -44,7 +44,7 @@ const COPY_RESET_MS = 2000;
 /**
  * Highlight every <code> element under the given root that Prism can handle.
  *
- * @param {ParentNode} root
+ * @param {Element|Document} root Root to search from.
  */
 function highlightAll( root ) {
 	Prism.highlightAllUnder( root );
@@ -71,8 +71,11 @@ function wireCopyButton( button ) {
 	button.addEventListener( 'click', async () => {
 		const text = raw.value;
 		try {
-			if ( navigator.clipboard && navigator.clipboard.writeText ) {
-				await navigator.clipboard.writeText( text );
+			if (
+				window.navigator.clipboard &&
+				window.navigator.clipboard.writeText
+			) {
+				await window.navigator.clipboard.writeText( text );
 			} else {
 				// Fallback for older browsers / non-secure contexts.
 				raw.removeAttribute( 'hidden' );
@@ -111,9 +114,13 @@ function wireMarkdownToggle( button ) {
 		return;
 	}
 	const preview = body.querySelector( '[data-codelag-md-preview]' );
-	const source  = body.querySelector( '[data-codelag-md-source]' );
-	const labelToPreview = button.querySelector( '[data-codelag-md-toggle-label-preview]' );
-	const labelToSource  = button.querySelector( '[data-codelag-md-toggle-label-source]' );
+	const source = body.querySelector( '[data-codelag-md-source]' );
+	const labelToPreview = button.querySelector(
+		'[data-codelag-md-toggle-label-preview]'
+	);
+	const labelToSource = button.querySelector(
+		'[data-codelag-md-toggle-label-source]'
+	);
 
 	button.addEventListener( 'click', () => {
 		if ( ! preview || ! source ) {
@@ -154,7 +161,7 @@ function wireMarkdownToggle( button ) {
  */
 function wireForkButton( button ) {
 	const lagoonId = button.getAttribute( 'data-lagoon-id' );
-	const nonce    = button.getAttribute( 'data-fork-nonce' );
+	const nonce = button.getAttribute( 'data-fork-nonce' );
 	const restRoot = button.getAttribute( 'data-fork-rest-root' );
 
 	if ( ! lagoonId || ! nonce || ! restRoot ) {
@@ -162,7 +169,7 @@ function wireForkButton( button ) {
 	}
 
 	const labelDefault = button.querySelector( '[data-codelag-fork-default]' );
-	const labelBusy    = button.querySelector( '[data-codelag-fork-busy]' );
+	const labelBusy = button.querySelector( '[data-codelag-fork-busy]' );
 
 	button.addEventListener( 'click', async () => {
 		if ( button.disabled ) {
@@ -174,7 +181,11 @@ function wireForkButton( button ) {
 			labelBusy.removeAttribute( 'hidden' );
 		}
 
-		const url = restRoot.replace( /\/$/, '' ) + '/codelag/v1/lagoons/' + encodeURIComponent( lagoonId ) + '/fork';
+		const url =
+			restRoot.replace( /\/$/, '' ) +
+			'/codelag/v1/lagoons/' +
+			encodeURIComponent( lagoonId ) +
+			'/fork';
 
 		try {
 			const response = await fetch( url, {
@@ -188,7 +199,11 @@ function wireForkButton( button ) {
 
 			if ( ! response.ok ) {
 				const body = await response.json().catch( () => ( {} ) );
-				throw new Error( body && body.message ? body.message : 'Fork request failed (' + response.status + ').' );
+				throw new Error(
+					body && body.message
+						? body.message
+						: 'Fork request failed (' + response.status + ').'
+				);
 			}
 
 			const data = await response.json();
@@ -224,25 +239,28 @@ function wireForkButton( button ) {
 // ---------------------------------------------------------------------------
 
 const THEMES = {
-	tomorrow:       { prism: 'tomorrow',       dark: true },
-	okaidia:        { prism: 'okaidia',        dark: true },
-	twilight:       { prism: 'twilight',       dark: true },
-	default:        { prism: 'default',        dark: false },
-	coy:            { prism: 'coy',            dark: false },
+	tomorrow: { prism: 'tomorrow', dark: true },
+	okaidia: { prism: 'okaidia', dark: true },
+	twilight: { prism: 'twilight', dark: true },
+	default: { prism: 'default', dark: false },
+	coy: { prism: 'coy', dark: false },
 	solarizedlight: { prism: 'solarizedlight', dark: false },
 };
 
 const PRISM_VERSION = '1.30.0';
-const STORAGE_KEY   = 'codelag-theme';
+const STORAGE_KEY = 'codelag-theme';
 const PRISM_LINK_ID = 'codelag-prism-theme';
 
 /**
  * Build the jsDelivr URL for a Prism theme. The "default" light theme is
  * served as `prism.min.css` (no `-default` suffix); everything else is
  * `prism-<name>.min.css`.
+ *
+ * @param {string} name Prism theme slug (e.g. "tomorrow", "default").
  */
 function prismUrl( name ) {
-	const filename = name === 'default' ? 'prism.min.css' : `prism-${ name }.min.css`;
+	const filename =
+		name === 'default' ? 'prism.min.css' : `prism-${ name }.min.css`;
 	return `https://cdn.jsdelivr.net/npm/prismjs@${ PRISM_VERSION }/themes/${ filename }`;
 }
 
@@ -250,6 +268,9 @@ function prismUrl( name ) {
  * Inject (or update) a stylesheet `<link>` with the given id and href. Idempotent —
  * the same call swaps the href on an existing link rather than appending a
  * duplicate, so memory and head clutter stay constant across theme switches.
+ *
+ * @param {string} id   DOM id to attach to the `<link>` element.
+ * @param {string} href Stylesheet URL to load.
  */
 function setLink( id, href ) {
 	let link = document.getElementById( id );
@@ -272,7 +293,10 @@ function setLink( id, href ) {
 function applyTheme( key ) {
 	const theme = THEMES[ key ] || THEMES.tomorrow;
 	setLink( PRISM_LINK_ID, prismUrl( theme.prism ) );
-	document.body.setAttribute( 'data-codelag-theme', theme.dark ? 'dark' : 'light' );
+	document.body.setAttribute(
+		'data-codelag-theme',
+		theme.dark ? 'dark' : 'light'
+	);
 	document.body.setAttribute( 'data-codelag-theme-key', key );
 }
 
@@ -302,6 +326,8 @@ function persistTheme( key ) {
 /**
  * Wire a single theme picker `<select>`. Sets the option matching the
  * persisted choice on init, then listens for changes.
+ *
+ * @param {HTMLSelectElement} select The theme-picker `<select>` element.
  */
 function wireThemePicker( select ) {
 	const persisted = readPersistedTheme();
@@ -329,8 +355,11 @@ function wireShareButton( button ) {
 	button.addEventListener( 'click', async () => {
 		const url = window.location.href;
 		try {
-			if ( navigator.clipboard && navigator.clipboard.writeText ) {
-				await navigator.clipboard.writeText( url );
+			if (
+				window.navigator.clipboard &&
+				window.navigator.clipboard.writeText
+			) {
+				await window.navigator.clipboard.writeText( url );
 			} else {
 				// Fallback for older browsers / non-secure contexts.
 				const tmp = document.createElement( 'textarea' );
@@ -359,18 +388,28 @@ function wireShareButton( button ) {
 }
 
 function init() {
-	const viewers = document.querySelectorAll( '.wp-block-codelag-lagoon-viewer' );
+	const viewers = document.querySelectorAll(
+		'.wp-block-codelag-lagoon-viewer'
+	);
 	viewers.forEach( ( viewer ) => {
 		highlightAll( viewer );
-		viewer.querySelectorAll( '[data-codelag-copy]' ).forEach( wireCopyButton );
-		viewer.querySelectorAll( '[data-codelag-md-toggle]' ).forEach( wireMarkdownToggle );
+		viewer
+			.querySelectorAll( '[data-codelag-copy]' )
+			.forEach( wireCopyButton );
+		viewer
+			.querySelectorAll( '[data-codelag-md-toggle]' )
+			.forEach( wireMarkdownToggle );
 	} );
 
 	// Fork buttons live OUTSIDE the lagoon-viewer wrapper (in the singular
 	// template's header card), so they're queried at document level rather
 	// than scoped per viewer.
-	document.querySelectorAll( '[data-codelag-fork-lagoon]' ).forEach( wireForkButton );
-	document.querySelectorAll( '[data-codelag-share]' ).forEach( wireShareButton );
+	document
+		.querySelectorAll( '[data-codelag-fork-lagoon]' )
+		.forEach( wireForkButton );
+	document
+		.querySelectorAll( '[data-codelag-share]' )
+		.forEach( wireShareButton );
 
 	// Restore theme as early as possible to minimise FOUC, then wire the
 	// pickers so the user can switch.
@@ -378,7 +417,9 @@ function init() {
 	if ( persistedTheme ) {
 		applyTheme( persistedTheme );
 	}
-	document.querySelectorAll( '[data-codelag-theme-picker]' ).forEach( wireThemePicker );
+	document
+		.querySelectorAll( '[data-codelag-theme-picker]' )
+		.forEach( wireThemePicker );
 
 	// The theme-panel.js module (loaded globally by the theme for logged-in
 	// users) fires a `codelag:syntax-theme` custom event when the user picks

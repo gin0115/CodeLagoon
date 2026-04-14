@@ -19,14 +19,14 @@
 ( function () {
 	'use strict';
 
-	var ROOT_ATTR    = 'data-site-theme';
-	var SIDE_STORE   = 'codelag-theme-panel-side';
-	var DEFAULT_SIDE = 'right';
+	const ROOT_ATTR = 'data-site-theme';
+	const SIDE_STORE = 'codelag-theme-panel-side';
+	const DEFAULT_SIDE = 'right';
 
 	document.addEventListener( 'DOMContentLoaded', init );
 
 	function init() {
-		var panel = document.querySelector( '[data-codelag-theme-panel]' );
+		const panel = document.querySelector( '[data-codelag-theme-panel]' );
 		if ( ! panel ) {
 			return;
 		}
@@ -42,11 +42,13 @@
 
 	/**
 	 * Restore the persisted left/right side on load.
+	 *
+	 * @param {HTMLElement} panel Panel root element.
 	 */
 	function applyInitialSide( panel ) {
-		var side = DEFAULT_SIDE;
+		let side = DEFAULT_SIDE;
 		try {
-			var stored = window.localStorage.getItem( SIDE_STORE );
+			const stored = window.localStorage.getItem( SIDE_STORE );
 			if ( stored === 'left' || stored === 'right' ) {
 				side = stored;
 			}
@@ -57,13 +59,13 @@
 	}
 
 	function wireToggle( panel ) {
-		var toggle = panel.querySelector( '[data-codelag-theme-toggle]' );
-		var body   = panel.querySelector( '[data-codelag-theme-body]' );
+		const toggle = panel.querySelector( '[data-codelag-theme-toggle]' );
+		const body = panel.querySelector( '[data-codelag-theme-body]' );
 		if ( ! toggle || ! body ) {
 			return;
 		}
 		toggle.addEventListener( 'click', function () {
-			var open = body.hasAttribute( 'hidden' );
+			const open = body.hasAttribute( 'hidden' );
 			if ( open ) {
 				body.removeAttribute( 'hidden' );
 				toggle.setAttribute( 'aria-expanded', 'true' );
@@ -75,12 +77,12 @@
 	}
 
 	function wireClose( panel ) {
-		var close  = panel.querySelector( '[data-codelag-theme-close]' );
-		var toggle = panel.querySelector( '[data-codelag-theme-toggle]' );
-		var body   = panel.querySelector( '[data-codelag-theme-body]' );
+		const close = panel.querySelector( '[data-codelag-theme-close]' );
+		const body = panel.querySelector( '[data-codelag-theme-body]' );
 		if ( ! close || ! body ) {
 			return;
 		}
+		const toggle = panel.querySelector( '[data-codelag-theme-toggle]' );
 		close.addEventListener( 'click', function () {
 			body.setAttribute( 'hidden', '' );
 			if ( toggle ) {
@@ -90,12 +92,13 @@
 	}
 
 	function wireSideSwap( panel ) {
-		var btn = panel.querySelector( '[data-codelag-theme-side]' );
+		const btn = panel.querySelector( '[data-codelag-theme-side]' );
 		if ( ! btn ) {
 			return;
 		}
 		btn.addEventListener( 'click', function () {
-			var side = panel.getAttribute( 'data-side' ) === 'left' ? 'right' : 'left';
+			const side =
+				panel.getAttribute( 'data-side' ) === 'left' ? 'right' : 'left';
 			panel.setAttribute( 'data-side', side );
 			try {
 				window.localStorage.setItem( SIDE_STORE, side );
@@ -106,30 +109,32 @@
 	}
 
 	function wireSiteThemeSelect( panel ) {
-		var select = panel.querySelector( '[data-codelag-site-theme]' );
-		var metaKey = panel.getAttribute( 'data-site-meta-key' );
+		const select = panel.querySelector( '[data-codelag-site-theme]' );
+		const metaKey = panel.getAttribute( 'data-site-meta-key' );
 		if ( ! select || ! metaKey ) {
 			return;
 		}
 		select.addEventListener( 'change', function () {
-			var value = select.value;
+			const value = select.value;
 			document.documentElement.setAttribute( ROOT_ATTR, value );
 			saveMeta( panel, metaKey, value );
 		} );
 	}
 
 	function wireSyntaxThemeSelect( panel ) {
-		var select = panel.querySelector( '[data-codelag-syntax-theme]' );
-		var metaKey = panel.getAttribute( 'data-syntax-meta-key' );
+		const select = panel.querySelector( '[data-codelag-syntax-theme]' );
+		const metaKey = panel.getAttribute( 'data-syntax-meta-key' );
 		if ( ! select || ! metaKey ) {
 			return;
 		}
 		select.addEventListener( 'change', function () {
-			var value = select.value;
+			const value = select.value;
 			// Notify any listeners (view.js on lagoon pages applies Prism themes
 			// when it sees this event) so the preview updates immediately.
 			document.dispatchEvent(
-				new CustomEvent( 'codelag:syntax-theme', { detail: { key: value } } )
+				new CustomEvent( 'codelag:syntax-theme', {
+					detail: { key: value },
+				} )
 			);
 			saveMeta( panel, metaKey, value );
 		} );
@@ -139,17 +144,19 @@
 	 * Wire the 1-col / 2-col button pair. Clicking swaps `data-codelag-cols`
 	 * on <html> live (so CSS column rules apply immediately) and PATCHes
 	 * the user's meta so the choice survives reloads.
+	 *
+	 * @param {HTMLElement} panel Panel root element.
 	 */
 	function wireColumnsToggle( panel ) {
-		var buttons = panel.querySelectorAll( '[data-codelag-columns]' );
-		var metaKey = panel.getAttribute( 'data-columns-meta-key' );
+		const buttons = panel.querySelectorAll( '[data-codelag-columns]' );
+		const metaKey = panel.getAttribute( 'data-columns-meta-key' );
 		if ( ! buttons.length || ! metaKey ) {
 			return;
 		}
 
 		buttons.forEach( function ( btn ) {
 			btn.addEventListener( 'click', function () {
-				var value = btn.getAttribute( 'data-codelag-columns' );
+				const value = btn.getAttribute( 'data-codelag-columns' );
 				if ( value !== '1' && value !== '2' ) {
 					return;
 				}
@@ -161,7 +168,10 @@
 					);
 				} );
 
-				document.documentElement.setAttribute( 'data-codelag-cols', value );
+				document.documentElement.setAttribute(
+					'data-codelag-cols',
+					value
+				);
 				saveMeta( panel, metaKey, parseInt( value, 10 ) );
 			} );
 		} );
@@ -169,14 +179,18 @@
 
 	/**
 	 * PATCH a single user-meta key on the current user via wp/v2/users/me.
+	 *
+	 * @param {HTMLElement} panel   Panel root element (carries REST root + nonce attrs).
+	 * @param {string}      metaKey Meta key to update.
+	 * @param {*}           value   New value for the meta key.
 	 */
 	function saveMeta( panel, metaKey, value ) {
-		var root  = panel.getAttribute( 'data-rest-root' );
-		var nonce = panel.getAttribute( 'data-nonce' );
+		const root = panel.getAttribute( 'data-rest-root' );
+		const nonce = panel.getAttribute( 'data-nonce' );
 		if ( ! root || ! nonce ) {
 			return;
 		}
-		var payload = { meta: {} };
+		const payload = { meta: {} };
 		payload.meta[ metaKey ] = value;
 
 		fetch( root.replace( /\/$/, '' ) + '/wp/v2/users/me', {

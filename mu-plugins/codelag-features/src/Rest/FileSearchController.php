@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Gin0115\Codelagoon\Features\Rest;
 
-use Gin0115\Codelagoon\Features\Database\FileRepository;
+use Gin0115\Codelagoon\Features\Database\FileSearch;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -36,18 +36,18 @@ final class FileSearchController {
 	private const ROUTE     = '/files/search';
 
 	/**
-	 * Shared file repository.
+	 * Shared file-search service.
 	 *
-	 * @var FileRepository
+	 * @var FileSearch
 	 */
-	private FileRepository $files;
+	private FileSearch $files;
 
 	/**
-	 * Inject the shared file repository.
+	 * Inject the shared file-search service.
 	 *
-	 * @param FileRepository $files File repository instance.
+	 * @param FileSearch $files File-search service instance.
 	 */
-	public function __construct( FileRepository $files ) {
+	public function __construct( FileSearch $files ) {
 		$this->files = $files;
 	}
 

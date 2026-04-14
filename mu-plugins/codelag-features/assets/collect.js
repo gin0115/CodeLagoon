@@ -14,12 +14,21 @@
 	'use strict';
 
 	function endpoint( button ) {
-		const root = button.getAttribute( 'data-collect-rest-root' ) || '/wp-json/';
-		const id = parseInt( button.getAttribute( 'data-lagoon-id' ) || '0', 10 );
+		const root =
+			button.getAttribute( 'data-collect-rest-root' ) || '/wp-json/';
+		const id = parseInt(
+			button.getAttribute( 'data-lagoon-id' ) || '0',
+			10
+		);
 		if ( ! id ) {
 			return '';
 		}
-		return root.replace( /\/+$/, '' ) + '/codelag/v1/lagoons/' + id + '/collect';
+		return (
+			root.replace( /\/+$/, '' ) +
+			'/codelag/v1/lagoons/' +
+			id +
+			'/collect'
+		);
 	}
 
 	async function request( button, method ) {
@@ -29,11 +38,11 @@
 		}
 		const nonce = button.getAttribute( 'data-collect-nonce' ) || '';
 		const res = await fetch( url, {
-			method: method,
+			method,
 			credentials: 'same-origin',
 			headers: {
 				'X-WP-Nonce': nonce,
-				'Accept': 'application/json',
+				Accept: 'application/json',
 			},
 		} );
 		if ( ! res.ok ) {
@@ -61,7 +70,8 @@
 				return;
 			}
 			button.disabled = true;
-			const currentlyCollected = 'true' === button.getAttribute( 'data-collected' );
+			const currentlyCollected =
+				'true' === button.getAttribute( 'data-collected' );
 			const method = currentlyCollected ? 'DELETE' : 'POST';
 			const result = await request( button, method );
 			if ( result && typeof result.collected === 'boolean' ) {
@@ -72,6 +82,8 @@
 	}
 
 	document.addEventListener( 'DOMContentLoaded', () => {
-		document.querySelectorAll( '[data-codelag-collect]' ).forEach( wireToggle );
+		document
+			.querySelectorAll( '[data-codelag-collect]' )
+			.forEach( wireToggle );
 	} );
-}() );
+} )();

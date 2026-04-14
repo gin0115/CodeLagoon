@@ -26,6 +26,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Permissions use the taxonomy's registered capabilities
  * (`manage_terms` / `edit_terms` / `delete_terms`), matching core behaviour.
+ *
+ * @SuppressWarnings("PHPMD.ExcessiveClassComplexity")
  */
 final class TermsController {
 
@@ -45,15 +47,27 @@ final class TermsController {
 	 */
 	private string $rest_base;
 
+	/**
+	 * Bind the controller to a specific taxonomy + REST base.
+	 *
+	 * @param string $taxonomy  Taxonomy slug this controller exposes.
+	 * @param string $rest_base REST base segment (e.g. `lagoon-tags`).
+	 */
 	public function __construct( string $taxonomy, string $rest_base ) {
 		$this->taxonomy  = $taxonomy;
 		$this->rest_base = $rest_base;
 	}
 
+	/**
+	 * Hook REST route registration.
+	 */
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
+	/**
+	 * Register the CRUD routes for this taxonomy.
+	 */
 	public function register_routes(): void {
 		$base = '/' . $this->rest_base;
 
@@ -126,9 +140,12 @@ final class TermsController {
 	// Permission callbacks
 	// ---------------------------------------------------------------------
 
+	/**
+	 * Allow creation only if the current user has `manage_terms` on this taxonomy.
+	 */
 	public function permissions_create(): bool|WP_Error {
 		$tax = get_taxonomy( $this->taxonomy );
-		if ( ! $tax || ! current_user_can( $tax->cap->manage_terms ) ) {
+		if ( ! $tax instanceof \WP_Taxonomy || ! current_user_can( $tax->cap->manage_terms ) ) {
 			return new WP_Error(
 				'codelag_cannot_create_term',
 				__( 'You are not allowed to create terms in this taxonomy.', 'codelag-features' ),
@@ -138,13 +155,18 @@ final class TermsController {
 		return true;
 	}
 
-	public function permissions_edit( WP_REST_Request $request ) {
+	/**
+	 * Allow editing only if the current user has `edit_terms` on this taxonomy.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
+	public function permissions_edit( WP_REST_Request $request ): bool|WP_Error {
 		$term = $this->resolve_term( $request );
 		if ( $term instanceof WP_Error ) {
 			return $term;
 		}
 		$tax = get_taxonomy( $this->taxonomy );
-		if ( ! $tax || ! current_user_can( $tax->cap->edit_terms ) ) {
+		if ( ! $tax instanceof \WP_Taxonomy || ! current_user_can( $tax->cap->edit_terms ) ) {
 			return new WP_Error(
 				'codelag_cannot_edit_term',
 				__( 'You are not allowed to edit terms in this taxonomy.', 'codelag-features' ),
@@ -154,13 +176,18 @@ final class TermsController {
 		return true;
 	}
 
-	public function permissions_delete( WP_REST_Request $request ) {
+	/**
+	 * Allow deletion only if the current user has `delete_terms` on this taxonomy.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
+	public function permissions_delete( WP_REST_Request $request ): bool|WP_Error {
 		$term = $this->resolve_term( $request );
 		if ( $term instanceof WP_Error ) {
 			return $term;
 		}
 		$tax = get_taxonomy( $this->taxonomy );
-		if ( ! $tax || ! current_user_can( $tax->cap->delete_terms ) ) {
+		if ( ! $tax instanceof \WP_Taxonomy || ! current_user_can( $tax->cap->delete_terms ) ) {
 			return new WP_Error(
 				'codelag_cannot_delete_term',
 				__( 'You are not allowed to delete terms in this taxonomy.', 'codelag-features' ),
@@ -174,6 +201,11 @@ final class TermsController {
 	// Route handlers
 	// ---------------------------------------------------------------------
 
+	/**
+	 * GET handler — list terms in this taxonomy.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
 	public function list_items( WP_REST_Request $request ): WP_REST_Response {
 		$per_page = (int) $request->get_param( 'per_page' );
 		$page     = (int) $request->get_param( 'page' );
@@ -199,12 +231,13 @@ final class TermsController {
 			return rest_ensure_response( array() );
 		}
 
-		$total = (int) wp_count_terms(
+		$count = wp_count_terms(
 			array(
 				'taxonomy'   => $this->taxonomy,
 				'hide_empty' => false,
 			)
 		);
+		$total = $count instanceof WP_Error ? 0 : (int) $count;
 
 		$response = rest_ensure_response( array_map( array( $this, 'prepare_term' ), (array) $terms ) );
 		$response->header( 'X-WP-Total', (string) $total );
@@ -212,7 +245,12 @@ final class TermsController {
 		return $response;
 	}
 
-	public function get_item( WP_REST_Request $request ) {
+	/**
+	 * GET handler — fetch a single term.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
+	public function get_item( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$term = $this->resolve_term( $request );
 		if ( $term instanceof WP_Error ) {
 			return $term;
@@ -220,7 +258,12 @@ final class TermsController {
 		return rest_ensure_response( $this->prepare_term( $term ) );
 	}
 
-	public function create_item( WP_REST_Request $request ) {
+	/**
+	 * POST handler — create a new term.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
+	public function create_item( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$name = trim( (string) $request->get_param( 'name' ) );
 		if ( '' === $name ) {
 			return new WP_Error(
@@ -242,7 +285,7 @@ final class TermsController {
 		}
 
 		$result = wp_insert_term( $name, $this->taxonomy, $args );
-		if ( is_wp_error( $result ) ) {
+		if ( $result instanceof WP_Error ) {
 			return $result;
 		}
 
@@ -260,7 +303,15 @@ final class TermsController {
 		return $response;
 	}
 
-	public function update_item( WP_REST_Request $request ) {
+	/**
+	 * PUT handler — update an existing term.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 *
+	 * @SuppressWarnings("PHPMD.CyclomaticComplexity")
+	 * @SuppressWarnings("PHPMD.NPathComplexity")
+	 */
+	public function update_item( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$term = $this->resolve_term( $request );
 		if ( $term instanceof WP_Error ) {
 			return $term;
@@ -285,7 +336,7 @@ final class TermsController {
 		}
 
 		$result = wp_update_term( $term->term_id, $this->taxonomy, $args );
-		if ( is_wp_error( $result ) ) {
+		if ( $result instanceof WP_Error ) {
 			return $result;
 		}
 
@@ -293,7 +344,12 @@ final class TermsController {
 		return rest_ensure_response( $this->prepare_term( $fresh instanceof WP_Term ? $fresh : $term ) );
 	}
 
-	public function delete_item( WP_REST_Request $request ) {
+	/**
+	 * DELETE handler — remove a term.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
+	 */
+	public function delete_item( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$term = $this->resolve_term( $request );
 		if ( $term instanceof WP_Error ) {
 			return $term;
@@ -324,11 +380,14 @@ final class TermsController {
 	// ---------------------------------------------------------------------
 
 	/**
+	 * Resolve the term referenced by the URL `id` arg.
+	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_Term|WP_Error
 	 */
 	private function resolve_term( WP_REST_Request $request ) {
-		$id   = (int) $request['id'];
-		$term = get_term( $id, $this->taxonomy );
+		$term_id = (int) $request['id'];
+		$term    = get_term( $term_id, $this->taxonomy );
 		if ( ! $term instanceof WP_Term ) {
 			return new WP_Error(
 				'codelag_term_not_found',
@@ -340,6 +399,9 @@ final class TermsController {
 	}
 
 	/**
+	 * Coerce a `WP_Term` into the REST response shape this controller emits.
+	 *
+	 * @param WP_Term $term Term to serialise.
 	 * @return array<string,mixed>
 	 */
 	private function prepare_term( WP_Term $term ): array {
@@ -355,6 +417,8 @@ final class TermsController {
 	}
 
 	/**
+	 * Reusable URL arg schema for the term `id`.
+	 *
 	 * @return array<string,mixed>
 	 */
 	private function id_arg(): array {
@@ -367,6 +431,9 @@ final class TermsController {
 	}
 
 	/**
+	 * Schema for body params on create / update.
+	 *
+	 * @param bool $create True for create (some fields required), false for update.
 	 * @return array<string,array<string,mixed>>
 	 */
 	private function write_args( bool $create ): array {

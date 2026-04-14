@@ -14,10 +14,12 @@
 
 import { __ } from '@wordpress/i18n';
 import { registerPlugin } from '@wordpress/plugins';
-import { PluginDocumentSettingPanel } from '@wordpress/editor';
+import {
+	PluginDocumentSettingPanel,
+	store as editorStore,
+} from '@wordpress/editor';
 import { RadioControl } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { store as editorStore } from '@wordpress/editor';
 
 const POST_TYPE = 'lagoon';
 
@@ -39,10 +41,12 @@ function VisibilityPanel() {
 	// Private can be represented as either `private` or sometimes surfaces as
 	// `private` alongside visibility=password in core; we only care about the
 	// three custom states here.
-	const current =
-		status === 'codelag_link' ? 'codelag_link' :
-		status === 'private'      ? 'private'      :
-		                             'publish';
+	let current = 'publish';
+	if ( status === 'codelag_link' ) {
+		current = 'codelag_link';
+	} else if ( status === 'private' ) {
+		current = 'private';
+	}
 
 	return (
 		<PluginDocumentSettingPanel
@@ -55,15 +59,24 @@ function VisibilityPanel() {
 				onChange={ ( value ) => editPost( { status: value } ) }
 				options={ [
 					{
-						label: __( 'Listed — shown in archives, search, and the API', 'codelag-features' ),
+						label: __(
+							'Listed — shown in archives, search, and the API',
+							'codelag-features'
+						),
 						value: 'publish',
 					},
 					{
-						label: __( 'Link only — anyone with the link can view; hidden from listings', 'codelag-features' ),
+						label: __(
+							'Link only — anyone with the link can view; hidden from listings',
+							'codelag-features'
+						),
 						value: 'codelag_link',
 					},
 					{
-						label: __( 'Private — only you can view', 'codelag-features' ),
+						label: __(
+							'Private — only you can view',
+							'codelag-features'
+						),
 						value: 'private',
 					},
 				] }

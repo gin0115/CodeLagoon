@@ -7,9 +7,15 @@
  * editor, lazy-loaded from jsDelivr on first use.
  */
 
-import { useEffect, useState, useMemo, useCallback, useRef } from '@wordpress/element';
+import {
+	useEffect,
+	useState,
+	useMemo,
+	useCallback,
+	useRef,
+} from '@wordpress/element';
 import { useBlockProps } from '@wordpress/block-editor';
-import { useSelect, useDispatch, subscribe, select, dispatch } from '@wordpress/data';
+import { useSelect, subscribe, select, dispatch } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import {
@@ -21,10 +27,10 @@ import {
 	Spinner,
 	Modal,
 	Dropdown,
-	Icon,
 } from '@wordpress/components';
 import {
 	search,
+	// eslint-disable-next-line import/named -- exported at runtime; not in the package's type declarations.
 	replaceAll,
 	code,
 	commentContent,
@@ -34,13 +40,10 @@ import {
 	formatIndent,
 	formatOutdent,
 	dragHandle,
-	check,
 	trash,
 	plus,
-	edit as editIcon,
 	aspectRatio,
 	seen,
-	page,
 } from '@wordpress/icons';
 
 import Editor, { loader } from '@monaco-editor/react';
@@ -78,6 +81,11 @@ import {
  * fallback icon for languages that don't have a brand logo (plaintext, xml,
  * future custom types). Pass an optional `label` to draw a coloured band with
  * the file type text — leave it blank for the plain notepad look.
+ *
+ * @param {Object} props       Component props.
+ * @param {string} props.label Optional band label (empty = plain notepad look).
+ * @param {string} props.color Band colour.
+ * @param {number} props.size  Icon side length in px.
  */
 function FileTypeIcon( { label = '', color = '#7dd3c0', size = 22 } ) {
 	return (
@@ -96,17 +104,56 @@ function FileTypeIcon( { label = '', color = '#7dd3c0', size = 22 } ) {
 				strokeWidth="1.4"
 				strokeLinejoin="round"
 			/>
-			<path d="M14 2v6h6" fill="none" stroke="#1a1a1a" strokeWidth="1.4" strokeLinejoin="round" />
+			<path
+				d="M14 2v6h6"
+				fill="none"
+				stroke="#1a1a1a"
+				strokeWidth="1.4"
+				strokeLinejoin="round"
+			/>
 			{ ! label && (
 				<>
-					<line x1="7.5" y1="11" x2="16.5" y2="11" stroke="#1a1a1a" strokeWidth="1.2" strokeLinecap="round" />
-					<line x1="7.5" y1="13.5" x2="16.5" y2="13.5" stroke="#1a1a1a" strokeWidth="1.2" strokeLinecap="round" />
-					<line x1="7.5" y1="16" x2="13" y2="16" stroke="#1a1a1a" strokeWidth="1.2" strokeLinecap="round" />
+					<line
+						x1="7.5"
+						y1="11"
+						x2="16.5"
+						y2="11"
+						stroke="#1a1a1a"
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="7.5"
+						y1="13.5"
+						x2="16.5"
+						y2="13.5"
+						stroke="#1a1a1a"
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="7.5"
+						y1="16"
+						x2="13"
+						y2="16"
+						stroke="#1a1a1a"
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
 				</>
 			) }
 			{ !! label && (
 				<>
-					<rect x="3" y="13" width="18" height="6.5" rx="0.4" fill={ color } stroke="#1a1a1a" strokeWidth="1.2" />
+					<rect
+						x="3"
+						y="13"
+						width="18"
+						height="6.5"
+						rx="0.4"
+						fill={ color }
+						stroke="#1a1a1a"
+						strokeWidth="1.2"
+					/>
 					<text
 						x="12"
 						y="17.6"
@@ -201,7 +248,7 @@ const VS_DARK_DATA = {
 		'editorBracketMatch.background': '#0064001a',
 		'editorBracketMatch.border': '#888888',
 		'minimap.background': '#1e1e1e',
-		'foreground': '#cccccc',
+		foreground: '#cccccc',
 	},
 };
 
@@ -227,20 +274,20 @@ const VS_LIGHT_DATA = {
 		'editorBracketMatch.background': '#0064001a',
 		'editorBracketMatch.border': '#b9b9b9',
 		'minimap.background': '#ffffff',
-		'foreground': '#616161',
+		foreground: '#616161',
 	},
 };
 
 const MONACO_THEMES = {
 	'vs-dark': { label: 'Visual Studio Dark (built-in)', data: VS_DARK_DATA },
-	'vs': { label: 'Visual Studio Light (built-in)', data: VS_LIGHT_DATA },
+	vs: { label: 'Visual Studio Light (built-in)', data: VS_LIGHT_DATA },
 	'night-owl': { label: 'Night Owl', data: nightOwlTheme },
-	'dracula': { label: 'Dracula', data: draculaTheme },
-	'monokai': { label: 'Monokai', data: monokaiTheme },
+	dracula: { label: 'Dracula', data: draculaTheme },
+	monokai: { label: 'Monokai', data: monokaiTheme },
 	'tomorrow-night': { label: 'Tomorrow Night', data: tomorrowNightTheme },
 	'solarized-dark': { label: 'Solarized Dark', data: solarizedDarkTheme },
-	'cobalt': { label: 'Cobalt', data: cobaltTheme },
-	'twilight': { label: 'Twilight', data: twilightTheme },
+	cobalt: { label: 'Cobalt', data: cobaltTheme },
+	twilight: { label: 'Twilight', data: twilightTheme },
 };
 
 const DEFAULT_THEME = 'vs-dark';
@@ -250,6 +297,8 @@ const DEFAULT_THEME = 'vs-dark';
  * monaco-themes package contain malformed rule entries — leading whitespace
  * in `fontStyle` values, empty objects, even null entries — which crash
  * Monaco's `defineTheme` parser ("Cannot read properties of undefined").
+ *
+ * @param {Object} data Raw Monaco theme JSON.
  */
 function sanitizeThemeData( data ) {
 	if ( ! data ) {
@@ -289,7 +338,12 @@ function sanitizeThemeData( data ) {
  * are already registered by Monaco internally, and our entries for them only
  * carry colour data for the React inline-style override path.
  */
-const BUILTIN_THEME_KEYS = new Set( [ 'vs', 'vs-dark', 'hc-black', 'hc-light' ] );
+const BUILTIN_THEME_KEYS = new Set( [
+	'vs',
+	'vs-dark',
+	'hc-black',
+	'hc-light',
+] );
 
 function defineAllThemes( monacoLib ) {
 	if ( ! monacoLib ) {
@@ -303,10 +357,17 @@ function defineAllThemes( monacoLib ) {
 			return;
 		}
 		try {
-			monacoLib.editor.defineTheme( key, sanitizeThemeData( theme.data ) );
+			monacoLib.editor.defineTheme(
+				key,
+				sanitizeThemeData( theme.data )
+			);
 		} catch ( err ) {
 			// eslint-disable-next-line no-console
-			console.warn( '[codelag] Failed to register Monaco theme:', key, err );
+			console.warn(
+				'[codelag] Failed to register Monaco theme:',
+				key,
+				err
+			);
 		}
 	} );
 }
@@ -316,6 +377,9 @@ function defineAllThemes( monacoLib ) {
  * so one call updates all editors on the page in lockstep. With the webpack
  * plugin in place this is all the wiring we need — Monaco's theme service
  * handles colour CSS emission natively now.
+ *
+ * @param {Object} monacoLib The live monaco-editor module instance.
+ * @param {string} themeKey  Monaco theme id to activate.
  */
 function applyMonacoTheme( monacoLib, themeKey ) {
 	if ( ! monacoLib || ! MONACO_THEMES[ themeKey ] ) {
@@ -359,9 +423,9 @@ function mirrorMonacoColorsToEditorIframes() {
 
 	const findSourceStyles = () => {
 		const main = sourceDoc.querySelector( 'style.monaco-colors' );
-		const extras = Array.from( sourceDoc.querySelectorAll( 'style' ) ).filter(
-			( s ) => /\.mtk\d+\s*\{/.test( s.textContent || '' )
-		);
+		const extras = Array.from(
+			sourceDoc.querySelectorAll( 'style' )
+		).filter( ( s ) => /\.mtk\d+\s*\{/.test( s.textContent || '' ) );
 		const all = new Set();
 		if ( main ) {
 			all.add( main );
@@ -395,7 +459,9 @@ function mirrorMonacoColorsToEditorIframes() {
 	};
 
 	const editorIframes = () => {
-		return Array.from( sourceDoc.querySelectorAll( 'iframe[name="editor-canvas"]' ) )
+		return Array.from(
+			sourceDoc.querySelectorAll( 'iframe[name="editor-canvas"]' )
+		)
 			.map( ( f ) => {
 				try {
 					return f.contentDocument;
@@ -419,7 +485,7 @@ function mirrorMonacoColorsToEditorIframes() {
 	const observers = [];
 
 	if ( sourceDoc.head ) {
-		const headObserver = new MutationObserver( () => syncAll() );
+		const headObserver = new window.MutationObserver( () => syncAll() );
 		headObserver.observe( sourceDoc.head, {
 			childList: true,
 			subtree: true,
@@ -432,15 +498,20 @@ function mirrorMonacoColorsToEditorIframes() {
 		if ( ! sourceDoc.body ) {
 			return;
 		}
-		const bodyObserver = new MutationObserver( () => syncAll() );
-		bodyObserver.observe( sourceDoc.body, { childList: true, subtree: true } );
+		const bodyObserver = new window.MutationObserver( () => syncAll() );
+		bodyObserver.observe( sourceDoc.body, {
+			childList: true,
+			subtree: true,
+		} );
 		observers.push( bodyObserver );
 	};
 
 	if ( sourceDoc.body ) {
 		installBodyObserver();
 	} else if ( sourceDoc.addEventListener ) {
-		sourceDoc.addEventListener( 'DOMContentLoaded', installBodyObserver, { once: true } );
+		sourceDoc.addEventListener( 'DOMContentLoaded', installBodyObserver, {
+			once: true,
+		} );
 	}
 
 	return () => {
@@ -455,15 +526,22 @@ if ( typeof document !== 'undefined' ) {
 	mirrorMonacoColorsToEditorIframes();
 }
 
-
 /**
  * Shape of the in-memory file model. `id` is the DB row ID once saved; new
  * unsaved files have id = null and a client-side `_key` for sortable tracking.
+ *
+ * @param {number} order    Target `file_order` index.
+ * @param {string} name     Initial filename.
+ * @param {string} language Initial Monaco language id.
  */
 function makeEmptyFile( order, name = 'untitled.txt', language = 'plaintext' ) {
 	return {
 		id: null,
-		_key: 'new-' + Date.now() + '-' + Math.random().toString( 36 ).slice( 2, 9 ),
+		_key:
+			'new-' +
+			Date.now() +
+			'-' +
+			Math.random().toString( 36 ).slice( 2, 9 ),
 		name,
 		description: '',
 		language,
@@ -495,7 +573,7 @@ function fileFromRest( row ) {
 	};
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { setAttributes } ) {
 	const blockProps = useBlockProps( { className: 'lagoon-viewer-editor' } );
 
 	const postId = useSelect(
@@ -560,7 +638,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	useEffect( () => {
 		apiFetch( { path: '/wp/v2/users/me?context=edit' } )
 			.then( ( user ) => {
-				const stored = user && user.meta && user.meta.codelag_editor_theme;
+				const stored =
+					user && user.meta && user.meta.codelag_editor_theme;
 				if ( stored && MONACO_THEMES[ stored ] ) {
 					setEditorTheme( stored );
 				}
@@ -579,21 +658,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	}, [ editorTheme, themeReady ] );
 
 	// Persist a theme change to user meta.
-	const handleThemeChange = useCallback(
-		( newTheme ) => {
-			setEditorTheme( newTheme );
-			apiFetch( {
-				path: '/wp/v2/users/me',
-				method: 'POST',
-				data: { meta: { codelag_editor_theme: newTheme } },
-			} ).catch( ( err ) => {
-				setError(
-					err?.message || __( 'Failed to save theme preference.', 'codelag-blocks' )
-				);
-			} );
-		},
-		[]
-	);
+	const handleThemeChange = useCallback( ( newTheme ) => {
+		setEditorTheme( newTheme );
+		apiFetch( {
+			path: '/wp/v2/users/me',
+			method: 'POST',
+			data: { meta: { codelag_editor_theme: newTheme } },
+		} ).catch( ( err ) => {
+			setError(
+				err?.message ||
+					__( 'Failed to save theme preference.', 'codelag-blocks' )
+			);
+		} );
+	}, [] );
 
 	// Run a Monaco action against the most-recently focused editor.
 	const runEditorAction = useCallback( ( actionId ) => {
@@ -622,11 +699,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		setError( null );
 		apiFetch( { path: `/codelag/v1/lagoons/${ postId }/files` } )
 			.then( ( rows ) => {
-				setFiles( Array.isArray( rows ) ? rows.map( fileFromRest ) : [] );
+				setFiles(
+					Array.isArray( rows ) ? rows.map( fileFromRest ) : []
+				);
 				setHasLoaded( true );
 			} )
 			.catch( ( err ) => {
-				setError( err?.message || __( 'Failed to load files.', 'codelag-blocks' ) );
+				setError(
+					err?.message ||
+						__( 'Failed to load files.', 'codelag-blocks' )
+				);
 			} )
 			.finally( () => setLoading( false ) );
 	}, [ hasPostId, postId ] );
@@ -644,12 +726,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			if ( ! editorStore ) {
 				return;
 			}
-			const savingNow = editorStore.isSavingPost() && ! editorStore.isAutosavingPost();
+			const savingNow =
+				editorStore.isSavingPost() && ! editorStore.isAutosavingPost();
 
 			if ( savingNow && ! isSaving ) {
 				isSaving = true;
 
-				const dirtyFiles = filesRef.current.filter( ( f ) => f._isDirty );
+				const dirtyFiles = filesRef.current.filter(
+					( f ) => f._isDirty
+				);
 				if ( dirtyFiles.length === 0 ) {
 					return;
 				}
@@ -674,8 +759,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						: `/codelag/v1/lagoons/${ currentPostId }/files`;
 					const method = file.id ? 'PUT' : 'POST';
 					return apiFetch( { path, method, data: payload } )
-						.then( ( response ) => ( { key: file._key, response, error: null } ) )
-						.catch( ( err ) => ( { key: file._key, response: null, error: err } ) );
+						.then( ( response ) => ( {
+							key: file._key,
+							response,
+							error: null,
+						} ) )
+						.catch( ( err ) => ( {
+							key: file._key,
+							response: null,
+							error: err,
+						} ) );
 				} );
 
 				Promise.all( tasks ).then( ( results ) => {
@@ -683,7 +776,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					setFiles( ( current ) =>
 						current.map( ( f ) => {
-							const result = results.find( ( r ) => r.key === f._key );
+							const result = results.find(
+								( r ) => r.key === f._key
+							);
 							if ( ! result || result.error ) {
 								return f;
 							}
@@ -693,7 +788,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					if ( failures.length > 0 ) {
 						setError(
-							__( 'Some files failed to save. Check the file cards for details.', 'codelag-blocks' )
+							__(
+								'Some files failed to save. Check the file cards for details.',
+								'codelag-blocks'
+							)
 						);
 					}
 
@@ -717,7 +815,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const patchFile = useCallback(
 		( key, patch ) => {
 			setFiles( ( current ) =>
-				current.map( ( f ) => ( f._key === key ? { ...f, ...patch, _isDirty: true } : f ) )
+				current.map( ( f ) =>
+					f._key === key ? { ...f, ...patch, _isDirty: true } : f
+				)
 			);
 			markPostDirty();
 		},
@@ -726,14 +826,18 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const toggleCollapse = useCallback( ( key ) => {
 		setFiles( ( current ) =>
-			current.map( ( f ) => ( f._key === key ? { ...f, _collapsed: ! f._collapsed } : f ) )
+			current.map( ( f ) =>
+				f._key === key ? { ...f, _collapsed: ! f._collapsed } : f
+			)
 		);
 	}, [] );
 
 	const toggleDescription = useCallback( ( key ) => {
 		setFiles( ( current ) =>
 			current.map( ( f ) =>
-				f._key === key ? { ...f, _descriptionOpen: ! f._descriptionOpen } : f
+				f._key === key
+					? { ...f, _descriptionOpen: ! f._descriptionOpen }
+					: f
 			)
 		);
 	}, [] );
@@ -769,8 +873,10 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const removeFile = useCallback(
 		async ( file ) => {
-			// eslint-disable-next-line no-alert
-			if ( ! window.confirm( __( 'Delete this file?', 'codelag-blocks' ) ) ) {
+			if (
+				// eslint-disable-next-line no-alert
+				! window.confirm( __( 'Delete this file?', 'codelag-blocks' ) )
+			) {
 				return;
 			}
 			if ( file.id ) {
@@ -780,11 +886,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						method: 'DELETE',
 					} );
 				} catch ( err ) {
-					setError( err?.message || __( 'Failed to delete the file.', 'codelag-blocks' ) );
+					setError(
+						err?.message ||
+							__( 'Failed to delete the file.', 'codelag-blocks' )
+					);
 					return;
 				}
 			}
-			setFiles( ( current ) => current.filter( ( f ) => f._key !== file._key ) );
+			setFiles( ( current ) =>
+				current.filter( ( f ) => f._key !== file._key )
+			);
 			markPostDirty();
 		},
 		[ postId, markPostDirty ]
@@ -802,13 +913,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		postIdRef.current = postId;
 	}, [ postId ] );
 
+	// eslint-disable-next-line no-unused-vars
 	const saveFile = useCallback(
 		async ( file ) => {
 			if ( ! hasPostId ) {
 				return;
 			}
 			setFiles( ( current ) =>
-				current.map( ( f ) => ( f._key === file._key ? { ...f, _isSaving: true } : f ) )
+				current.map( ( f ) =>
+					f._key === file._key ? { ...f, _isSaving: true } : f
+				)
 			);
 			try {
 				const payload = {
@@ -836,9 +950,14 @@ export default function Edit( { attributes, setAttributes } ) {
 					current.map( ( f ) => ( f._key === file._key ? fresh : f ) )
 				);
 			} catch ( err ) {
-				setError( err?.message || __( 'Failed to save the file.', 'codelag-blocks' ) );
+				setError(
+					err?.message ||
+						__( 'Failed to save the file.', 'codelag-blocks' )
+				);
 				setFiles( ( current ) =>
-					current.map( ( f ) => ( f._key === file._key ? { ...f, _isSaving: false } : f ) )
+					current.map( ( f ) =>
+						f._key === file._key ? { ...f, _isSaving: false } : f
+					)
 				);
 			}
 		},
@@ -849,7 +968,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const sensors = useSensors(
 		useSensor( PointerSensor ),
-		useSensor( KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates } )
+		useSensor( KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		} )
 	);
 
 	const handleDragEnd = useCallback(
@@ -863,13 +984,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			if ( oldIndex < 0 || newIndex < 0 ) {
 				return;
 			}
-			const reordered = arrayMove( files, oldIndex, newIndex ).map( ( f, idx ) => ( {
-				...f,
-				file_order: idx,
-			} ) );
+			const reordered = arrayMove( files, oldIndex, newIndex ).map(
+				( f, idx ) => ( {
+					...f,
+					file_order: idx,
+				} )
+			);
 			setFiles( reordered );
 
-			const savedIds = reordered.filter( ( f ) => f.id ).map( ( f ) => f.id );
+			const savedIds = reordered
+				.filter( ( f ) => f.id )
+				.map( ( f ) => f.id );
 			if ( savedIds.length > 0 ) {
 				try {
 					await apiFetch( {
@@ -878,7 +1003,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						data: { ids: savedIds },
 					} );
 				} catch ( err ) {
-					setError( err?.message || __( 'Failed to save the new order.', 'codelag-blocks' ) );
+					setError(
+						err?.message ||
+							__(
+								'Failed to save the new order.',
+								'codelag-blocks'
+							)
+					);
 				}
 			}
 		},
@@ -893,7 +1024,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		return (
 			<div { ...blockProps }>
 				<Notice status="info" isDismissible={ false }>
-					{ __( 'Save this lagoon as a draft to start adding files.', 'codelag-blocks' ) }
+					{ __(
+						'Save this lagoon as a draft to start adding files.',
+						'codelag-blocks'
+					) }
 				</Notice>
 			</div>
 		);
@@ -926,32 +1060,53 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Button
 						size="small"
 						icon={ replaceAll }
-						label={ __( 'Find & Replace (Ctrl+H)', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.startFindReplaceAction' ) }
+						label={ __(
+							'Find & Replace (Ctrl+H)',
+							'codelag-blocks'
+						) }
+						onClick={ () =>
+							runEditorAction(
+								'editor.action.startFindReplaceAction'
+							)
+						}
 					/>
 					<Button
 						size="small"
 						icon={ code }
-						label={ __( 'Format document (Shift+Alt+F)', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.formatDocument' ) }
+						label={ __(
+							'Format document (Shift+Alt+F)',
+							'codelag-blocks'
+						) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.formatDocument' )
+						}
 					/>
 					<Button
 						size="small"
 						icon={ commentContent }
-						label={ __( 'Toggle line comment (Ctrl+/)', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.commentLine' ) }
+						label={ __(
+							'Toggle line comment (Ctrl+/)',
+							'codelag-blocks'
+						) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.commentLine' )
+						}
 					/>
 					<Button
 						size="small"
 						icon={ formatIndent }
 						label={ __( 'Indent', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.indentLines' ) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.indentLines' )
+						}
 					/>
 					<Button
 						size="small"
 						icon={ formatOutdent }
 						label={ __( 'Outdent', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.outdentLines' ) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.outdentLines' )
+						}
 					/>
 					<Button
 						size="small"
@@ -969,23 +1124,29 @@ export default function Edit( { attributes, setAttributes } ) {
 						size="small"
 						icon={ aspectRatio }
 						label={ __( 'Toggle minimap', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.toggleMinimap' ) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.toggleMinimap' )
+						}
 					/>
 					<Button
 						size="small"
 						icon={ wordpress }
 						label={ __( 'Command palette (F1)', 'codelag-blocks' ) }
-						onClick={ () => runEditorAction( 'editor.action.quickCommand' ) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.quickCommand' )
+						}
 					/>
 				</div>
 
 				<SelectControl
 					label={ __( 'Editor theme', 'codelag-blocks' ) }
 					value={ editorTheme }
-					options={ Object.entries( MONACO_THEMES ).map( ( [ key, theme ] ) => ( {
-						value: key,
-						label: theme.label,
-					} ) ) }
+					options={ Object.entries( MONACO_THEMES ).map(
+						( [ key, theme ] ) => ( {
+							value: key,
+							label: theme.label,
+						} )
+					) }
 					onChange={ handleThemeChange }
 					__nextHasNoMarginBottom
 				/>
@@ -1013,7 +1174,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				collisionDetection={ closestCenter }
 				onDragEnd={ handleDragEnd }
 			>
-				<SortableContext items={ itemKeys } strategy={ verticalListSortingStrategy }>
+				<SortableContext
+					items={ itemKeys }
+					strategy={ verticalListSortingStrategy }
+				>
 					{ files.map( ( file ) => (
 						<FileCard
 							key={ file._key }
@@ -1021,10 +1185,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							editorTheme={ editorTheme }
 							monacoLibRef={ monacoLibRef }
 							focusedEditorRef={ focusedEditorRef }
-							onUpdate={ ( patch ) => patchFile( file._key, patch ) }
+							onUpdate={ ( patch ) =>
+								patchFile( file._key, patch )
+							}
 							onDelete={ () => removeFile( file ) }
-							onToggleCollapse={ () => toggleCollapse( file._key ) }
-							onToggleDescription={ () => toggleDescription( file._key ) }
+							onToggleCollapse={ () =>
+								toggleCollapse( file._key )
+							}
+							onToggleDescription={ () =>
+								toggleDescription( file._key )
+							}
 							onTogglePreview={ () => togglePreview( file._key ) }
 						/>
 					) ) }
@@ -1069,7 +1239,44 @@ export default function Edit( { attributes, setAttributes } ) {
 }
 
 /**
+ * Pick the right icon for a file's language. Replaces a nested ternary in
+ * {@see FileCard}'s Dropdown toggle, which eslint's `no-nested-ternary` rule
+ * rejects. Returns JSX.
+ *
+ * @param {Object}        props               Icon selection props.
+ * @param {Function|null} props.LangIcon      react-icons/si icon component for the language, if any.
+ * @param {string|null}   props.langIconColor Brand colour for the react-icons icon.
+ * @param {string}        props.langLabel     Human-readable language label (e.g. "PHP").
+ * @param {string}        props.language      Monaco language id (used for the plain-text / XML fallbacks).
+ */
+function renderLangIcon( { LangIcon, langIconColor, langLabel, language } ) {
+	if ( LangIcon ) {
+		return (
+			<LangIcon size={ 18 } color={ langIconColor } title={ langLabel } />
+		);
+	}
+	if ( language === 'xml' ) {
+		return <FileTypeIcon label="XML" color="#7dd3fc" />;
+	}
+	if ( language === 'plaintext' ) {
+		return <FileTypeIcon label="TXT" color="#4ade80" />;
+	}
+	return <FileTypeIcon />;
+}
+
+/**
  * Sortable collapsible card for a single file.
+ *
+ * @param {Object}   props                     Component props.
+ * @param {Object}   props.file                In-memory file row (see makeEmptyFile / fileFromRest).
+ * @param {string}   props.editorTheme         Active Monaco theme id.
+ * @param {Object}   props.monacoLibRef        Ref to the loaded monaco module instance.
+ * @param {Object}   props.focusedEditorRef    Ref tracking which editor currently has focus.
+ * @param {Function} props.onUpdate            Partial-update callback (patch fields on this file).
+ * @param {Function} props.onDelete            Delete-this-file callback.
+ * @param {Function} props.onToggleCollapse    Collapse / expand card callback.
+ * @param {Function} props.onToggleDescription Description open / close callback.
+ * @param {Function} props.onTogglePreview     Markdown-preview open / close callback.
  */
 function FileCard( {
 	file,
@@ -1083,7 +1290,14 @@ function FileCard( {
 	onTogglePreview,
 } ) {
 	const isMarkdown = file.language === 'markdown' || file.language === 'md';
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable( {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable( {
 		id: file._key,
 	} );
 
@@ -1094,20 +1308,21 @@ function FileCard( {
 	};
 
 	const langLabel =
-		( LANGUAGE_OPTIONS.find( ( o ) => o.value === file.language ) || {} ).label ||
-		file.language;
+		( LANGUAGE_OPTIONS.find( ( o ) => o.value === file.language ) || {} )
+			.label || file.language;
 	const langIconDef = LANGUAGE_ICONS[ file.language ];
 	const LangIcon = langIconDef ? langIconDef.Icon : null;
 	const langIconColor = langIconDef ? langIconDef.color : null;
+	// eslint-disable-next-line no-unused-vars
 	const isXml = file.language === 'xml';
 
 	return (
 		<div
 			ref={ setNodeRef }
 			style={ style }
-			className={ `lagoon-file-card${ file._collapsed ? ' is-collapsed' : '' }${
-				file._isDirty ? ' is-dirty' : ''
-			}` }
+			className={ `lagoon-file-card${
+				file._collapsed ? ' is-collapsed' : ''
+			}${ file._isDirty ? ' is-dirty' : '' }` }
 		>
 			<div className="lagoon-file-card__header">
 				<Button
@@ -1134,22 +1349,19 @@ function FileCard( {
 							size="small"
 							onClick={ onToggle }
 							aria-expanded={ isOpen }
-							aria-label={ __( 'Change language: ', 'codelag-blocks' ) + langLabel }
+							aria-label={
+								__( 'Change language:', 'codelag-blocks' ) +
+								' ' +
+								langLabel
+							}
 							className="lagoon-file-card__lang-badge"
 						>
-							{ LangIcon ? (
-								<LangIcon
-									size={ 18 }
-									color={ langIconColor }
-									title={ langLabel }
-								/>
-							) : file.language === 'xml' ? (
-								<FileTypeIcon label="XML" color="#7dd3fc" />
-							) : file.language === 'plaintext' ? (
-								<FileTypeIcon label="TXT" color="#4ade80" />
-							) : (
-								<FileTypeIcon />
-							) }
+							{ renderLangIcon( {
+								LangIcon,
+								langIconColor,
+								langLabel,
+								language: file.language,
+							} ) }
 						</Button>
 					) }
 					renderContent={ ( { onClose } ) => (
@@ -1192,7 +1404,10 @@ function FileCard( {
 						label={
 							file._previewOpen
 								? __( 'Hide preview', 'codelag-blocks' )
-								: __( 'Show markdown preview', 'codelag-blocks' )
+								: __(
+										'Show markdown preview',
+										'codelag-blocks'
+								  )
 						}
 						onClick={ onTogglePreview }
 						aria-pressed={ file._previewOpen }
@@ -1231,7 +1446,9 @@ function FileCard( {
 							<TextareaControl
 								label={ __( 'Description', 'codelag-blocks' ) }
 								value={ file.description }
-								onChange={ ( value ) => onUpdate( { description: value } ) }
+								onChange={ ( value ) =>
+									onUpdate( { description: value } )
+								}
 								rows={ 3 }
 								__nextHasNoMarginBottom
 							/>
@@ -1245,92 +1462,99 @@ function FileCard( {
 							</ReactMarkdown>
 						</div>
 					) : (
-					<div className="lagoon-file-card__editor">
-						<Editor
-							height="100%"
-							width="100%"
-							language={ slugToMonacoLanguage( file.language ) }
-							value={ file.content }
-							onChange={ ( value ) => onUpdate( { content: value || '' } ) }
-							theme={ editorTheme }
-							loading={ <Spinner /> }
-							beforeMount={ ( monacoLib ) => {
-								// Register every custom theme with Monaco BEFORE the
-								// editor instance is created. After this, passing the
-								// theme name via the `theme` prop is enough to switch.
-								defineAllThemes( monacoLib );
-							} }
-							onMount={ ( editor, monacoLib ) => {
-								if ( monacoLibRef ) {
-									monacoLibRef.current = monacoLib;
+						<div className="lagoon-file-card__editor">
+							<Editor
+								height="100%"
+								width="100%"
+								language={ slugToMonacoLanguage(
+									file.language
+								) }
+								value={ file.content }
+								onChange={ ( value ) =>
+									onUpdate( { content: value || '' } )
 								}
-								// Belt-and-braces re-apply in case React's prop diff
-								// missed the initial render.
-								applyMonacoTheme( monacoLib, editorTheme );
-
-								// Track focus so the top toolbar's action buttons can
-								// route their commands to the editor the user was just
-								// working in.
-								if ( focusedEditorRef ) {
-									focusedEditorRef.current = editor;
-									try {
-										editor.onDidFocusEditorWidget( () => {
-											focusedEditorRef.current = editor;
-										} );
-									} catch ( err ) {
-										// noop
+								theme={ editorTheme }
+								loading={ <Spinner /> }
+								beforeMount={ ( monacoLib ) => {
+									// Register every custom theme with Monaco BEFORE the
+									// editor instance is created. After this, passing the
+									// theme name via the `theme` prop is enough to switch.
+									defineAllThemes( monacoLib );
+								} }
+								onMount={ ( editor, monacoLib ) => {
+									if ( monacoLibRef ) {
+										monacoLibRef.current = monacoLib;
 									}
-								}
+									// Belt-and-braces re-apply in case React's prop diff
+									// missed the initial render.
+									applyMonacoTheme( monacoLib, editorTheme );
 
-								try {
-									editor.layout();
-								} catch ( err ) {
-									// noop
-								}
-								window.requestAnimationFrame( () => {
+									// Track focus so the top toolbar's action buttons can
+									// route their commands to the editor the user was just
+									// working in.
+									if ( focusedEditorRef ) {
+										focusedEditorRef.current = editor;
+										try {
+											editor.onDidFocusEditorWidget(
+												() => {
+													focusedEditorRef.current =
+														editor;
+												}
+											);
+										} catch ( err ) {
+											// noop
+										}
+									}
+
 									try {
 										editor.layout();
 									} catch ( err ) {
 										// noop
 									}
-								} );
-							} }
-							options={ {
-								minimap: {
-									enabled: true,
-									side: 'right',
-									renderCharacters: true,
-									size: 'fill',
-									scale: 2,
-									maxColumn: 120,
-									showSlider: 'always',
-								},
-								tabSize: 2,
-								wordWrap: 'on',
-								fontSize: 14,
-								fontLigatures: true,
-								automaticLayout: true,
-								scrollBeyondLastLine: false,
-								lineNumbers: 'on',
-								bracketPairColorization: { enabled: true },
-								guides: {
-									bracketPairs: true,
-									indentation: true,
-									highlightActiveIndentation: true,
-								},
-								smoothScrolling: true,
-								cursorBlinking: 'smooth',
-								cursorSmoothCaretAnimation: 'on',
-								renderLineHighlight: 'all',
-								formatOnPaste: true,
-								padding: { top: 12, bottom: 12 },
-								scrollbar: {
-									verticalScrollbarSize: 10,
-									horizontalScrollbarSize: 10,
-								},
-							} }
-						/>
-					</div>
+									window.requestAnimationFrame( () => {
+										try {
+											editor.layout();
+										} catch ( err ) {
+											// noop
+										}
+									} );
+								} }
+								options={ {
+									minimap: {
+										enabled: true,
+										side: 'right',
+										renderCharacters: true,
+										size: 'fill',
+										scale: 2,
+										maxColumn: 120,
+										showSlider: 'always',
+									},
+									tabSize: 2,
+									wordWrap: 'on',
+									fontSize: 14,
+									fontLigatures: true,
+									automaticLayout: true,
+									scrollBeyondLastLine: false,
+									lineNumbers: 'on',
+									bracketPairColorization: { enabled: true },
+									guides: {
+										bracketPairs: true,
+										indentation: true,
+										highlightActiveIndentation: true,
+									},
+									smoothScrolling: true,
+									cursorBlinking: 'smooth',
+									cursorSmoothCaretAnimation: 'on',
+									renderLineHighlight: 'all',
+									formatOnPaste: true,
+									padding: { top: 12, bottom: 12 },
+									scrollbar: {
+										verticalScrollbarSize: 10,
+										horizontalScrollbarSize: 10,
+									},
+								} }
+							/>
+						</div>
 					) }
 				</div>
 			) }

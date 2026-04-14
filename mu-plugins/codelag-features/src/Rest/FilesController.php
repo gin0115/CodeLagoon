@@ -39,6 +39,11 @@ final class FilesController {
 	 */
 	private FileRepository $files;
 
+	/**
+	 * Wire in the shared file repository.
+	 *
+	 * @param FileRepository $files Files-table repository this controller reads/writes through.
+	 */
 	public function __construct( FileRepository $files ) {
 		$this->files = $files;
 	}
@@ -141,6 +146,7 @@ final class FilesController {
 	/**
 	 * Require `read_post` on the parent lagoon.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return true|WP_Error
 	 */
 	public function permissions_read( WP_REST_Request $request ) {
@@ -163,6 +169,7 @@ final class FilesController {
 	/**
 	 * Require `edit_post` on the parent lagoon.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return true|WP_Error
 	 */
 	public function permissions_edit( WP_REST_Request $request ) {
@@ -189,6 +196,7 @@ final class FilesController {
 	/**
 	 * GET /lagoons/{id}/files — list every file in the lagoon.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function list_files( WP_REST_Request $request ) {
@@ -206,6 +214,7 @@ final class FilesController {
 	/**
 	 * POST /lagoons/{id}/files — create a new file.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function create_file( WP_REST_Request $request ) {
@@ -252,6 +261,7 @@ final class FilesController {
 	/**
 	 * GET /lagoons/{id}/files/{file_id} — fetch a single file.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function get_file( WP_REST_Request $request ) {
@@ -266,6 +276,7 @@ final class FilesController {
 	/**
 	 * PUT /lagoons/{id}/files/{file_id} — update a file.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function update_file( WP_REST_Request $request ) {
@@ -305,6 +316,7 @@ final class FilesController {
 	/**
 	 * DELETE /lagoons/{id}/files/{file_id} — delete a file.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function delete_file( WP_REST_Request $request ) {
@@ -313,8 +325,8 @@ final class FilesController {
 			return $row;
 		}
 
-		$ok = $this->files->delete( (int) $row['id'] );
-		if ( ! $ok ) {
+		$deleted = $this->files->delete( (int) $row['id'] );
+		if ( ! $deleted ) {
 			return new WP_Error(
 				'codelag_file_delete_failed',
 				__( 'Could not delete the file.', 'codelag-features' ),
@@ -333,6 +345,7 @@ final class FilesController {
 	/**
 	 * POST /lagoons/{id}/files/reorder — bulk reorder.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function reorder_files( WP_REST_Request $request ) {
@@ -341,9 +354,9 @@ final class FilesController {
 			return $post;
 		}
 
-		$ids = (array) $request->get_param( 'ids' );
-		$ok  = $this->files->reorder( $post->ID, $ids );
-		if ( ! $ok ) {
+		$ids       = (array) $request->get_param( 'ids' );
+		$reordered = $this->files->reorder( $post->ID, $ids );
+		if ( ! $reordered ) {
 			return new WP_Error(
 				'codelag_reorder_failed',
 				__( 'Could not reorder files.', 'codelag-features' ),
@@ -363,11 +376,12 @@ final class FilesController {
 	/**
 	 * Resolve the parent lagoon from the request's `id` arg, or WP_Error if not found.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return WP_Post|WP_Error
 	 */
 	private function resolve_lagoon( WP_REST_Request $request ) {
-		$id   = (int) $request['id'];
-		$post = get_post( $id );
+		$lagoon_id = (int) $request['id'];
+		$post      = get_post( $lagoon_id );
 
 		if ( ! $post instanceof WP_Post || LagoonPostType::POST_TYPE !== $post->post_type ) {
 			return new WP_Error(
@@ -383,6 +397,7 @@ final class FilesController {
 	/**
 	 * Resolve a file row and confirm it belongs to the lagoon in the URL.
 	 *
+	 * @param WP_REST_Request $request Incoming REST request.
 	 * @return array<string,mixed>|WP_Error
 	 */
 	private function resolve_file( WP_REST_Request $request ) {
@@ -415,7 +430,7 @@ final class FilesController {
 	/**
 	 * Coerce a raw DB row into a REST-ready structure with proper types and RFC-3339 dates.
 	 *
-	 * @param array<string,mixed> $row
+	 * @param array<string,mixed> $row Raw DB row from the files table.
 	 * @return array<string,mixed>
 	 */
 	private function prepare_file_for_response( array $row ): array {
@@ -466,6 +481,7 @@ final class FilesController {
 	/**
 	 * Schema for body params on create / update.
 	 *
+	 * @param bool $create True for create (some fields required), false for update.
 	 * @return array<string,array<string,mixed>>
 	 */
 	private function file_write_args( bool $create ): array {

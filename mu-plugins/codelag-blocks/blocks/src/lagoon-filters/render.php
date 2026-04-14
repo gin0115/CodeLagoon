@@ -10,9 +10,9 @@
  * on `/snippets/language/<slug>/` the language filter is hidden (because
  * the user is already scoped to that language); same for tag / purpose.
  *
- * @var array    $attributes
- * @var string   $content
- * @var WP_Block $block
+ * @var array<string,mixed> $attributes
+ * @var string              $content
+ * @var WP_Block            $block
  *
  * @package Gin0115\Codelagoon\Blocks
  */
@@ -134,12 +134,17 @@ defined( 'ABSPATH' ) || exit;
 		$raw = wp_unslash( $_GET[ $key ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- array-vs-string check + sanitize_key applied via array_map below.
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		$list = is_array( $raw ) ? $raw : explode( ',', (string) $raw );
-		return array_values( array_filter( array_map( 'sanitize_key', $list ) ) );
+		return array_values(
+			array_filter(
+				array_map( 'sanitize_key', $list ),
+				static fn( string $value ): bool => '' !== $value
+			)
+		);
 	};
 
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only filter params; no state change.
-	$current_search    = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['search'] ) ) : '';
-	$current_date      = isset( $_GET['date_range'] ) ? sanitize_key( wp_unslash( (string) $_GET['date_range'] ) ) : 'any';
+	$current_search = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['search'] ) ) : '';
+	$current_date   = isset( $_GET['date_range'] ) ? sanitize_key( wp_unslash( (string) $_GET['date_range'] ) ) : 'any';
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	$current_languages = $collect_multi( 'filter_language' );
 	$current_purposes  = $collect_multi( 'filter_purpose' );
