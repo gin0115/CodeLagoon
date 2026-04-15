@@ -1,0 +1,44 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./mu-plugins/codelag-blocks/blocks/src/ascii-art/editor.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * ASCII Art — editor-only styles.
+ *
+ * The editor preview re-uses the frontend .codelag-ascii-art rules so the
+ * author sees the real rendering. Extra here is just to give the repeater
+ * a bit of breathing room and visually separate each item.
+ */
+.codelag-ascii-art--editor {
+  display: block;
+  padding: 1rem;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+.codelag-ascii-art--editor .codelag-ascii-art__stage {
+  display: block;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.03);
+}
+.codelag-ascii-art--editor .codelag-ascii-art__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.codelag-ascii-art--editor .codelag-ascii-art__item {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.codelag-ascii-art--editor .codelag-ascii-art__item textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  white-space: pre;
+}

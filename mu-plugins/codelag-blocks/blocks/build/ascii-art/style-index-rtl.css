@@ -1,0 +1,57 @@
+/*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./mu-plugins/codelag-blocks/blocks/src/ascii-art/style.scss ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
+/**
+ * ASCII Art — base frontend styles.
+ *
+ * Deliberately neutral. Uses stock WordPress preset variables where they
+ * exist (so a plain install looks fine), leaving theme overrides to layer
+ * their own palette on top. The theme applies `--cl-*` vars via its
+ * components/_ascii-art.scss override.
+ */
+.codelag-ascii-art {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+.codelag-ascii-art::before {
+  content: "";
+  display: block;
+  grid-row: 1;
+  height: 2rem;
+}
+.codelag-ascii-art__stage {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  white-space: pre;
+  text-align: right;
+  color: inherit;
+  background: transparent;
+  overflow: visible;
+}
+.codelag-ascii-art__next {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 2px;
+}
+.codelag-ascii-art__next:hover, .codelag-ascii-art__next:focus-visible {
+  outline: none;
+  background: rgba(0, 0, 0, 0.05);
+}
