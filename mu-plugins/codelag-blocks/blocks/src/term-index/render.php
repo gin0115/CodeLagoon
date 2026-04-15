@@ -52,20 +52,27 @@ defined( 'ABSPATH' ) || exit;
 	}
 
 	$order_by   = isset( $attributes['orderBy'] ) && 'count' === $attributes['orderBy'] ? 'count' : 'name';
-	$hide_empty = isset( $attributes['hideEmpty'] ) && (bool) $attributes['hideEmpty'];
 	$show_count = ! isset( $attributes['showCount'] ) || (bool) $attributes['showCount'];
 
+	// Always hide empty terms — index pages should never advertise terms with
+	// nothing behind them. We do a stricter publish-status filter further down
+	// (see $publish_count) to also drop terms that only have draft/private
+	// posts attached.
 	$term_args = array(
 		'taxonomy'   => $taxonomy_slug,
 		'orderby'    => $order_by,
 		'order'      => 'count' === $order_by ? 'DESC' : 'ASC',
-		'hide_empty' => $hide_empty,
+		'hide_empty' => true,
 	);
-	// When we're scoped to a specific parent (single-term archive), only pull
-	// that term's direct children. If it has none, render nothing — the block
-	// should disappear on leaf-term archives so the page isn't cluttered.
+	// Always render a single flat level of terms regardless of taxonomy depth:
+	// - Single-term archive: list the queried term's direct children.
+	// - Hierarchical index: list only top-level terms (children show on each
+	//   parent's own archive page via the same code path).
+	// - Flat taxonomy: list everything (no parent filter).
 	if ( null !== $scope_parent_id ) {
 		$term_args['parent'] = $scope_parent_id;
+	} elseif ( (bool) $taxonomy->hierarchical ) {
+		$term_args['parent'] = 0;
 	}
 
 	$terms = get_terms( $term_args );
@@ -73,25 +80,9 @@ defined( 'ABSPATH' ) || exit;
 		return;
 	}
 
-	// Hierarchical taxonomies render as a nested tree on index pages (top-
-	// level terms act as group headings with children as a sub-list). When
-	// we're scoped to one parent's direct children (single-term archive
-	// context) we render flat because there's only one level to show.
-	$is_hierarchical = (bool) $taxonomy->hierarchical && null === $scope_parent_id;
-	$children_map    = array();
-	if ( $is_hierarchical ) {
-		foreach ( $terms as $term ) {
-			$parent_id = (int) $term->parent;
-			if ( ! isset( $children_map[ $parent_id ] ) ) {
-				$children_map[ $parent_id ] = array();
-			}
-			$children_map[ $parent_id ][] = $term;
-		}
-	}
-
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
-			'class' => 'codelag-term-index' . ( $is_hierarchical ? ' codelag-term-index--tree' : ' codelag-term-index--flat' ),
+			'class' => 'codelag-term-index codelag-term-index--flat',
 		)
 	);
 
@@ -130,6 +121,22 @@ defined( 'ABSPATH' ) || exit;
 		return $publish_count_cache[ $cache_key ];
 	};
 
+	// Drop terms whose publish-status post count is zero. `hide_empty => true`
+	// only removes terms with no assignments at all; this also catches terms
+	// whose only attached posts are drafts/private (which would otherwise show
+	// a "0" badge that links to an empty archive).
+	$terms = array_values(
+		array_filter(
+			$terms,
+			static function ( \WP_Term $term ) use ( $publish_count ): bool {
+				return $publish_count( $term ) > 0;
+			}
+		)
+	);
+	if ( array() === $terms ) {
+		return;
+	}
+
 	/**
 	 * Render a single term tile (link + name + optional count). Extracted so
 	 * both the flat list and the hierarchical tree use identical markup for
@@ -153,44 +160,11 @@ defined( 'ABSPATH' ) || exit;
 	};
 	?>
 	<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<?php if ( ! $is_hierarchical ) : ?>
-			<ul class="codelag-term-index__list">
-				<?php foreach ( $terms as $term ) : ?>
-					<?php $render_term_tile( $term, $show_count ); ?>
-				<?php endforeach; ?>
-			</ul>
-		<?php else : ?>
-			<?php
-			$top_level = $children_map[0] ?? array();
-			foreach ( $top_level as $parent ) :
-				$children = $children_map[ (int) $parent->term_id ] ?? array();
-				?>
-				<section class="codelag-term-index__group">
-					<header class="codelag-term-index__group-head">
-						<?php
-						$parent_link = get_term_link( $parent );
-						if ( ! is_wp_error( $parent_link ) ) :
-							?>
-							<a class="codelag-term-index__group-title" href="<?php echo esc_url( $parent_link ); ?>">
-								<span><?php echo esc_html( $parent->name ); ?></span>
-								<?php if ( $show_count ) : ?>
-									<span class="codelag-term-index__count"><?php echo esc_html( (string) $publish_count( $parent ) ); ?></span>
-								<?php endif; ?>
-							</a>
-						<?php else : ?>
-							<span class="codelag-term-index__group-title"><?php echo esc_html( $parent->name ); ?></span>
-						<?php endif; ?>
-					</header>
-					<?php if ( array() !== $children ) : ?>
-						<ul class="codelag-term-index__list">
-							<?php foreach ( $children as $child ) : ?>
-								<?php $render_term_tile( $child, $show_count ); ?>
-							<?php endforeach; ?>
-						</ul>
-					<?php endif; ?>
-				</section>
+		<ul class="codelag-term-index__list">
+			<?php foreach ( $terms as $term ) : ?>
+				<?php $render_term_tile( $term, $show_count ); ?>
 			<?php endforeach; ?>
-		<?php endif; ?>
+		</ul>
 	</div>
 	<?php
 } )( $attributes, $content, $block );

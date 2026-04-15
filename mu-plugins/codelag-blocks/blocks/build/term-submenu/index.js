@@ -182,7 +182,7 @@ function Edit({
             className: "wp-block-navigation-item__content",
             children: [term.name, showCount && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("span", {
               className: "codelag-term-submenu__count",
-              children: [" (", term.count || 0, ")"]
+              children: [' ', "(", term.count || 0, ")"]
             })]
           })
         }, term.id))]
