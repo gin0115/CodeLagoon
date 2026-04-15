@@ -1,14 +1,20 @@
 <?php
 /**
- * Frontend floating theme picker for logged-in users.
+ * Frontend floating theme picker.
  *
  * Renders a draggable side button + popout panel in the footer. The panel
- * exposes the same two choices that live on the wp-admin profile page
- * (site theme + code syntax theme). Changes are persisted to user meta via
- * the standard WP REST `/wp/v2/users/me` endpoint with the meta keys we
- * registered in SiteThemeService::register_meta(), and applied live by
- * swapping `data-site-theme` on <html> so the CSS variable cascade takes
- * over instantly — no reload required.
+ * exposes the same choices that live on the wp-admin profile page (site
+ * theme + code syntax theme + archive columns).
+ *
+ * Persistence depends on who's looking:
+ *  - Logged-in users: PATCH user meta via `/wp/v2/users/me` (the same meta
+ *    keys registered in SiteThemeService). The cookie is also mirrored so
+ *    that if they later log out, their last choice still applies.
+ *  - Guests: written to cookies only (1-year expiry). SiteThemeService's
+ *    resolve_* methods read those cookies server-side for first paint.
+ *
+ * In both cases the selection applies live by swapping `data-site-theme`
+ * on <html>, so the CSS variable cascade takes over with no reload.
  *
  * @package Codelagoon_Theme
  */
@@ -33,21 +39,36 @@ use Gin0115\Codelagoon\Theme\SiteThemeService;
  *   inline HTML / heredoc; extracting it would trade readability for metric.
  */
 function codelag_render_theme_panel(): void {
-	if ( ! is_user_logged_in() ) {
-		return;
-	}
 	if ( ! class_exists( SiteThemes::class ) || ! class_exists( SiteThemeService::class ) ) {
 		return;
 	}
 
-	$user_id         = get_current_user_id();
-	$current_site    = (string) get_user_meta( $user_id, SiteThemeService::META_KEY, true );
-	$current_syntax  = (string) get_user_meta( $user_id, SiteThemeService::SYNTAX_META_KEY, true );
-	$current_columns = (int) get_user_meta( $user_id, SiteThemeService::COLUMNS_META_KEY, true );
-	if ( '' === $current_site ) {
+	$is_logged_in = is_user_logged_in();
+	$mode         = $is_logged_in ? 'user' : 'guest';
+
+	if ( $is_logged_in ) {
+		$user_id         = get_current_user_id();
+		$current_site    = (string) get_user_meta( $user_id, SiteThemeService::META_KEY, true );
+		$current_syntax  = (string) get_user_meta( $user_id, SiteThemeService::SYNTAX_META_KEY, true );
+		$current_columns = (int) get_user_meta( $user_id, SiteThemeService::COLUMNS_META_KEY, true );
+	} else {
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		$current_site    = isset( $_COOKIE[ SiteThemeService::META_KEY ] )
+			? (string) wp_unslash( $_COOKIE[ SiteThemeService::META_KEY ] )
+			: '';
+		$current_syntax  = isset( $_COOKIE[ SiteThemeService::SYNTAX_META_KEY ] )
+			? (string) wp_unslash( $_COOKIE[ SiteThemeService::SYNTAX_META_KEY ] )
+			: '';
+		$current_columns = isset( $_COOKIE[ SiteThemeService::COLUMNS_META_KEY ] )
+			? (int) wp_unslash( $_COOKIE[ SiteThemeService::COLUMNS_META_KEY ] )
+			: 0;
+		// phpcs:enable
+	}
+
+	if ( '' === $current_site || ! isset( SiteThemes::choices()[ $current_site ] ) ) {
 		$current_site = SiteThemes::DEFAULT_THEME;
 	}
-	if ( '' === $current_syntax ) {
+	if ( '' === $current_syntax || ! isset( SiteThemeService::SYNTAX_CHOICES[ $current_syntax ] ) ) {
 		$current_syntax = SiteThemeService::SYNTAX_DEFAULT;
 	}
 	if ( 1 !== $current_columns && 2 !== $current_columns ) {
@@ -56,8 +77,8 @@ function codelag_render_theme_panel(): void {
 
 	$site_choices   = SiteThemes::choices();
 	$syntax_choices = SiteThemeService::SYNTAX_CHOICES;
-	$nonce          = wp_create_nonce( 'wp_rest' );
-	$rest_root      = esc_url_raw( rest_url() );
+	$nonce          = $is_logged_in ? wp_create_nonce( 'wp_rest' ) : '';
+	$rest_root      = $is_logged_in ? esc_url_raw( rest_url() ) : '';
 	?>
 	<aside
 		class="codelag-theme-panel"
@@ -65,6 +86,7 @@ function codelag_render_theme_panel(): void {
 		data-site-meta-key="<?php echo esc_attr( SiteThemeService::META_KEY ); ?>"
 		data-syntax-meta-key="<?php echo esc_attr( SiteThemeService::SYNTAX_META_KEY ); ?>"
 		data-columns-meta-key="<?php echo esc_attr( SiteThemeService::COLUMNS_META_KEY ); ?>"
+		data-mode="<?php echo esc_attr( $mode ); ?>"
 		data-nonce="<?php echo esc_attr( $nonce ); ?>"
 		data-rest-root="<?php echo esc_attr( $rest_root ); ?>"
 		aria-label="<?php esc_attr_e( 'Theme settings', 'codelagoon' ); ?>"
@@ -158,9 +180,6 @@ add_action( 'wp_footer', 'codelag_render_theme_panel' );
  * Enqueue the small vanilla-JS module that wires the panel up.
  */
 function codelag_theme_panel_assets(): void {
-	if ( ! is_user_logged_in() ) {
-		return;
-	}
 	$handle = 'codelagoon-theme-panel';
 	$src    = get_theme_file_uri( 'assets/js/theme-panel.js' );
 	$path   = get_theme_file_path( 'assets/js/theme-panel.js' );
