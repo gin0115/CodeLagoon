@@ -49,7 +49,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p className="codelag-ascii-art__count">
 						{ sprintf(
 							/* translators: %d: number of ascii art pieces bundled with the block. */
-							__( '%d pieces bundled with this block.', 'codelag-blocks' ),
+							__(
+								'%d pieces bundled with this block.',
+								'codelag-blocks'
+							),
 							count
 						) }
 					</p>
@@ -59,10 +62,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				<pre className="codelag-ascii-art__stage" aria-hidden="true">
 					{ preview ||
-						__(
-							'No ASCII art bundled.',
-							'codelag-blocks'
-						) }
+						__( 'No ASCII art bundled.', 'codelag-blocks' ) }
 				</pre>
 			</div>
 		</>

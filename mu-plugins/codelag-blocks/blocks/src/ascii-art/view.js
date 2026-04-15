@@ -22,9 +22,7 @@
 	document.addEventListener( 'DOMContentLoaded', init );
 
 	function init() {
-		const wrappers = document.querySelectorAll(
-			'[data-codelag-ascii]'
-		);
+		const wrappers = document.querySelectorAll( '[data-codelag-ascii]' );
 		if ( ! wrappers.length ) {
 			return;
 		}

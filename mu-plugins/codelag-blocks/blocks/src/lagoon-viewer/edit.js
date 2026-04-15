@@ -415,38 +415,158 @@ loader.config( { monaco } );
  */
 const CONTEXT_MENU_ACTIONS = [
 	// --- Line operations -----------------------------------------------
-	{ id: 'editor.action.moveLinesUpAction',       label: 'Move Line Up',       group: '5_lines',     order: 1 },
-	{ id: 'editor.action.moveLinesDownAction',     label: 'Move Line Down',     group: '5_lines',     order: 2 },
-	{ id: 'editor.action.copyLinesUpAction',       label: 'Copy Line Up',       group: '5_lines',     order: 3 },
-	{ id: 'editor.action.copyLinesDownAction',     label: 'Copy Line Down',     group: '5_lines',     order: 4 },
-	{ id: 'editor.action.deleteLines',             label: 'Delete Line',        group: '5_lines',     order: 5 },
-	{ id: 'editor.action.joinLines',               label: 'Join Lines',         group: '5_lines',     order: 6 },
-	{ id: 'editor.action.insertLineAfter',         label: 'Insert Line Below',  group: '5_lines',     order: 7 },
-	{ id: 'editor.action.insertLineBefore',        label: 'Insert Line Above',  group: '5_lines',     order: 8 },
+	{
+		id: 'editor.action.moveLinesUpAction',
+		label: 'Move Line Up',
+		group: '5_lines',
+		order: 1,
+	},
+	{
+		id: 'editor.action.moveLinesDownAction',
+		label: 'Move Line Down',
+		group: '5_lines',
+		order: 2,
+	},
+	{
+		id: 'editor.action.copyLinesUpAction',
+		label: 'Copy Line Up',
+		group: '5_lines',
+		order: 3,
+	},
+	{
+		id: 'editor.action.copyLinesDownAction',
+		label: 'Copy Line Down',
+		group: '5_lines',
+		order: 4,
+	},
+	{
+		id: 'editor.action.deleteLines',
+		label: 'Delete Line',
+		group: '5_lines',
+		order: 5,
+	},
+	{
+		id: 'editor.action.joinLines',
+		label: 'Join Lines',
+		group: '5_lines',
+		order: 6,
+	},
+	{
+		id: 'editor.action.insertLineAfter',
+		label: 'Insert Line Below',
+		group: '5_lines',
+		order: 7,
+	},
+	{
+		id: 'editor.action.insertLineBefore',
+		label: 'Insert Line Above',
+		group: '5_lines',
+		order: 8,
+	},
 
 	// --- Selection / multi-cursor -------------------------------------
-	{ id: 'editor.action.addSelectionToNextFindMatch', label: 'Select Next Occurrence', group: '6_select', order: 1 },
-	{ id: 'editor.action.selectHighlights',            label: 'Select All Occurrences', group: '6_select', order: 2 },
-	{ id: 'editor.action.changeAll',                   label: 'Change All Occurrences', group: '6_select', order: 3 },
+	{
+		id: 'editor.action.addSelectionToNextFindMatch',
+		label: 'Select Next Occurrence',
+		group: '6_select',
+		order: 1,
+	},
+	{
+		id: 'editor.action.selectHighlights',
+		label: 'Select All Occurrences',
+		group: '6_select',
+		order: 2,
+	},
+	{
+		id: 'editor.action.changeAll',
+		label: 'Change All Occurrences',
+		group: '6_select',
+		order: 3,
+	},
 
 	// --- Text transforms ----------------------------------------------
-	{ id: 'editor.action.transformToUppercase',    label: 'Transform to Uppercase', group: '7_transform', order: 1 },
-	{ id: 'editor.action.transformToLowercase',    label: 'Transform to Lowercase', group: '7_transform', order: 2 },
-	{ id: 'editor.action.transformToTitlecase',    label: 'Transform to Title Case', group: '7_transform', order: 3 },
-	{ id: 'editor.action.sortLinesAscending',      label: 'Sort Lines Ascending',    group: '7_transform', order: 4 },
-	{ id: 'editor.action.sortLinesDescending',     label: 'Sort Lines Descending',   group: '7_transform', order: 5 },
-	{ id: 'editor.action.removeDuplicateLines',    label: 'Remove Duplicate Lines',  group: '7_transform', order: 6 },
-	{ id: 'editor.action.trimTrailingWhitespace',  label: 'Trim Trailing Whitespace',group: '7_transform', order: 7 },
+	{
+		id: 'editor.action.transformToUppercase',
+		label: 'Transform to Uppercase',
+		group: '7_transform',
+		order: 1,
+	},
+	{
+		id: 'editor.action.transformToLowercase',
+		label: 'Transform to Lowercase',
+		group: '7_transform',
+		order: 2,
+	},
+	{
+		id: 'editor.action.transformToTitlecase',
+		label: 'Transform to Title Case',
+		group: '7_transform',
+		order: 3,
+	},
+	{
+		id: 'editor.action.sortLinesAscending',
+		label: 'Sort Lines Ascending',
+		group: '7_transform',
+		order: 4,
+	},
+	{
+		id: 'editor.action.sortLinesDescending',
+		label: 'Sort Lines Descending',
+		group: '7_transform',
+		order: 5,
+	},
+	{
+		id: 'editor.action.removeDuplicateLines',
+		label: 'Remove Duplicate Lines',
+		group: '7_transform',
+		order: 6,
+	},
+	{
+		id: 'editor.action.trimTrailingWhitespace',
+		label: 'Trim Trailing Whitespace',
+		group: '7_transform',
+		order: 7,
+	},
 
 	// --- Navigation / view --------------------------------------------
-	{ id: 'editor.action.gotoLine',                label: 'Go to Line\u2026',        group: '8_view',     order: 1 },
-	{ id: 'editor.action.toggleWordWrap',          label: 'Toggle Word Wrap',         group: '8_view',     order: 2 },
-	{ id: 'editor.action.jumpToBracket',           label: 'Jump to Matching Bracket', group: '8_view',     order: 3 },
+	{
+		id: 'editor.action.gotoLine',
+		label: 'Go to Line\u2026',
+		group: '8_view',
+		order: 1,
+	},
+	{
+		id: 'editor.action.toggleWordWrap',
+		label: 'Toggle Word Wrap',
+		group: '8_view',
+		order: 2,
+	},
+	{
+		id: 'editor.action.jumpToBracket',
+		label: 'Jump to Matching Bracket',
+		group: '8_view',
+		order: 3,
+	},
 
 	// --- Code-aware (no-op on languages without a service) ------------
-	{ id: 'editor.action.formatSelection',         label: 'Format Selection',         group: '9_code',     order: 1 },
-	{ id: 'editor.action.quickFix',                label: 'Quick Fix\u2026',          group: '9_code',     order: 2 },
-	{ id: 'editor.action.rename',                  label: 'Rename Symbol',            group: '9_code',     order: 3 },
+	{
+		id: 'editor.action.formatSelection',
+		label: 'Format Selection',
+		group: '9_code',
+		order: 1,
+	},
+	{
+		id: 'editor.action.quickFix',
+		label: 'Quick Fix\u2026',
+		group: '9_code',
+		order: 2,
+	},
+	{
+		id: 'editor.action.rename',
+		label: 'Rename Symbol',
+		group: '9_code',
+		order: 3,
+	},
 ];
 
 /**
@@ -1256,9 +1376,7 @@ export default function Edit( { setAttributes } ) {
 						icon={ arrowUp }
 						label={ __( 'Move line up', 'codelag-blocks' ) }
 						onClick={ () =>
-							runEditorAction(
-								'editor.action.moveLinesUpAction'
-							)
+							runEditorAction( 'editor.action.moveLinesUpAction' )
 						}
 					/>
 					<Button
