@@ -35,6 +35,7 @@ final class LagoonPostType {
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
+		add_filter( 'default_content', array( $this, 'seed_default_content' ), 10, 2 );
 	}
 
 	/**
@@ -102,17 +103,40 @@ final class LagoonPostType {
 			'capability_type'     => 'post',
 			'show_in_rest'        => true,
 			'rest_base'           => 'lagoons',
-			'template'            => array(
-				array( 'codelag/lagoon-prose' ),
-				array(
-					'codelag/lagoon-viewer',
-					array( 'align' => 'full' ),
-				),
-				array( 'codelag/lagoon-prose' ),
-			),
-			'template_lock'       => 'all',
 		);
 
 		register_post_type( self::POST_TYPE, $args );
+	}
+
+	/**
+	 * Seed new lagoon posts with the locked prose / viewer / prose skeleton.
+	 *
+	 * The `template` + `template_lock` CPT args were removed because the
+	 * editor's `doBlocksMatchTemplate` check fails as soon as the user adds
+	 * any inner block to a `lagoon-prose` slot (the CPT template has no
+	 * inner-blocks template, so WP expects zero children). Instead we bake
+	 * per-block `lock` attributes into the initial content so the three
+	 * outer blocks cannot be moved or removed, while their inner blocks
+	 * remain freely editable.
+	 *
+	 * @param string   $content Default post content.
+	 * @param \WP_Post $post    Draft post being created.
+	 */
+	public function seed_default_content( string $content, \WP_Post $post ): string {
+		if ( self::POST_TYPE !== $post->post_type ) {
+			return $content;
+		}
+
+		return <<<HTML
+<!-- wp:codelag/lagoon-prose {"lock":{"move":true,"remove":true}} -->
+<div class="wp-block-codelag-lagoon-prose lagoon-prose"></div>
+<!-- /wp:codelag/lagoon-prose -->
+
+<!-- wp:codelag/lagoon-viewer {"align":"full","lock":{"move":true,"remove":true}} /-->
+
+<!-- wp:codelag/lagoon-prose {"lock":{"move":true,"remove":true}} -->
+<div class="wp-block-codelag-lagoon-prose lagoon-prose"></div>
+<!-- /wp:codelag/lagoon-prose -->
+HTML;
 	}
 }
