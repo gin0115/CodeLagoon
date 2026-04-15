@@ -11,6 +11,8 @@
  */
 body {
 	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 // When the WP admin bar is visible, core puts a 32px (46px on small screens)
@@ -25,11 +27,6 @@ body.admin-bar {
 	body.admin-bar {
 		min-height: calc(100vh - 46px);
 	}
-}
-
-body {
-	display: flex;
-	flex-direction: column;
 }
 
 .wp-site-blocks {
