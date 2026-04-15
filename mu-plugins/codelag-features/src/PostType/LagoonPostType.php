@@ -127,7 +127,7 @@ final class LagoonPostType {
 			return $content;
 		}
 
-		return <<<HTML
+		return <<<'HTML'
 <!-- wp:codelag/lagoon-prose {"lock":{"move":true,"remove":true}} -->
 <div class="wp-block-codelag-lagoon-prose lagoon-prose"></div>
 <!-- /wp:codelag/lagoon-prose -->

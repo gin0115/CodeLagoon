@@ -67,7 +67,7 @@ defined( 'ABSPATH' ) || exit;
 	// Always render a single flat level of terms regardless of taxonomy depth:
 	// - Single-term archive: list the queried term's direct children.
 	// - Hierarchical index: list only top-level terms (children show on each
-	//   parent's own archive page via the same code path).
+	// parent's own archive page via the same code path).
 	// - Flat taxonomy: list everything (no parent filter).
 	if ( null !== $scope_parent_id ) {
 		$term_args['parent'] = $scope_parent_id;

@@ -1,0 +1,190 @@
+> composer run lint:php:theme; composer run lint:php:features; composer run lint:php:blocks
+> composer run lint:php:theme:phpcs; composer run lint:php:theme:phpmd; composer run lint:php:theme:phpstan
+> phpcs --standard=./themes/codelagoon/.phpcs.xml --basepath=. ./themes/codelagoon -v
+Registering sniffs in the  standard... DONE (299 sniffs registered)
+Creating file list... DONE (9 files in queue)
+Changing into directory themes/codelagoon/patterns
+Processing footer-default.php [PHP => 90 tokens in 28 lines]... DONE in 94ms (0 errors, 0 warnings)
+Changing into directory themes/codelagoon/includes
+Processing theme-setup.php [PHP => 389 tokens in 65 lines]... DONE in 229ms (0 errors, 0 warnings)
+Changing into directory themes/codelagoon
+Processing functions.php [PHP => 734 tokens in 95 lines]... DONE in 263ms (0 errors, 0 warnings)
+Changing into directory themes/codelagoon/includes
+Processing theme-theme-panel.php [PHP => 1330 tokens in 191 lines]... DONE in 556ms (0 errors, 0 warnings)
+Processing plugin-woocommerce.php [PHP => 313 tokens in 41 lines]... DONE in 158ms (0 errors, 0 warnings)
+Changing into directory themes/codelagoon/includes
+Processing theme-shortcodes.php [PHP => 1015 tokens in 145 lines]... DONE in 410ms (0 errors, 0 warnings)
+Processing theme-comment-editor.php [PHP => 922 tokens in 170 lines]... DONE in 337ms (0 errors, 0 warnings)
+Changing into directory themes/codelagoon/src
+Processing SiteThemes.php [PHP => 1354 tokens in 199 lines]... DONE in 404ms (0 errors, 0 warnings)
+Processing SiteThemeService.php [PHP => 2795 tokens in 356 lines]... DONE in 986ms (0 errors, 0 warnings)
+Time: 1.67 secs; Memory: 16MB
+
+> phpmd ./themes/codelagoon ansi ./themes/codelagoon/.phpmd.xml -v
+
+Found 0 violations and 0 errors in 92ms
+
+[32mNo mess detected[0m
+> phpstan analyse -c ./themes/codelagoon/.phpstan.neon -v --memory-limit=1G
+  0/17 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0% < 1 sec[1G[2K 17/17 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% 2 secs
+
+
+ [OK] No errors                                                                 
+
+Elapsed time: 2.87 seconds
+Used memory: 450.07 MB
+> composer run lint:php:features:phpcs; composer run lint:php:features:phpmd; composer run lint:php:features:phpstan
+> phpcs --standard=./mu-plugins/codelag-features/.phpcs.xml --basepath=. ./mu-plugins/codelag-features -v
+Registering sniffs in the  standard... DONE (299 sniffs registered)
+Creating file list... DONE (46 files in queue)
+Changing into directory mu-plugins/codelag-features/includes
+Processing plugin-setup.php [PHP => 113 tokens in 18 lines]... DONE in 145ms (0 errors, 0 warnings)
+Processing custom-post-types.php [PHP => 57 tokens in 13 lines]... DONE in 80ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features
+Processing functions.php [PHP => 669 tokens in 87 lines]... DONE in 325ms (0 errors, 0 warnings)
+Processing codelag-features.php [PHP => 434 tokens in 64 lines]... DONE in 242ms (0 errors, 0 warnings)
+Processing autoload.php [PHP => 226 tokens in 33 lines]... DONE in 137ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Shortcode
+Processing ShareButtonShortcode.php [PHP => 467 tokens in 75 lines]... DONE in 213ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Taxonomy
+Processing LagoonPurposeTaxonomy.php [PHP => 701 tokens in 85 lines]... DONE in 332ms (0 errors, 0 warnings)
+Processing LagoonTagTaxonomy.php [PHP => 701 tokens in 85 lines]... DONE in 362ms (0 errors, 0 warnings)
+Processing DefaultTermsSeeder.php [PHP => 809 tokens in 132 lines]... DONE in 299ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Download
+Processing ZipDownloadHandler.php [PHP => 1783 tokens in 244 lines]... DONE in 591ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Shortcode
+Processing ForkButtonShortcode.php [PHP => 547 tokens in 89 lines]... DONE in 308ms (0 errors, 0 warnings)
+Processing ThemePickerShortcode.php [PHP => 605 tokens in 100 lines]... DONE in 366ms (0 errors, 0 warnings)
+Processing ForkLineageShortcode.php [PHP => 1650 tokens in 215 lines]... DONE in 603ms (0 errors, 0 warnings)
+Processing CollectButtonShortcode.php [PHP => 803 tokens in 119 lines]... DONE in 357ms (0 errors, 0 warnings)
+Processing DownloadButtonShortcode.php [PHP => 563 tokens in 87 lines]... DONE in 240ms (0 errors, 0 warnings)
+Processing EditButtonShortcode.php [PHP => 532 tokens in 84 lines]... DONE in 237ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/PostType
+Processing LinkStatus.php [PHP => 745 tokens in 117 lines]... DONE in 297ms (0 errors, 0 warnings)
+Processing EditorAssets.php [PHP => 379 tokens in 61 lines]... DONE in 222ms (0 errors, 0 warnings)
+Processing MonkeyRole.php [PHP => 863 tokens in 134 lines]... DONE in 416ms (0 errors, 0 warnings)
+Processing LagoonPostType.php [PHP => 1102 tokens in 142 lines]... DONE in 438ms (0 errors, 0 warnings)
+Processing SlugGenerator.php [PHP => 1381 tokens in 211 lines]... DONE in 469ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Search
+Processing LagoonSearchQuery.php [PHP => 1796 tokens in 240 lines]... DONE in 586ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Comments
+Processing CommentsEnhancer.php [PHP => 1548 tokens in 219 lines]... DONE in 613ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src
+Processing Plugin.php [PHP => 1139 tokens in 126 lines]... DONE in 656ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Markdown
+Processing Renderer.php [PHP => 493 tokens in 77 lines]... DONE in 234ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Fork
+Processing ForkService.php [PHP => 1744 tokens in 235 lines]... DONE in 638ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Meta
+Processing UserCollection.php [PHP => 1140 tokens in 147 lines]... DONE in 380ms (0 errors, 0 warnings)
+Processing UserPreferences.php [PHP => 475 tokens in 77 lines]... DONE in 189ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Meta
+Processing LagoonMeta.php [PHP => 2022 tokens in 283 lines]... DONE in 843ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Database
+Processing Schema.php [PHP => 582 tokens in 126 lines]... DONE in 231ms (0 errors, 0 warnings)
+Processing FileSearch.php [PHP => 1616 tokens in 221 lines]... DONE in 510ms (0 errors, 0 warnings)
+Processing Denormalisation.php [PHP => 805 tokens in 115 lines]... DONE in 316ms (0 errors, 0 warnings)
+Processing FileRepository.php [PHP => 2943 tokens in 394 lines]... DONE in 997ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Taxonomy
+Processing LagoonLanguageTaxonomy.php [PHP => 756 tokens in 92 lines]... DONE in 284ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Query
+Processing ArchiveQueryFilter.php [PHP => 1148 tokens in 153 lines]... DONE in 562ms (0 errors, 0 warnings)
+Processing TermIndexRewrite.php [PHP => 1095 tokens in 167 lines]... DONE in 466ms (0 errors, 0 warnings)
+Processing AuthorArchiveRewrite.php [PHP => 1366 tokens in 183 lines]... DONE in 487ms (0 errors, 0 warnings)
+Processing CollectionQueryFilter.php [PHP => 1525 tokens in 198 lines]... DONE in 521ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Rest
+Processing ForkController.php [PHP => 1149 tokens in 166 lines]... DONE in 422ms (0 errors, 0 warnings)
+Processing LagoonsWriteController.php [PHP => 2198 tokens in 286 lines]... DONE in 807ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-features/src/Rest
+Processing CollectionController.php [PHP => 1151 tokens in 163 lines]... DONE in 533ms (0 errors, 0 warnings)
+Processing FileSearchController.php [PHP => 1180 tokens in 161 lines]... DONE in 441ms (0 errors, 0 warnings)
+Processing FilesController.php [PHP => 3805 tokens in 512 lines]... DONE in 1.28 secs (0 errors, 0 warnings)
+Processing TermsController.php [PHP => 3718 tokens in 463 lines]... DONE in 1.19 secs (0 errors, 0 warnings)
+Processing LagoonsController.php [PHP => 1689 tokens in 231 lines]... DONE in 606ms (0 errors, 0 warnings)
+Processing LagoonsControllerSupport.php [PHP => 2787 tokens in 321 lines]... DONE in 916ms (0 errors, 0 warnings)
+Time: 5.24 secs; Memory: 16MB
+
+> phpmd ./mu-plugins/codelag-features ansi ./mu-plugins/codelag-features/.phpmd.xml -v
+
+Found 0 violations and 0 errors in 511ms
+
+[32mNo mess detected[0m
+> phpstan analyse -c ./mu-plugins/codelag-features/.phpstan.neon -v --memory-limit=1G
+  0/57 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0% < 1 sec[1G[2K 20/57 [▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░]  35% 2 secs[1G[2K 40/57 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░]  70% 5 secs[1G[2K 57/57 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% 6 secs
+
+
+ [OK] No errors                                                                 
+
+Elapsed time: 6.72 seconds
+Used memory: 891.6 MB
+> composer run lint:php:blocks:phpcs; composer run lint:php:blocks:phpmd; composer run lint:php:blocks:phpstan
+> phpcs --standard=./mu-plugins/codelag-blocks/.phpcs.xml --basepath=. ./mu-plugins/codelag-blocks -v
+Registering sniffs in the  standard... DONE (299 sniffs registered)
+Creating file list... DONE (16 files in queue)
+Changing into directory mu-plugins/codelag-blocks
+Processing autoload.php [PHP => 226 tokens in 33 lines]... DONE in 144ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/src
+Processing Plugin.php [PHP => 488 tokens in 88 lines]... DONE in 172ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks
+Processing codelag-blocks.php [PHP => 347 tokens in 54 lines]... DONE in 177ms (0 errors, 0 warnings)
+Processing functions.php [PHP => 669 tokens in 87 lines]... DONE in 232ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/src/term-submenu
+Processing render.php [PHP => 1350 tokens in 169 lines]... DONE in 451ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/src/ascii-art
+Processing render.php [PHP => 521 tokens in 74 lines]... DONE in 210ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/build/term-submenu
+Processing render.php [PHP => 1350 tokens in 169 lines]... DONE in 509ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/build/ascii-art
+Processing render.php [PHP => 526 tokens in 74 lines]... DONE in 221ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/build/lagoon-card
+Processing render.php [PHP => 1591 tokens in 166 lines]... DONE in 665ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/build/lagoon-viewer
+Processing render.php [PHP => 1234 tokens in 159 lines]... DONE in 483ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/src/lagoon-card
+Processing render.php [PHP => 1591 tokens in 166 lines]... DONE in 719ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/src/lagoon-viewer
+Processing render.php [PHP => 1234 tokens in 159 lines]... DONE in 443ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/src/lagoon-filters
+Processing render.php [PHP => 2552 tokens in 316 lines]... DONE in 973ms (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/src/term-index
+Processing render.php [PHP => 1314 tokens in 172 lines]... DONE in 441ms (1 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/build/lagoon-filters
+Processing render.php [PHP => 2552 tokens in 316 lines]... DONE in 1.01 secs (0 errors, 0 warnings)
+Changing into directory mu-plugins/codelag-blocks/blocks/build/term-index
+Processing render.php [PHP => 1315 tokens in 170 lines]... DONE in 467ms (0 errors, 0 warnings)
+
+[1mFILE: mu-plugins/codelag-blocks/blocks/src/term-index/render.php[0m
+--------------------------------------------------------------------------------
+[1mFOUND 1 ERROR AFFECTING 1 LINE[0m
+--------------------------------------------------------------------------------
+ 67 | [31mERROR[0m | [1mEmpty line required before block comment[0m
+    |       | (Squiz.Commenting.BlockComment.NoEmptyLineBefore)
+--------------------------------------------------------------------------------
+
+Time: 1.77 secs; Memory: 16MB
+
+Script phpcs --standard=./mu-plugins/codelag-blocks/.phpcs.xml --basepath=. ./mu-plugins/codelag-blocks -v handling the lint:php:blocks:phpcs event returned with error code 1
+> phpmd ./mu-plugins/codelag-blocks ansi ./mu-plugins/codelag-blocks/.phpmd.xml -v
+
+Found 0 violations and 0 errors in 63ms
+
+[32mNo mess detected[0m
+> phpstan analyse -c ./mu-plugins/codelag-blocks/.phpstan.neon -v --memory-limit=1G
+  0/27 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0% < 1 sec[1G[2K 20/27 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░]  74% 3 secs[1G[2K 27/27 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100% 3 secs
+
+ ------ ----------------------------------------------------------------------- 
+  Line   blocks/build/ascii-art/render.php                                      
+ ------ ----------------------------------------------------------------------- 
+  44     Parameter #1 $array (non-empty-list<non-empty-string>) of array_value  
+         s is already a list, call has no effect.                               
+         🪪  arrayValues.list                                                   
+ ------ ----------------------------------------------------------------------- 
+
+
+ [ERROR] Found 1 error                                                          
+
+Elapsed time: 4.34 seconds
+Used memory: 515.41 MB
+Script phpstan analyse -c ./mu-plugins/codelag-blocks/.phpstan.neon -v --memory-limit=1G handling the lint:php:blocks:phpstan event returned with error code 1
+Script composer run lint:php:blocks:phpcs; composer run lint:php:blocks:phpmd; composer run lint:php:blocks:phpstan handling the lint:php:blocks event returned with error code 1
+Script composer run lint:php:theme; composer run lint:php:features; composer run lint:php:blocks handling the lint:php event returned with error code 1
