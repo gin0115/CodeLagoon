@@ -31,13 +31,14 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies -- installed transitively via @wordpress/components; listing it explicitly would require a package-lock refresh we can't run from CI.
 import {
 	search,
-	// eslint-disable-next-line import/named -- exported at runtime; not in the package's type declarations.
-	replaceAll,
 	code,
 	commentContent,
 	chevronUp,
 	chevronDown,
-	wordpress,
+	arrowUp,
+	arrowDown,
+	copy,
+	closeSmall,
 	formatIndent,
 	formatOutdent,
 	dragHandle,
@@ -399,6 +400,99 @@ function applyMonacoTheme( monacoLib, themeKey ) {
 loader.config( { monaco } );
 
 /**
+ * Curated list of Monaco actions to expose in every editor's right-click
+ * context menu. Most of these actions are already registered internally by
+ * Monaco but with no `contextMenuGroupId`, so they never appear when the
+ * user right-clicks. The wrapper actions registered in
+ * `registerContextMenuActions()` give them a group + label and delegate to
+ * the original action's `run()`.
+ *
+ * Order within each group sets the visual order in the menu. Groups are
+ * Monaco's standard sort keys — `1_` first, `9_` last — so our entries land
+ * cleanly under the built-in clipboard items.
+ *
+ * Edit this list to prune (or rename / regroup) any items you don't want.
+ */
+const CONTEXT_MENU_ACTIONS = [
+	// --- Line operations -----------------------------------------------
+	{ id: 'editor.action.moveLinesUpAction',       label: 'Move Line Up',       group: '5_lines',     order: 1 },
+	{ id: 'editor.action.moveLinesDownAction',     label: 'Move Line Down',     group: '5_lines',     order: 2 },
+	{ id: 'editor.action.copyLinesUpAction',       label: 'Copy Line Up',       group: '5_lines',     order: 3 },
+	{ id: 'editor.action.copyLinesDownAction',     label: 'Copy Line Down',     group: '5_lines',     order: 4 },
+	{ id: 'editor.action.deleteLines',             label: 'Delete Line',        group: '5_lines',     order: 5 },
+	{ id: 'editor.action.joinLines',               label: 'Join Lines',         group: '5_lines',     order: 6 },
+	{ id: 'editor.action.insertLineAfter',         label: 'Insert Line Below',  group: '5_lines',     order: 7 },
+	{ id: 'editor.action.insertLineBefore',        label: 'Insert Line Above',  group: '5_lines',     order: 8 },
+
+	// --- Selection / multi-cursor -------------------------------------
+	{ id: 'editor.action.addSelectionToNextFindMatch', label: 'Select Next Occurrence', group: '6_select', order: 1 },
+	{ id: 'editor.action.selectHighlights',            label: 'Select All Occurrences', group: '6_select', order: 2 },
+	{ id: 'editor.action.changeAll',                   label: 'Change All Occurrences', group: '6_select', order: 3 },
+
+	// --- Text transforms ----------------------------------------------
+	{ id: 'editor.action.transformToUppercase',    label: 'Transform to Uppercase', group: '7_transform', order: 1 },
+	{ id: 'editor.action.transformToLowercase',    label: 'Transform to Lowercase', group: '7_transform', order: 2 },
+	{ id: 'editor.action.transformToTitlecase',    label: 'Transform to Title Case', group: '7_transform', order: 3 },
+	{ id: 'editor.action.sortLinesAscending',      label: 'Sort Lines Ascending',    group: '7_transform', order: 4 },
+	{ id: 'editor.action.sortLinesDescending',     label: 'Sort Lines Descending',   group: '7_transform', order: 5 },
+	{ id: 'editor.action.removeDuplicateLines',    label: 'Remove Duplicate Lines',  group: '7_transform', order: 6 },
+	{ id: 'editor.action.trimTrailingWhitespace',  label: 'Trim Trailing Whitespace',group: '7_transform', order: 7 },
+
+	// --- Navigation / view --------------------------------------------
+	{ id: 'editor.action.gotoLine',                label: 'Go to Line\u2026',        group: '8_view',     order: 1 },
+	{ id: 'editor.action.toggleWordWrap',          label: 'Toggle Word Wrap',         group: '8_view',     order: 2 },
+	{ id: 'editor.action.jumpToBracket',           label: 'Jump to Matching Bracket', group: '8_view',     order: 3 },
+
+	// --- Code-aware (no-op on languages without a service) ------------
+	{ id: 'editor.action.formatSelection',         label: 'Format Selection',         group: '9_code',     order: 1 },
+	{ id: 'editor.action.quickFix',                label: 'Quick Fix\u2026',          group: '9_code',     order: 2 },
+	{ id: 'editor.action.rename',                  label: 'Rename Symbol',            group: '9_code',     order: 3 },
+];
+
+/**
+ * Register every action in CONTEXT_MENU_ACTIONS against the given editor
+ * instance so they appear in the right-click menu. Each wrapper just
+ * delegates to the original Monaco action — that way we don't reimplement
+ * any behaviour, we just lift it into a context-menu-visible position.
+ *
+ * Wrapped in a try/catch per action so a missing action (e.g. one whose
+ * underlying contribution was dropped from the webpack bundle) can't break
+ * the rest of the registration.
+ *
+ * @param {Object} editor Monaco editor instance.
+ */
+function registerContextMenuActions( editor ) {
+	if ( ! editor || typeof editor.addAction !== 'function' ) {
+		return;
+	}
+
+	CONTEXT_MENU_ACTIONS.forEach( ( spec ) => {
+		try {
+			editor.addAction( {
+				id: 'codelag.ctx.' + spec.id,
+				label: spec.label,
+				contextMenuGroupId: spec.group,
+				contextMenuOrder: spec.order,
+				keybindings: [],
+				run: ( ed ) => {
+					const action = ed.getAction( spec.id );
+					if ( action ) {
+						action.run();
+					}
+				},
+			} );
+		} catch ( err ) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				'[lagoon-viewer] failed to add context-menu action',
+				spec.id,
+				err
+			);
+		}
+	} );
+}
+
+/**
  * Mirror Monaco's `style.monaco-colors` from the parent document into the
  * Gutenberg editor-canvas iframe.
  *
@@ -674,20 +768,25 @@ export default function Edit( { setAttributes } ) {
 	}, [] );
 
 	// Run a Monaco action against the most-recently focused editor.
+	// Focus MUST be restored to the editor BEFORE calling action.run():
+	// cursor-based actions (move line up/down, copy line, delete line, etc.)
+	// check the active editor and bail silently when focus is still on the
+	// toolbar button that fired them. Previously we focused after running,
+	// which is why those actions worked in the right-click menu (where the
+	// editor already has focus) but were no-ops from the toolbar.
 	const runEditorAction = useCallback( ( actionId ) => {
 		const editor = focusedEditorRef.current;
 		if ( ! editor ) {
 			return;
 		}
-		const action = editor.getAction( actionId );
-		if ( action ) {
-			action.run();
-		}
-		// Refocus so subsequent keyboard input goes to the editor, not the toolbar button.
 		try {
 			editor.focus();
 		} catch ( err ) {
 			// noop
+		}
+		const action = editor.getAction( actionId );
+		if ( action ) {
+			action.run();
 		}
 	}, [] );
 
@@ -1060,7 +1159,50 @@ export default function Edit( { setAttributes } ) {
 					/>
 					<Button
 						size="small"
-						icon={ replaceAll }
+						icon={
+							<svg
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+								aria-hidden="true"
+							>
+								{ /* Magnifier + pencil (find-replace-1). */ }
+								<circle
+									cx="10"
+									cy="12"
+									r="5"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="1.6"
+								/>
+								<line
+									x1="13.6"
+									y1="15.6"
+									x2="17.5"
+									y2="19.5"
+									stroke="currentColor"
+									strokeWidth="1.6"
+									strokeLinecap="round"
+								/>
+								<path
+									d="M16 4.5 L18 6.5 L12.5 12 L10 12.5 L10.5 10 Z"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="1.6"
+									strokeLinejoin="round"
+								/>
+								<line
+									x1="15.2"
+									y1="5.3"
+									x2="17.2"
+									y2="7.3"
+									stroke="currentColor"
+									strokeWidth="1.6"
+									strokeLinecap="round"
+								/>
+							</svg>
+						}
 						label={ __(
 							'Find & Replace (Ctrl+H)',
 							'codelag-blocks'
@@ -1111,6 +1253,44 @@ export default function Edit( { setAttributes } ) {
 					/>
 					<Button
 						size="small"
+						icon={ arrowUp }
+						label={ __( 'Move line up', 'codelag-blocks' ) }
+						onClick={ () =>
+							runEditorAction(
+								'editor.action.moveLinesUpAction'
+							)
+						}
+					/>
+					<Button
+						size="small"
+						icon={ arrowDown }
+						label={ __( 'Move line down', 'codelag-blocks' ) }
+						onClick={ () =>
+							runEditorAction(
+								'editor.action.moveLinesDownAction'
+							)
+						}
+					/>
+					<Button
+						size="small"
+						icon={ copy }
+						label={ __( 'Duplicate line below', 'codelag-blocks' ) }
+						onClick={ () =>
+							runEditorAction(
+								'editor.action.copyLinesDownAction'
+							)
+						}
+					/>
+					<Button
+						size="small"
+						icon={ closeSmall }
+						label={ __( 'Delete line', 'codelag-blocks' ) }
+						onClick={ () =>
+							runEditorAction( 'editor.action.deleteLines' )
+						}
+					/>
+					<Button
+						size="small"
 						icon={ chevronUp }
 						label={ __( 'Fold all', 'codelag-blocks' ) }
 						onClick={ () => runEditorAction( 'editor.foldAll' ) }
@@ -1125,16 +1305,58 @@ export default function Edit( { setAttributes } ) {
 						size="small"
 						icon={ aspectRatio }
 						label={ __( 'Toggle minimap', 'codelag-blocks' ) }
-						onClick={ () =>
-							runEditorAction( 'editor.action.toggleMinimap' )
-						}
+						onClick={ () => {
+							// Monaco doesn't register a `toggleMinimap` action
+							// in the standalone build, so going through the
+							// action registry is a no-op. Read the current
+							// option off the focused editor and flip it
+							// directly via updateOptions.
+							const editor = focusedEditorRef.current;
+							if ( ! editor ) {
+								return;
+							}
+							const raw = editor.getRawOptions();
+							const enabled = raw?.minimap?.enabled !== false;
+							editor.updateOptions( {
+								minimap: {
+									...( raw?.minimap || {} ),
+									enabled: ! enabled,
+								},
+							} );
+							try {
+								editor.focus();
+							} catch ( err ) {
+								// noop
+							}
+						} }
 					/>
 					<Button
 						size="small"
-						icon={ wordpress }
-						label={ __( 'Command palette (F1)', 'codelag-blocks' ) }
+						icon={
+							<svg
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="1.8"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								aria-hidden="true"
+							>
+								{ /* Hash + right arrow (goto-3), hash stretched horizontally. */ }
+								<line x1="1.5" y1="8" x2="15" y2="8" />
+								<line x1="1.5" y1="14" x2="15" y2="14" />
+								<line x1="6" y1="4" x2="5" y2="18" />
+								<line x1="12" y1="4" x2="11" y2="18" />
+								<line x1="15.5" y1="11" x2="22" y2="11" />
+								<polyline points="19,8 22,11 19,14" />
+							</svg>
+						}
+						label={ __( 'Go to line', 'codelag-blocks' ) }
 						onClick={ () =>
-							runEditorAction( 'editor.action.quickCommand' )
+							runEditorAction( 'editor.action.gotoLine' )
 						}
 					/>
 				</div>
@@ -1308,6 +1530,12 @@ function FileCard( {
 		opacity: isDragging ? 0.6 : 1,
 	};
 
+	// Hide the Monaco editor until its first layout call has fired. Without
+	// this, Monaco mounts at its content-driven natural width and visibly
+	// snaps to the parent's actual width once `automaticLayout` measures —
+	// the snap is the layout flash the user sees on every new file card.
+	const [ isEditorReady, setIsEditorReady ] = useState( false );
+
 	const langLabel =
 		( LANGUAGE_OPTIONS.find( ( o ) => o.value === file.language ) || {} )
 			.label || file.language;
@@ -1463,7 +1691,11 @@ function FileCard( {
 							</ReactMarkdown>
 						</div>
 					) : (
-						<div className="lagoon-file-card__editor">
+						<div
+							className={ `lagoon-file-card__editor${
+								isEditorReady ? ' is-ready' : ''
+							}` }
+						>
 							<Editor
 								height="100%"
 								width="100%"
@@ -1518,7 +1750,22 @@ function FileCard( {
 										} catch ( err ) {
 											// noop
 										}
+										// Flip the ready flag after the second
+										// layout pass so the fade-in mask hides
+										// the initial mount flash.
+										setIsEditorReady( true );
 									} );
+
+									// Surface a curated set of Monaco actions
+									// in the right-click menu under a single
+									// "Codelagoon" group. Most of these are
+									// already registered by Monaco internally
+									// but their `contextMenuGroupId` is unset,
+									// so they never appear when the user
+									// right-clicks. We re-expose them by
+									// adding thin wrappers that delegate to
+									// the original action.
+									registerContextMenuActions( editor );
 								} }
 								options={ {
 									minimap: {
@@ -1553,6 +1800,14 @@ function FileCard( {
 										verticalScrollbarSize: 10,
 										horizontalScrollbarSize: 10,
 									},
+									// Detach context menu / hover / autocomplete
+									// widgets from the editor container so the
+									// surrounding `overflow: hidden` (used to
+									// stop the mount-flash from leaking) can't
+									// clip them. Without this the right-click
+									// menu loses items as soon as it hits the
+									// container's edge.
+									fixedOverflowWidgets: true,
 								} }
 							/>
 						</div>
