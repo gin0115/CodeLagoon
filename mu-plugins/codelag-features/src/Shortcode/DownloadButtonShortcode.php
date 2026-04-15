@@ -23,8 +23,9 @@ defined( 'ABSPATH' ) || exit;
  * streams it back. No JS required — the browser handles the file download
  * natively from the anchor.
  *
- * Empty string outside singular lagoon pages and for logged-out visitors
- * (the handler also enforces this server-side; this just hides the button).
+ * Empty string outside singular lagoon pages. Guests can now download too —
+ * the ZipDownloadHandler relies on `current_user_can( 'read_post' )` which
+ * already honours post visibility without needing a login gate.
  */
 final class DownloadButtonShortcode {
 
@@ -60,10 +61,6 @@ final class DownloadButtonShortcode {
 
 		$post = get_post( $post_id );
 		if ( null === $post || LagoonPostType::POST_TYPE !== $post->post_type ) {
-			return '';
-		}
-
-		if ( ! is_user_logged_in() ) {
 			return '';
 		}
 

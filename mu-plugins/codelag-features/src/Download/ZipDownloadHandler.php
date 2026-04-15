@@ -82,20 +82,17 @@ final class ZipDownloadHandler {
 			$this->fail_404();
 		}
 
-		if ( ! is_user_logged_in() ) {
-			wp_die(
-				esc_html__( 'You must be logged in to download a lagoon.', 'codelag-features' ),
-				'',
-				array( 'response' => 401 )
-			);
-		}
-
 		$post = get_post( $post_id );
 		if ( ! $post instanceof WP_Post || LagoonPostType::POST_TYPE !== $post->post_type ) {
 			$this->fail_404();
 		}
 
-		if ( ! current_user_can( 'read_post', $post_id ) ) {
+		// Allow guests on publicly-viewable lagoons (they have no `read`
+		// capability so `current_user_can('read_post')` would refuse them
+		// even on a public post). For anything non-public, fall back to the
+		// capability check so drafts / private / password-protected stay
+		// gated.
+		if ( ! is_post_publicly_viewable( $post ) && ! current_user_can( 'read_post', $post_id ) ) {
 			wp_die(
 				esc_html__( 'You are not allowed to download this lagoon.', 'codelag-features' ),
 				'',

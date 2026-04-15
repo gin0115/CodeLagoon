@@ -317,7 +317,8 @@ final class SiteThemeService {
 
 	/**
 	 * Resolve the active theme slug for the current request. Logged-in
-	 * users get their meta choice; guests get the system default.
+	 * users get their meta choice; guests fall back to a cookie written by
+	 * the floating theme panel, then to the system default.
 	 */
 	private function resolve_current_theme(): string {
 		if ( is_user_logged_in() ) {
@@ -325,14 +326,19 @@ final class SiteThemeService {
 			if ( '' !== $stored ) {
 				return SiteThemes::sanitize( $stored );
 			}
+			return SiteThemes::DEFAULT_THEME;
+		}
+		if ( isset( $_COOKIE[ self::META_KEY ] ) ) {
+			return SiteThemes::sanitize( wp_unslash( (string) $_COOKIE[ self::META_KEY ] ) );
 		}
 		return SiteThemes::DEFAULT_THEME;
 	}
 
 	/**
 	 * Resolve the archive column count for the current viewer. Logged-in
-	 * users get their stored preference (1 or 2); guests get the system
-	 * default. Guaranteed to return 1 or 2.
+	 * users get their stored preference (1 or 2); guests fall back to a
+	 * cookie written by the floating theme panel, then to the default.
+	 * Guaranteed to return 1 or 2.
 	 */
 	private function resolve_current_columns(): int {
 		if ( is_user_logged_in() ) {
@@ -340,6 +346,10 @@ final class SiteThemeService {
 			if ( 1 === $stored || 2 === $stored ) {
 				return $stored;
 			}
+			return self::COLUMNS_DEFAULT;
+		}
+		if ( isset( $_COOKIE[ self::COLUMNS_META_KEY ] ) ) {
+			return self::sanitize_columns( wp_unslash( (string) $_COOKIE[ self::COLUMNS_META_KEY ] ) );
 		}
 		return self::COLUMNS_DEFAULT;
 	}

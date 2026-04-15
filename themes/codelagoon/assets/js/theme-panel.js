@@ -6,14 +6,17 @@
  *  - lets the user flip the panel between left and right edges (position
  *    persisted in localStorage under `codelag-theme-panel-side`)
  *  - swaps `data-site-theme` on <html> live when the site-theme select
- *    changes, then PATCHes the user meta so the choice survives reloads
+ *    changes, then persists the choice so it survives reloads
  *  - does the same for the code-syntax select, which only matters on
  *    lagoon pages where view.js listens for the change and re-applies
  *    Prism themes — we just fire a custom event so view.js can react
  *    without this script having to know how it works
  *
- * This script is loaded in the footer and is only enqueued for logged-in
- * users; the corresponding markup is printed by codelag_render_theme_panel().
+ * Persistence branches on the panel's `data-mode` attribute:
+ *  - `user`  — PATCH user meta via `/wp/v2/users/me` AND mirror to a
+ *              cookie, so a later logout falls back to the same choice.
+ *  - `guest` — write a 1-year cookie only; the server reads it on the
+ *              next request to avoid FOUC.
  */
 
 ( function () {
@@ -22,6 +25,7 @@
 	const ROOT_ATTR = 'data-site-theme';
 	const SIDE_STORE = 'codelag-theme-panel-side';
 	const DEFAULT_SIDE = 'right';
+	const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
 	document.addEventListener( 'DOMContentLoaded', init );
 
@@ -178,13 +182,21 @@
 	}
 
 	/**
-	 * PATCH a single user-meta key on the current user via wp/v2/users/me.
+	 * Persist a single preference. Always writes a cookie so the choice
+	 * survives logout; for logged-in users also PATCHes user meta via
+	 * wp/v2/users/me so it follows them across devices.
 	 *
-	 * @param {HTMLElement} panel   Panel root element (carries REST root + nonce attrs).
-	 * @param {string}      metaKey Meta key to update.
-	 * @param {*}           value   New value for the meta key.
+	 * @param {HTMLElement} panel   Panel root element (carries REST root + nonce + mode attrs).
+	 * @param {string}      metaKey Meta key / cookie name.
+	 * @param {*}           value   New value.
 	 */
 	function saveMeta( panel, metaKey, value ) {
+		writeCookie( metaKey, value );
+
+		if ( panel.getAttribute( 'data-mode' ) !== 'user' ) {
+			return;
+		}
+
 		const root = panel.getAttribute( 'data-rest-root' );
 		const nonce = panel.getAttribute( 'data-nonce' );
 		if ( ! root || ! nonce ) {
@@ -205,5 +217,26 @@
 			// eslint-disable-next-line no-console
 			console.error( '[codelag-theme-panel] save failed', err );
 		} );
+	}
+
+	/**
+	 * Write a preference cookie (1-year expiry, path=/, SameSite=Lax).
+	 *
+	 * @param {string} name  Cookie name.
+	 * @param {*}      value Value (coerced to string).
+	 */
+	function writeCookie( name, value ) {
+		const encoded = encodeURIComponent( String( value ) );
+		let cookie =
+			name +
+			'=' +
+			encoded +
+			'; Max-Age=' +
+			COOKIE_MAX_AGE +
+			'; Path=/; SameSite=Lax';
+		if ( window.location.protocol === 'https:' ) {
+			cookie += '; Secure';
+		}
+		document.cookie = cookie;
 	}
 } )();
