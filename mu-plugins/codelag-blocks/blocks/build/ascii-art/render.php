@@ -41,7 +41,7 @@ defined( 'ABSPATH' ) || exit;
 	// Pick the initial frame at random so every page load starts differently.
 	$initial = $items[ array_rand( $items ) ];
 
-	$items_json = wp_json_encode( array_values( $items ) );
+	$items_json = wp_json_encode( $items );
 	if ( false === $items_json ) {
 		$items_json = '[]';
 	}
