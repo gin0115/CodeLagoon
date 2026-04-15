@@ -64,6 +64,7 @@ defined( 'ABSPATH' ) || exit;
 		'order'      => 'count' === $order_by ? 'DESC' : 'ASC',
 		'hide_empty' => true,
 	);
+
 	/*
 	 * Always render a single flat level of terms regardless of taxonomy depth:
 	 *  - Single-term archive: list the queried term's direct children.
