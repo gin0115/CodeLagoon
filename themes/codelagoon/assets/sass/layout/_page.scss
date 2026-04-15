@@ -1,6 +1,48 @@
 @use "../abstracts/mixins" as *;
 
 /**
+ * Sticky-footer layout — make `<body>` fill the viewport vertically, let
+ * the Gutenberg site wrapper and its inner `<main>` grow to absorb any
+ * spare space, so a short page's footer still sits on the viewport edge
+ * instead of floating under a half-empty page.
+ *
+ * Targets the standard block-theme output: `<body>` > `.wp-site-blocks`
+ * > `header` / `main` / `footer` (from templates/*.html + parts/*.html).
+ */
+body {
+	min-height: 100vh;
+}
+
+// When the WP admin bar is visible, core puts a 32px (46px on small screens)
+// margin-top on `<html>` to make room for it. That margin adds to the total
+// document height, so we shrink body's min-height by the same amount —
+// otherwise the footer sits a bar-height below the viewport bottom.
+body.admin-bar {
+	min-height: calc(100vh - 32px);
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar {
+		min-height: calc(100vh - 46px);
+	}
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+.wp-site-blocks {
+	flex: 1 0 auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.wp-site-blocks > main {
+	flex: 1 0 auto;
+}
+
+/**
  * Page
  * - Description of page styles
  */

@@ -1,0 +1,35 @@
+/**
+ * Theme override for `codelag/ascii-art`.
+ *
+ * The block ships with neutral stock WordPress styling (see the block's own
+ * style.scss). Here we overlay CodeLagoon's palette — `--cl-surface-*`,
+ * `--cl-on-*`, accent colours — so the rotating art reads as part of the
+ * themed chrome without having to know anything about the block itself.
+ */
+
+.codelag-ascii-art,
+.wp-block-codelag-ascii-art {
+	color: var(--cl-on-surface);
+	background: var(--cl-surface-low);
+	border: 1px solid var(--cl-outline-variant);
+	border-radius: var(--cl-radius);
+	padding: 100px;
+
+	&__stage {
+		color: var(--cl-primary);
+		font-size: 0.8rem;
+		line-height: 1.2;
+		text-shadow: 0 0 8px color-mix(in srgb, var(--cl-primary) 30%, transparent);
+	}
+
+	&__next {
+		color: var(--cl-primary);
+		border-color: var(--cl-primary);
+
+		&:hover,
+		&:focus-visible {
+			background: color-mix(in srgb, var(--cl-primary) 15%, transparent);
+			color: var(--cl-primary);
+		}
+	}
+}

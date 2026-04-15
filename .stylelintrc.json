@@ -4,6 +4,7 @@
     "at-rule-empty-line-before": null,
     "rule-empty-line-before": null,
     "selector-class-pattern": null,
-    "no-descending-specificity": null
+    "no-descending-specificity": null,
+    "function-url-quotes": null
   }
 }

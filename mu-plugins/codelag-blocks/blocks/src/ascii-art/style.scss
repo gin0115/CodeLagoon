@@ -1,0 +1,66 @@
+/**
+ * ASCII Art — base frontend styles.
+ *
+ * Deliberately neutral. Uses stock WordPress preset variables where they
+ * exist (so a plain install looks fine), leaving theme overrides to layer
+ * their own palette on top. The theme applies `--cl-*` vars via its
+ * components/_ascii-art.scss override.
+ */
+
+.codelag-ascii-art {
+	// Grid: button row at top, art in the middle, an invisible spacer at the
+	// bottom that mirrors the button's row. This keeps the art visually
+	// centered in the panel regardless of whether the button is rendered.
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto 1fr auto;
+	justify-items: center;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	padding: 1rem;
+	box-sizing: border-box;
+
+	// Invisible first-row spacer that mirrors the bottom button row, so the
+	// art in the middle sits at the optical centre. Height approximates the
+	// Next button (padding 0.35rem * 2 + ~1em line-height).
+	&::before {
+		content: "";
+		display: block;
+		grid-row: 1;
+		height: 2rem;
+	}
+
+	&__stage {
+		margin: 0;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+			"Liberation Mono", "Courier New", monospace;
+		font-size: 0.85rem;
+		line-height: 1.2;
+		white-space: pre;
+		text-align: left;
+		color: inherit;
+		background: transparent;
+		overflow: visible;
+	}
+
+	&__next {
+		appearance: none;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		padding: 0.35rem 0.9rem;
+		border: 1px solid currentColor;
+		background: transparent;
+		color: inherit;
+		border-radius: 2px;
+
+		&:hover,
+		&:focus-visible {
+			outline: none;
+			background: rgba(0, 0, 0, 0.05);
+		}
+	}
+}
