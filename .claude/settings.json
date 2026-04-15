@@ -4,7 +4,8 @@
       "Bash(unzip -l /media/glynn/2024/devilbox_public/CodeLagoon/htdocs/wp-content/xwcgs5atxc.zip)",
       "Bash(ls mu-plugins/codelag-blocks/languages/*.pot)",
       "Bash(grep -n \"Automattic Special Projects\\\\|wordpress.org/support\" mu-plugins/codelag-blocks/languages/*.pot)",
-      "Read(//media/glynn/2024/devilbox_public/CodeLagoon/**)"
+      "Read(//media/glynn/2024/devilbox_public/CodeLagoon/**)",
+      "Read(//media/glynn/2024/codedevbox_public/CodeLagoon/htdocs/wp-content/mu-plugins/codelag-blocks/blocks/src/lagoon-viewer/**)"
     ]
   }
 }

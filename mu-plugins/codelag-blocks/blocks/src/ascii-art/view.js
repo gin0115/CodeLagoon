@@ -22,9 +22,7 @@
 	document.addEventListener( 'DOMContentLoaded', init );
 
 	function init() {
-		const wrappers = document.querySelectorAll(
-			'[data-codelag-ascii]'
-		);
+		const wrappers = document.querySelectorAll( '[data-codelag-ascii]' );
 		if ( ! wrappers.length ) {
 			return;
 		}
@@ -125,7 +123,7 @@
 	 * single item we'd always return the same one, but the caller guards
 	 * against that (rotation is skipped for lists of 1).
 	 *
-	 * @param {number} length Total items.
+	 * @param {number} length  Total items.
 	 * @param {number} current Current index to avoid.
 	 * @return {number} New index.
 	 */

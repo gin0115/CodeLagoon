@@ -8,19 +8,11 @@
 	"icon": "editor-code",
 	"description": "Rotates through a list of ASCII art pieces at random, centered in the wrapper.",
 	"textdomain": "codelag-blocks",
-	"keywords": [
-		"ascii",
-		"art",
-		"text",
-		"decoration"
-	],
+	"keywords": [ "ascii", "art", "text", "decoration" ],
 	"supports": {
 		"html": false,
 		"anchor": true,
-		"align": [
-			"wide",
-			"full"
-		],
+		"align": [ "wide", "full" ],
 		"customClassName": true
 	},
 	"attributes": {
