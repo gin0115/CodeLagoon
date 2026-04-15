@@ -245,8 +245,6 @@
 }
 .codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice {
   flex: 0 0 auto;
-}
-.codelag-filters .select2-container--default .select2-selection--multiple .select2-selection__choice {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;

@@ -169,7 +169,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 const POST_TYPE = 'lagoon';
 function VisibilityPanel() {
   const {
@@ -192,7 +191,12 @@ function VisibilityPanel() {
   // Private can be represented as either `private` or sometimes surfaces as
   // `private` alongside visibility=password in core; we only care about the
   // three custom states here.
-  const current = status === 'codelag_link' ? 'codelag_link' : status === 'private' ? 'private' : 'publish';
+  let current = 'publish';
+  if (status === 'codelag_link') {
+    current = 'codelag_link';
+  } else if (status === 'private') {
+    current = 'private';
+  }
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_wordpress_editor__WEBPACK_IMPORTED_MODULE_2__.PluginDocumentSettingPanel, {
     name: "codelag-visibility",
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Visibility', 'codelag-features'),

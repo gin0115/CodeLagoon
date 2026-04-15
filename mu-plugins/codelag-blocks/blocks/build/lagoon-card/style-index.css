@@ -81,7 +81,7 @@
   border-left: 2px solid var(--cl-primary, #00f0ff);
   border-radius: var(--cl-radius-sm, 0.5rem);
   color: var(--cl-on-surface-variant, #b9cacb);
-  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: ui-monospace, "SFMono-Regular", consolas, "Liberation Mono", menlo, monospace;
   font-size: 0.72rem;
   line-height: 1.45;
   max-height: 8.7em;

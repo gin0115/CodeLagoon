@@ -613,7 +613,7 @@
   margin: 1.5rem 0;
   padding: 0 20px;
   color: var(--cl-on-surface, #e5e2e1);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
 }
 .wp-block-codelag-lagoon-viewer .lagoon-viewer__empty {
   font-style: italic;
@@ -637,7 +637,7 @@
   gap: 0.75rem;
   padding: 0.6rem 1rem;
   background: var(--cl-surface-low, #1c1b1b);
-  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: ui-monospace, "SFMono-Regular", consolas, "Liberation Mono", menlo, monospace;
   font-size: 0.82rem;
 }
 .lagoon-file__name {
@@ -656,7 +656,7 @@
   height: 14px;
   margin-left: 0.45rem;
   vertical-align: -2px;
-  background-color: currentColor;
+  background-color: currentcolor;
   mask-image: url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27><path d=%27M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z%27 fill=%27black%27/></svg>");
   -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27><path d=%27M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z%27 fill=%27black%27/></svg>");
   mask-repeat: no-repeat;
@@ -714,7 +714,7 @@
   padding: 1.1rem 1.25rem;
   background: var(--cl-surface-lowest, #0e0e0e);
   color: var(--cl-on-surface-variant, #b9cacb);
-  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: ui-monospace, "SFMono-Regular", consolas, "Liberation Mono", menlo, monospace;
   font-size: 0.85rem;
   line-height: 1.6;
   overflow-x: auto;
@@ -730,8 +730,8 @@
 }
 .lagoon-file__md.markdown-body {
   padding: 1.5rem 1.75rem;
-  background: #ffffff;
-  color: #111111;
+  background: #fff;
+  color: #111;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   font-size: 0.95rem;
   line-height: 1.65;
@@ -744,7 +744,7 @@
   margin-bottom: 0;
 }
 .lagoon-file__md.markdown-body h1, .lagoon-file__md.markdown-body h2, .lagoon-file__md.markdown-body h3, .lagoon-file__md.markdown-body h4, .lagoon-file__md.markdown-body h5, .lagoon-file__md.markdown-body h6 {
-  color: #111111;
+  color: #111;
   font-weight: 700;
   line-height: 1.25;
   margin-top: 1.6em;
@@ -771,7 +771,7 @@
 }
 .lagoon-file__md.markdown-body h6 {
   font-size: 0.85rem;
-  color: #555555;
+  color: #555;
 }
 .lagoon-file__md.markdown-body p {
   margin: 0 0 1em;
@@ -792,8 +792,8 @@
 .lagoon-file__md.markdown-body blockquote {
   margin: 1em 0;
   padding: 0.25em 1em;
-  color: #555555;
-  border-right: 4px solid #dddddd;
+  color: #555;
+  border-right: 4px solid #ddd;
   background: transparent;
 }
 .lagoon-file__md.markdown-body blockquote > *:first-child {
@@ -816,7 +816,7 @@
 }
 .lagoon-file__md.markdown-body code {
   background: #f3f3f3;
-  color: #111111;
+  color: #111;
   padding: 0.1em 0.35em;
   border-radius: 3px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -824,7 +824,7 @@
 }
 .lagoon-file__md.markdown-body pre {
   background: #f6f6f6;
-  color: #111111;
+  color: #111;
   padding: 0.9em 1em;
   border-radius: 6px;
   overflow-x: auto;
@@ -879,7 +879,7 @@
 }
 .lagoon-file__md.markdown-body .footnotes {
   font-size: 0.85rem;
-  color: #555555;
+  color: #555;
   border-top: 1px solid #e5e5e5;
   margin-top: 2em;
   padding-top: 1em;

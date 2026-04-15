@@ -4447,7 +4447,7 @@ const COPY_RESET_MS = 2000;
 /**
  * Highlight every <code> element under the given root that Prism can handle.
  *
- * @param {ParentNode} root
+ * @param {Element|Document} root Root to search from.
  */
 function highlightAll(root) {
   prismjs__WEBPACK_IMPORTED_MODULE_0___default().highlightAllUnder(root);
@@ -4473,8 +4473,8 @@ function wireCopyButton(button) {
   button.addEventListener('click', async () => {
     const text = raw.value;
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
+      if (window.navigator.clipboard && window.navigator.clipboard.writeText) {
+        await window.navigator.clipboard.writeText(text);
       } else {
         // Fallback for older browsers / non-secure contexts.
         raw.removeAttribute('hidden');
@@ -4650,6 +4650,8 @@ const PRISM_LINK_ID = 'codelag-prism-theme';
  * Build the jsDelivr URL for a Prism theme. The "default" light theme is
  * served as `prism.min.css` (no `-default` suffix); everything else is
  * `prism-<name>.min.css`.
+ *
+ * @param {string} name Prism theme slug (e.g. "tomorrow", "default").
  */
 function prismUrl(name) {
   const filename = name === 'default' ? 'prism.min.css' : `prism-${name}.min.css`;
@@ -4660,6 +4662,9 @@ function prismUrl(name) {
  * Inject (or update) a stylesheet `<link>` with the given id and href. Idempotent —
  * the same call swaps the href on an existing link rather than appending a
  * duplicate, so memory and head clutter stay constant across theme switches.
+ *
+ * @param {string} id   DOM id to attach to the `<link>` element.
+ * @param {string} href Stylesheet URL to load.
  */
 function setLink(id, href) {
   let link = document.getElementById(id);
@@ -4711,6 +4716,8 @@ function persistTheme(key) {
 /**
  * Wire a single theme picker `<select>`. Sets the option matching the
  * persisted choice on init, then listens for changes.
+ *
+ * @param {HTMLSelectElement} select The theme-picker `<select>` element.
  */
 function wireThemePicker(select) {
   const persisted = readPersistedTheme();
@@ -4736,8 +4743,8 @@ function wireShareButton(button) {
   button.addEventListener('click', async () => {
     const url = window.location.href;
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
+      if (window.navigator.clipboard && window.navigator.clipboard.writeText) {
+        await window.navigator.clipboard.writeText(url);
       } else {
         // Fallback for older browsers / non-secure contexts.
         const tmp = document.createElement('textarea');
