@@ -36,6 +36,8 @@ final class LagoonPostType {
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_filter( 'default_content', array( $this, 'seed_default_content' ), 10, 2 );
+		add_filter( 'display_post_states', array( $this, 'visibility_post_states' ), 10, 2 );
+		add_action( 'admin_head', array( $this, 'visibility_icon_styles' ) );
 	}
 
 	/**
@@ -100,12 +102,74 @@ final class LagoonPostType {
 			),
 			'exclude_from_search' => false,
 			'publicly_queryable'  => true,
-			'capability_type'     => 'post',
+			'capability_type'     => 'lagoon',
+			'map_meta_cap'        => true,
 			'show_in_rest'        => true,
 			'rest_base'           => 'lagoons',
 		);
 
 		register_post_type( self::POST_TYPE, $args );
+	}
+
+	/**
+	 * Adjust the post-state labels for lagoons:
+	 *   - "Listed" for published lagoons (WP shows nothing by default).
+	 *   - Keep WP's built-in "Private" and "Draft" labels.
+	 *   - "Link only" is already registered via LinkStatus.
+	 *
+	 * @param string[] $states Current post states.
+	 * @param \WP_Post $post   The post.
+	 * @return string[]
+	 */
+	public function visibility_post_states( array $states, \WP_Post $post ): array {
+		if ( self::POST_TYPE !== $post->post_type ) {
+			return $states;
+		}
+
+		if ( 'publish' === $post->post_status ) {
+			$states['codelag_listed'] = __( 'Listed', 'codelag-features' );
+		}
+
+		return $states;
+	}
+
+	/**
+	 * Add a visibility dashicon before lagoon titles in the admin list.
+	 *
+	 * Uses CSS `::before` pseudo-elements on row classes that WordPress
+	 * already applies (`.status-publish`, `.status-private`, etc.).
+	 */
+	public function visibility_icon_styles(): void {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen instanceof \WP_Screen || 'edit-' . self::POST_TYPE !== $screen->id ) {
+			return;
+		}
+		?>
+		<style>
+			.post-type-lagoon .type-lagoon .row-title::before {
+				font-family: dashicons;
+				font-size: 16px;
+				vertical-align: text-bottom;
+				margin-right: 4px;
+			}
+			.post-type-lagoon .type-lagoon.status-publish .row-title::before {
+				content: "\f177"; /* dashicons-visibility */
+				color: #1e7e34;
+			}
+			.post-type-lagoon .type-lagoon.status-<?php echo esc_attr( LinkStatus::STATUS ); ?> .row-title::before {
+				content: "\f103"; /* dashicons-admin-links */
+				color: #1a56db;
+			}
+			.post-type-lagoon .type-lagoon.status-private .row-title::before {
+				content: "\f530"; /* dashicons-hidden */
+				color: #c5221f;
+			}
+			.post-type-lagoon .type-lagoon.status-draft .row-title::before {
+				content: "\f464"; /* dashicons-edit */
+				color: #e37400;
+			}
+		</style>
+		<?php
 	}
 
 	/**
