@@ -1,13 +1,12 @@
 <?php
 /**
- * Custom `monkey` role — basic contributor-like role for lagoon authors.
+ * Custom `curator` role — basic contributor-like role for lagoon authors.
  *
- * A monkey can create, edit, and publish their own lagoons. In wp-admin list
- * tables they see only their own lagoons plus publicly-listed lagoons from
- * other users (no private, no link-only, no drafts from others).
+ * A curator can create, edit, and publish their own lagoons. In wp-admin list
+ * tables they see only their own lagoons (no other users' lagoons at all).
  *
  * Role is added via `add_role()` once (idempotent). Admin visibility limits
- * are enforced via `pre_get_posts` on the Lagoons list screen so a monkey
+ * are enforced via `pre_get_posts` on the Lagoons list screen so a curator
  * can't widen their view by manipulating the status filter in the URL.
  *
  * @package Gin0115\Codelagoon\Features\PostType
@@ -24,18 +23,18 @@ use WP_Query;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers and policies the `monkey` user role — see file docblock above.
+ * Registers and policies the `curator` user role — see file docblock above.
  */
-final class MonkeyRole {
+final class CuratorRole {
 
-	public const ROLE = 'monkey';
+	public const ROLE = 'curator';
 
 	/**
-	 * Capabilities a monkey gets. Uses lagoon-specific caps so monkeys can
+	 * Capabilities a curator gets. Uses lagoon-specific caps so curators can
 	 * manage their own lagoons without gaining access to regular posts.
 	 *
 	 * Comment caps are deliberately absent here — comment moderation is
-	 * handled via filters that scope access to the monkey's own lagoons
+	 * handled via filters that scope access to the curator's own lagoons
 	 * and their own comments.
 	 *
 	 * @return array<string,bool>
@@ -67,9 +66,9 @@ final class MonkeyRole {
 		add_action( 'pre_get_posts', array( $this, 'restrict_admin_list' ) );
 		add_filter( 'map_meta_cap', array( $this, 'restrict_comment_caps' ), 10, 4 );
 		add_action( 'pre_get_comments', array( $this, 'restrict_comment_list' ) );
-		add_filter( 'user_has_cap', array( $this, 'grant_edit_posts_for_monkey' ), 10, 4 );
-		add_action( 'admin_menu', array( $this, 'remove_posts_menu_for_monkey' ) );
-		add_filter( 'wp_count_posts', array( $this, 'filter_lagoon_counts_for_monkey' ), 10, 3 );
+		add_filter( 'user_has_cap', array( $this, 'grant_edit_posts_for_curator' ), 10, 4 );
+		add_action( 'admin_menu', array( $this, 'remove_menus_for_curator' ) );
+		add_filter( 'wp_count_posts', array( $this, 'filter_lagoon_counts_for_curator' ), 10, 3 );
 	}
 
 	/**
@@ -83,17 +82,17 @@ final class MonkeyRole {
 		}
 		add_role(
 			self::ROLE,
-			_x( 'Monkey', 'user role label', 'codelag-features' ),
+			_x( 'Curator', 'user role label', 'codelag-features' ),
 			$this->capabilities()
 		);
 	}
 
 	/**
-	 * Dynamically grant `edit_posts` to monkeys in wp-admin.
+	 * Dynamically grant `edit_posts` to curators in wp-admin.
 	 *
 	 * WordPress core requires `edit_posts` for the Comments menu and the
 	 * edit-comments.php screen. We grant it dynamically so those work, then
-	 * remove the Posts menu via `remove_posts_menu_for_monkey()` so monkeys
+	 * remove the Posts menu via `remove_menus_for_curator()` so curators
 	 * still cannot access regular posts.
 	 *
 	 * @param array<string,bool> $allcaps All capabilities for the user.
@@ -102,7 +101,7 @@ final class MonkeyRole {
 	 * @param \WP_User           $user    The user object.
 	 * @return array<string,bool>
 	 */
-	public function grant_edit_posts_for_monkey( array $allcaps, array $caps, array $args, $user ): array {
+	public function grant_edit_posts_for_curator( array $allcaps, array $caps, array $args, $user ): array {
 		if ( ! in_array( self::ROLE, (array) $user->roles, true ) ) {
 			return $allcaps;
 		}
@@ -117,14 +116,14 @@ final class MonkeyRole {
 	}
 
 	/**
-	 * Remove menu items monkeys should not access.
+	 * Remove menu items curators should not access.
 	 *
 	 * Because we dynamically grant `edit_posts` (needed for comments),
-	 * WordPress will show the Posts menu. Media is also hidden — monkeys
+	 * WordPress will show the Posts menu. Media is also hidden — curators
 	 * can still upload files via the lagoon editor but don't need the
 	 * standalone media library.
 	 */
-	public function remove_posts_menu_for_monkey(): void {
+	public function remove_menus_for_curator(): void {
 		$user = wp_get_current_user();
 		if ( ! $user->exists() || ! in_array( self::ROLE, (array) $user->roles, true ) ) {
 			return;
@@ -135,7 +134,7 @@ final class MonkeyRole {
 	}
 
 	/**
-	 * Override `wp_count_posts` for the lagoon post type so monkeys only
+	 * Override `wp_count_posts` for the lagoon post type so curators only
 	 * see counts for their own lagoons. Also removes the "Mine" view link
 	 * since all lagoons shown are theirs.
 	 *
@@ -144,7 +143,7 @@ final class MonkeyRole {
 	 * @param string $perm    Permission filter ('readable' or empty).
 	 * @return object
 	 */
-	public function filter_lagoon_counts_for_monkey( $counts, string $type, string $perm ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- required by wp_count_posts filter signature.
+	public function filter_lagoon_counts_for_curator( $counts, string $type, string $perm ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- required by wp_count_posts filter signature.
 		if ( LagoonPostType::POST_TYPE !== $type ) {
 			return $counts;
 		}
@@ -156,7 +155,7 @@ final class MonkeyRole {
 
 		global $wpdb;
 
-		// Count only this monkey's lagoons per status.
+		// Count only this curator's lagoons per status.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT post_status, COUNT(*) AS num_posts
@@ -191,7 +190,7 @@ final class MonkeyRole {
 	}
 
 	/**
-	 * On the wp-admin Lagoons list, restrict monkeys to only their own
+	 * On the wp-admin Lagoons list, restrict curators to only their own
 	 * lagoons (any status). Admins / editors (anyone with
 	 * `edit_others_lagoons`) see everything.
 	 *
@@ -221,7 +220,7 @@ final class MonkeyRole {
 	}
 
 	/**
-	 * Restrict comment editing/moderation for monkeys so they can only touch:
+	 * Restrict comment editing/moderation for curators so they can only touch:
 	 *   - comments on their own lagoons, OR
 	 *   - their own comments (on any lagoon).
 	 *
@@ -261,12 +260,12 @@ final class MonkeyRole {
 			return array( 'do_not_allow' );
 		}
 
-		// Allow if this is the monkey's own comment.
+		// Allow if this is the curator's own comment.
 		if ( (int) $comment->user_id === $user_id ) {
 			return $caps;
 		}
 
-		// Allow if the comment is on one of the monkey's own lagoons.
+		// Allow if the comment is on one of the curator's own lagoons.
 		$post = get_post( $comment->comment_post_ID );
 		if (
 			$post instanceof \WP_Post
@@ -280,7 +279,7 @@ final class MonkeyRole {
 	}
 
 	/**
-	 * On the wp-admin Comments list, narrow results for monkeys to only show
+	 * On the wp-admin Comments list, narrow results for curators to only show
 	 * comments on their own lagoons plus their own comments on any lagoon.
 	 *
 	 * @param \WP_Comment_Query $query Comment query being executed.
@@ -304,7 +303,7 @@ final class MonkeyRole {
 		// triggers pre_get_comments which would call this method again.
 		remove_action( 'pre_get_comments', array( $this, 'restrict_comment_list' ) );
 
-		// Gather IDs of lagoons this monkey owns.
+		// Gather IDs of lagoons this curator owns.
 		$own_lagoon_ids = get_posts(
 			array(
 				'post_type'      => LagoonPostType::POST_TYPE,
@@ -315,7 +314,7 @@ final class MonkeyRole {
 			)
 		);
 
-		// Gather IDs of the monkey's own comments on lagoons.
+		// Gather IDs of the curator's own comments on lagoons.
 		$own_comment_ids = get_comments(
 			array(
 				'user_id'   => $user_id,
@@ -325,7 +324,7 @@ final class MonkeyRole {
 			)
 		);
 
-		// Build a list of comment IDs the monkey may see: all comments on
+		// Build a list of comment IDs the curator may see: all comments on
 		// their own lagoons + their own comments elsewhere.
 		$allowed_ids = array();
 		if ( array() !== $own_lagoon_ids ) {
