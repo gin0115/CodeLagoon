@@ -76,7 +76,7 @@ final class Plugin {
 		( new PostType\LagoonPostType() )->register();
 		( new PostType\SlugGenerator() )->register();
 		( new PostType\LinkStatus() )->register();
-		( new PostType\MonkeyRole() )->register();
+		( new PostType\CuratorRole() )->register();
 		( new PostType\EditorAssets() )->register();
 		( new Taxonomy\DefaultTermsSeeder() )->register();
 		( new Meta\LagoonMeta() )->register();
